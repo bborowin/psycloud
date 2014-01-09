@@ -1,0 +1,1 @@
+exports.Kinetic = require("./kinetic-v4.7.1.js")

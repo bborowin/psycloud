@@ -1,0 +1,52 @@
+{
+  "name": "psycloud",
+  "description": "library for creating psychological experiments in the browser",
+  "version": "0.0.1",
+  "homepage": "https://github.com/brad/psycloud",
+  "author": {
+    "name": "Bradley Buchsbaum",
+    "email": "brad.buchsbaum@gmail.com"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/brad/psycloud.git"
+  },
+  "bugs": {
+    "url": "https://github.com/brad/psycloud/issues"
+  },
+  "licenses": [
+    {
+      "type": "MIT",
+      "url": "https://github.com/brad/psycloud/blob/master/LICENSE-MIT"
+    }
+  ],
+  "main": "./index",
+  "devDependencies": {
+    "grunt": "~0.4.2",
+    "grunt-contrib-clean": "~0.5.0",
+    "grunt-contrib-watch": "~0.5.3",
+    "grunt-contrib-livereload": "~0.1.2",
+    "grunt-mocha-debug": "~0.0.10",
+    "grunt-newer": "~0.5.4",
+    "powerbuild": "~0.0.11",
+    "grunt-saucelabs": "~4.1.2",
+    "grunt-exec-jshint": "~0.0.0",
+    "grunt-release": "~0.5.1",
+    "teacup": "~0.2.10",
+    "baconjs": "~0.7.0",
+    "grunt-contrib-coffee": "~0.8.0",
+    "mixen": "~0.5.2",
+    "marked": "~0.3.0",
+    "grunt-contrib-concat": "~0.3.0",
+    "grunt-contrib-cssmin": "~0.7.0",
+    "codo": "~2.0.3",
+    "q": "~1.0.0",
+    "taffydb": "~2.7.2"
+  },
+  "scripts": {
+    "test": "grunt ci"
+  },
+  "dependencies": {
+
+  }
+}

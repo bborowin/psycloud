@@ -1,0 +1,29 @@
+# psycloud
+
+> library for creating psychological experiments in the browser
+
+#### Node.js:
+[![Build Status](https://travis-ci.org//psycloud.png)](https://travis-ci.org//psycloud)
+
+#### Browsers:
+[![Selenium Test Status](https://saucelabs.com/browser-matrix/_psycloud.svg)](https://saucelabs.com/u/_psycloud)
+
+
+## Installation
+
+```sh
+npm install --save psycloud
+```
+
+## Usage
+
+## Development
+
+Clone, install dependencies and re-test whenever some file is modified:
+
+```sh
+git clone git://github.com/brad/psycloud.git
+cd psycloud
+npm install
+grunt
+```
