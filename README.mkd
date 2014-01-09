@@ -2,12 +2,6 @@
 
 > library for creating psychological experiments in the browser
 
-#### Node.js:
-[![Build Status](https://travis-ci.org//psycloud.png)](https://travis-ci.org//psycloud)
-
-#### Browsers:
-[![Selenium Test Status](https://saucelabs.com/browser-matrix/_psycloud.svg)](https://saucelabs.com/u/_psycloud)
-
 
 ## Installation
 
