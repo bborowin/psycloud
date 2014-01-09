@@ -11,7 +11,6 @@ factorSet =
 @evenSampler = new Psy.ReplacementSampler([2,4,6,8])
 @oddSampler = new Psy.ReplacementSampler([3,5,7,9])
 
-
 fnode = Psy.FactorSetNode.build(factorSet)
 @trials = fnode.trialList(5, 5)
 
@@ -22,8 +21,6 @@ trials.shuffle()
 
 
 nums = [2,3,4,5,6,7,8,9]
-
-
 
 window.display =
   Display:
@@ -101,15 +98,6 @@ window.display =
 
 
       Feedback: ->
-        console.log("in feedback")
-        console.log("this", this)
-        console.log("accuracy", @Accuracy)
-        console.log("RT", @RT)
-        #HtmlLabel:
-        #  text: if @Accuracy is true then "CORRECT" else "INCORRECT"
-        #  glyph: if @Accuracy is true then "checkmark" else "frown"
-        #  position: "center"
-        #  origin: "center"
         Rectangle:
           fill: if @Accuracy then "green" else "red"
           x: 0
@@ -123,12 +111,5 @@ window.display =
 
 
 
-
-
-
-
-
-window.pres = new Psy.Presenter(trials, display.Display, context)
-console.log("STARTING PRES")
+pres = new Psy.Presenter(trials, display.Display, context)
 pres.start()
-###
