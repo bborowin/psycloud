@@ -12,15 +12,16 @@ factorSet =
 @oddSampler = new Psy.ReplacementSampler([3,5,7,9])
 
 fnode = Psy.FactorSetNode.build(factorSet)
+
+# create 5 blocks of trials with 5 complete replications per block
 @trials = fnode.trialList(5, 5)
 
+# add a column to design called 'num' that contains the odd or even numerals
 trials = @trials.bind ((record) =>
   if record.oddeven is "odd" then num: oddSampler.take(1)[0] else num: evenSampler.take(1)[0])
 
 trials.shuffle()
 
-
-nums = [2,3,4,5,6,7,8,9]
 
 window.display =
   Display:
@@ -53,9 +54,6 @@ window.display =
 
     Block:
       Start: ->
-        console.log("state is ", @state)
-        console.log("context is", @context)
-        console.log("block number is", @blockNumber)
         Text:
           position: "center"
           origin: "center"
@@ -64,9 +62,7 @@ window.display =
           SpaceKey: ""
 
       End: ->
-        console.log("state is ", @state)
-        console.log("context is", @context)
-        Text:
+          Text:
           position: "center"
           origin: "center"
           content: ["End of Block #{@blockNumber}", "Press any key to continue"]
@@ -105,7 +101,6 @@ window.display =
                 duration: 1500
 
       Feedback: ->
-        console.log("feedback this", this)
         Blank:
           fill: if @answer?.Accuracy then "green" else "red"
           opacity: .1
