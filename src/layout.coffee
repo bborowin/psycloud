@@ -27,13 +27,13 @@ convertPercentageToFraction = (perc, dim) ->
   frac * dim
 
 convertToCoordinate = (val, d) ->
-  console.log("converting to coordinate!!!!!!!!", val)
+  #console.log("converting to coordinate!!!!!!!!", val)
   if isPercentage val
     val = convertPercentageToFraction(val, d)
   else if isPositionLabel val
-    console.log("found a position label:", val)
+    #console.log("found a position label:", val)
     ret = positionToCoord(val, 0, 0, d[0], d[1], [0,0])
-    console.log("position coordinate", ret)
+    #console.log("position coordinate", ret)
     ret
   else
     Math.min(val, d)
@@ -59,13 +59,13 @@ exports.Layout =
     computePosition: (dim, constraints) -> throw new Error("unimplimented error")
 
     convertToCoordinate: (val, d) ->
-      console.log("converting to coordinate!!!!!!!!", val)
+      #console.log("converting to coordinate!!!!!!!!", val)
       if isPercentage val
         val = convertPercentageToFraction(val, d)
       else if isPositionLabel val
-        console.log("found a position label:", val)
+        #console.log("found a position label:", val)
         ret = positionToCoord(val, 0, 0, d[0], d[1], [0,0])
-        console.log("position coordinate", ret)
+        #console.log("position coordinate", ret)
         ret
       else
         Math.min(val, d)
@@ -76,8 +76,8 @@ exports.AbsoluteLayout =
   class AbsoluteLayout extends exports.Layout
 
     computePosition: (dim, constraints) ->
-      console.log("dim", dim)
-      console.log("constraints", constraints)
+      #console.log("dim", dim)
+      #console.log("constraints", constraints)
       if _.isArray(constraints)
         ## assume coordinate array of length 2
         x = convertToCoordinate(constraints[0], dim[0])

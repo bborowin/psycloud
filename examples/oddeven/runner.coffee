@@ -15,7 +15,7 @@ fnode = Psy.FactorSetNode.build(factorSet)
 @trials = fnode.trialList(5, 5)
 
 trials = @trials.bind ((record) =>
-  if record.oddeven is "odd" then num: oddSampler.take(1) else num: evenSampler.take(1))
+  if record.oddeven is "odd" then num: oddSampler.take(1)[0] else num: evenSampler.take(1)[0])
 
 trials.shuffle()
 
@@ -50,27 +50,32 @@ window.display =
             AnyKey: ""
 
 
+
     Block:
-      Start: (context) ->
+      Start: ->
+        console.log("state is ", @state)
+        console.log("context is", @context)
+        console.log("block number is", @blockNumber)
         Text:
           position: "center"
           origin: "center"
-          content: ["Get Ready!", "Press Space Bar to start"]
+          content: ["Get Ready for Block #{@blockNumber}!", "Press Space Bar to start"]
         Next:
           SpaceKey: ""
 
-      End: (context) ->
+      End: ->
+        console.log("state is ", @state)
+        console.log("context is", @context)
         Text:
           position: "center"
           origin: "center"
-          content: "END OF BLOCK, PRESS ANY KEY TO CONTINUE"
+          content: ["End of Block #{@blockNumber}", "Press any key to continue"]
         Next:
           AnyKey: ""
 
 
 
     Trial: ->
-      #num = if @oddeven is "even" then evenSampler.take(1) else oddSampler.take(1)
 
       Background:
         CanvasBorder:
@@ -91,19 +96,18 @@ window.display =
             fontSize: 175
             fill: "blue"
           Next:
-            KeyPress:
-              id: "answer"
-              keys: ['n', 'm']
-              correct: if @oddeven is "even" then 'n' else 'm'
-
+            First:
+              KeyPress:
+                id: "answer"
+                keys: ['n', 'm']
+                correct: if @oddeven is "even" then 'n' else 'm'
+              Timeout:
+                duration: 1500
 
       Feedback: ->
-        Rectangle:
-          fill: if @Accuracy then "green" else "red"
-          x: 0
-          y: 0
-          width: 960
-          height: 800
+        console.log("feedback this", this)
+        Blank:
+          fill: if @answer?.Accuracy then "green" else "red"
           opacity: .1
         Next:
           Timeout:

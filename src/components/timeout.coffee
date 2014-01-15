@@ -12,7 +12,15 @@ class Timeout extends Response
     deferred = Q.defer()
 
     utils.doTimer(@spec.duration, (diff) =>
-      deferred.resolve({timeout: diff, requested: @spec.duration}))
+      console.log("resolving timeout")
+      resp =
+        name: "Timeout"
+        id: @id
+        timeElapsed: diff
+        timeRequested: @spec.duration
+
+      context.pushData(resp)
+      deferred.resolve(resp))
     deferred.promise
 
 

@@ -72,6 +72,21 @@ class DefaultComponentFactory extends ComponentFactory
         layoutParams = _.values(params.layout)[0]
         new Components.Group(stims, @makeLayout(layoutName, layoutParams, context))
 
+      when "First"
+        console.log("First!")
+        console.log("param", params)
+        names = _.keys(params)
+        console.log("first names", names)
+        props = _.values(params)
+        console.log("first props", props)
+
+        resps = _.map([0...names.length], (i) =>
+          callee(names[i], props[i], @registry)
+        )
+
+        new Components.First(resps)
+
+
       else
         if not registry[name]?
           throw new Error("DefaultComponentFactory:make cannot find component in registry named: ", name)

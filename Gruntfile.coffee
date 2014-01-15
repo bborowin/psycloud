@@ -17,6 +17,7 @@ module.exports = (grunt) ->
         expand: true
         ext: '.js'
 
+
     powerbuild:
       options:
         sourceMap: true
@@ -42,6 +43,15 @@ module.exports = (grunt) ->
           {src: "src/main.coffee", dest: 'build/psycloud.min.js'}
         ]
 
+    watch:
+      scripts:
+        files: ['src/**/*.coffee']
+        tasks: ['default']
+        options:
+          spawn: false
+
+
+
     concat:
       min:
         src: ['build/psycloud.min.js', 'jslibs/jquery-1.7.min.js', 'vex.combined.min.js']
@@ -54,11 +64,11 @@ module.exports = (grunt) ->
       combine: 
         files: 
           'build/psycloud_bundle.css': ['css/*.css']
-      
-    
-     
-     
-        
+
+
+
+
+  grunt.loadNpmTasks('grunt-contrib-watch');
   grunt.loadNpmTasks('grunt-contrib-coffee')
   grunt.loadNpmTasks('grunt-contrib-clean')
   grunt.loadNpmTasks('grunt-contrib-concat')

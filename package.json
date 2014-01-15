@@ -46,7 +46,5 @@
   "scripts": {
     "test": "grunt ci"
   },
-  "dependencies": {
-
-  }
+  "dependencies": {}
 }

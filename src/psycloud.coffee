@@ -96,7 +96,9 @@ class RunnableNode
 
   @functionList: (nodes, context, callback) ->
     ## for every runnable node, create a function that returns a promise via 'node.start'
-    _.map(nodes, (node) => (=>
+    _.map(nodes, (node) => ( (resp) =>
+      console.log("resp is", resp)
+      console.log("node is", node)
       callback(node) if callback?
       node.start(context)
     ))
@@ -117,10 +119,13 @@ class RunnableNode
     ## sequentially chain the promise-producing functions in an array 'funArray'
     ## 'result' is the promise chain.
     for fun in funArray
+
       result = result.then(fun,
-      (err) ->
-        throw new Error("Error during execution: ", err)
+        (err) ->
+          throw new Error("Error during execution: ", err)
       )
+
+
     result
 
   numChildren: -> @children.length
@@ -165,10 +170,12 @@ exports.Event =
 
         @stimulus.render(context, context.contentLayer)
         context.draw()
+        0
 
     after: (context) ->
       =>
         @stimulus.stop(context)
+
 
 
     start: (context) ->
@@ -199,12 +206,24 @@ exports.Trial =
           context.drawBackground()
 
 
+
     after: (context, callback) ->
       ## return a function that executes feedback operation
       =>
         if @feedback?
           args = context.trialData()
+          idSet = {}
+          for obj in args
+             if obj["id"]?
+              idSet[obj["id"]] = obj
+
+
+          console.log("idSet", idSet)
+
+          args = _.extend(args, idSet)
+
           spec = @feedback.apply(args)
+
           event = context.stimFactory.buildEvent(spec, context)
           event.start(context).then(=>
             if callback?
@@ -248,7 +267,8 @@ exports.Block =
         )
 
         if @blockSpec? and @blockSpec.Start
-          spec = @blockSpec.Start(context)
+          args = _.extend(context.exState.toRecord(), context: context)
+          spec = @blockSpec.Start.apply(args)
           @showEvent(spec, context)
         else
           Q.fcall(0)
@@ -259,7 +279,9 @@ exports.Block =
       =>
 
         if @blockSpec? and @blockSpec.End
-          spec = @blockSpec.End(context)
+          args = _.extend(context.exState.toRecord(), context: context)
+          spec = @blockSpec.End.apply(args)
+
           @showEvent(spec, context)
         else
           Q.fcall(0)
@@ -336,13 +358,13 @@ exports.ExperimentState =
 
     toRecord: ->
       ret = {
-        $blockNumber: @blockNumber
-        $trialNumber: @trialNumber
-        $eventNumber: @eventNumber
-        $stimulus: @event?.stimulus?.constructor?.name
-        $response: @event?.response?.constructor?.name
-        $stimulusID: @event?.stimulus?.id
-        $responseID: @event?.response?.id
+        blockNumber: @blockNumber
+        trialNumber: @trialNumber
+        eventNumber: @eventNumber
+        stimulus: @event?.stimulus?.constructor?.name
+        response: @event?.response?.constructor?.name
+        stimulusID: @event?.stimulus?.id
+        responseID: @event?.response?.id
 
       }
 
@@ -420,7 +442,7 @@ exports.ExperimentContext =
       console.log(@log)
 
     trialData: ->
-      ret = @userData().filter({ $trialNumber: @exState.trialNumber }).get()
+      ret = @userData().filter({ trialNumber: @exState.trialNumber }).get()
       if ret.length == 1
         ret[0]
       else ret
@@ -431,9 +453,9 @@ exports.ExperimentContext =
         args.blockNum = @exState.blockNumber
 
       if not args.name
-        @userData().filter({ $blockNumber: args.blockNum })
+        @userData().filter({ blockNumber: args.blockNum })
       else
-        @userData().filter({ $blockNumber: args.blockNum }).select(args.name)
+        @userData().filter({ blockNumber: args.blockNum }).select(args.name)
 
     allData: (args= {name: null}) ->
       if not args.name

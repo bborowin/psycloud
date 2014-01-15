@@ -1,6 +1,9 @@
 
 moduleKeywords = ['included', 'extended']
 
+
+## Module base class
+
 class Module
   @include: (obj) ->
     throw new Error('include(obj) requires obj') unless obj

@@ -12,6 +12,8 @@ class Text extends Stimulus
     super(spec)
     if (_.isArray(@spec.content))
       @spec.content = @spec.content.join("\n")
+      if not spec.lineHeight?
+        @spec.lineHeight = 2
 
   render: (context, layer) ->
     #coords = @computeCoordinates(context, @spec.position, @spec.width, @spec.height)
@@ -31,8 +33,6 @@ class Text extends Stimulus
     })
 
 
-    console.log("text width: ", text.getWidth())
-    console.log("text height: ", text.getHeight())
 
     coords = @computeCoordinates(context, @spec.position, text.getWidth(), text.getHeight())
 

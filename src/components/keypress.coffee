@@ -50,29 +50,44 @@ for i in [1..9]
   keyTable[i + 96]
 
 
-class KeyPress extends Response
-
+class KeyResponse extends Response
   defaults:
     keys: ['1', '2'], correct: ['1']
 
+
+
+
+
+
+class KeyPress extends KeyResponse
+
+
+  createResponseData: (timeStamp, startTime, Acc, char) ->
+    resp =
+      name: @name
+      id: @id
+      KeyTime: timeStamp
+      RT: timeStamp - startTime
+      Accuracy: Acc
+      KeyChar: char
+
+    resp
+
+
   activate: (context) ->
     @startTime = utils.getTimestamp()
-    myname = @name
     deferred = Q.defer()
     keyStream = context.keypressStream()
     keyStream.filter((event) =>
       char = String.fromCharCode(event.keyCode)
       _.contains(@spec.keys, char)).take(1).onValue( (filtered) =>
+      timeStamp = utils.getTimestamp()
       Acc = _.contains(@spec.correct, String.fromCharCode(filtered.keyCode))
-      timestamp = utils.getTimestamp()
 
-      resp =
-        name: myname
-        id: @id
-        KeyTime: timestamp
-        RT: timestamp - @startTime
-        Accuracy: Acc
-        KeyChar: String.fromCharCode(filtered.keyCode)
+
+      resp = @createResponseData(timeStamp, @startTime, Acc, String.fromCharCode(filtered.keyCode))
+
+      console.log("pushing key resp data", resp)
 
       context.pushData(resp)
 
@@ -87,11 +102,21 @@ exports.KeyPress = KeyPress
 class SpaceKey extends Response
 
   activate: (context) ->
+    @startTime = utils.getTimestamp()
     deferred = Q.defer()
     keyStream = context.keypressStream()
     keyStream.filter((event) =>
       event.keyCode == 32).take(1).onValue((event) =>
-      deferred.resolve(event))
+      timeStamp = utils.getTimestamp()
+      resp =
+        name: "SpaceKey"
+        id: @id
+        KeyTime: timeStamp
+        RT: timeStamp - @startTime
+        KeyChar: "space"
+
+      context.pushData(resp)
+      deferred.resolve(resp))
 
     deferred.promise
 

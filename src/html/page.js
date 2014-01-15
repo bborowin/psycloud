@@ -32,7 +32,3 @@
   exports.Page = Page;
 
 }).call(this);
-
-/*
-//@ sourceMappingURL=page.map
-*/

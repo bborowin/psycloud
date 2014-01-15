@@ -39,7 +39,3 @@
   exports.Message = Message;
 
 }).call(this);
-
-/*
-//@ sourceMappingURL=message.map
-*/
