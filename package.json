@@ -41,7 +41,9 @@
     "grunt-contrib-cssmin": "~0.7.0",
     "codo": "~2.0.3",
     "q": "~1.0.0",
-    "taffydb": "~2.7.2"
+    "taffydb": "~2.7.2",
+    "coffee-script": "~1.6.3",
+    "lodash": "~2.4.1"
   },
   "scripts": {
     "test": "grunt ci"
