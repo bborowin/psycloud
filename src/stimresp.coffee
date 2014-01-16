@@ -89,3 +89,7 @@ class Response extends Stimulus
   start: (context) -> @activate(context)
 
   activate: (context) ->
+
+
+
+exports.ResponseDat
