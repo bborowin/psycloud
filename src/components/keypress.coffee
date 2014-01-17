@@ -1,5 +1,6 @@
 Q = require("q")
 Response = require("../stimresp").Response
+ResponseData = require("../stimresp").ResponseData
 utils = require("../utils")
 _ = require('lodash')
 
@@ -56,9 +57,6 @@ class KeyResponse extends Response
 
 
 
-
-
-
 class KeyPress extends KeyResponse
 
 
@@ -83,15 +81,9 @@ class KeyPress extends KeyResponse
       _.contains(@spec.keys, char)).take(1).onValue( (filtered) =>
       timeStamp = utils.getTimestamp()
       Acc = _.contains(@spec.correct, String.fromCharCode(filtered.keyCode))
-
-
       resp = @createResponseData(timeStamp, @startTime, Acc, String.fromCharCode(filtered.keyCode))
 
-      console.log("pushing key resp data", resp)
-
-      context.pushData(resp)
-
-      deferred.resolve(resp))
+      deferred.resolve(new ResponseData(resp)))
 
     deferred.promise
 
@@ -100,7 +92,7 @@ exports.KeyPress = KeyPress
 
 
 class SpaceKey extends Response
-
+  # not DRY, need to abstract
   activate: (context) ->
     @startTime = utils.getTimestamp()
     deferred = Q.defer()
@@ -114,19 +106,25 @@ class SpaceKey extends Response
         KeyTime: timeStamp
         RT: timeStamp - @startTime
         KeyChar: "space"
-
-      context.pushData(resp)
-      deferred.resolve(resp))
+      deferred.resolve(new ResponseData(resp)))
 
     deferred.promise
 
 class AnyKey extends Response
-
+  # not DRY, need to abstract
   activate: (context) ->
+    @startTime = utils.getTimestamp()
     deferred = Q.defer()
     keyStream = context.keypressStream()
     keyStream.take(1).onValue((event) =>
-      deferred.resolve(event))
+      timeStamp = utils.getTimestamp()
+      resp =
+        name: "AnyKey"
+        id: @id
+        KeyTime: timeStamp
+        RT: timeStamp - @startTime
+        KeyChar: String.fromCharCode(event.keyCode)
+      deferred.resolve(new ResponseData(resp)))
 
     deferred.promise
 

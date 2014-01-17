@@ -1,5 +1,6 @@
 Q = require("q")
 Response = require("../stimresp").Response
+ResponseData = require("../stimresp").ResponseData
 utils = require("../utils")
 
 class MousePress extends Response
@@ -20,10 +21,8 @@ class MousePress extends Response
         RT: timestamp - @startTime
         Accuracy: Acc
 
-      context.pushData(resp)
 
-
-      deferred.resolve(event))
+      deferred.resolve(new ResponseData(resp)))
     deferred.promise
 
 exports.MousePress = MousePress

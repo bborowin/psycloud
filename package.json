@@ -41,7 +41,8 @@
     "grunt-contrib-cssmin": "~0.7.0",
     "codo": "~2.0.3",
     "q": "~1.0.0",
-    "taffydb": "~2.7.2"
+    "taffydb": "~2.7.2",
+    "mousetrap": "0.0.1"
   },
   "scripts": {
     "test": "grunt ci"

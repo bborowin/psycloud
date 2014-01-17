@@ -67,9 +67,7 @@ class Stimulus extends Module
     else [0,0]
 
     if @spec.origin?
-      console.log("spec origin",@spec.origin )
       xyoff = @xyoffset(@spec.origin, nodeWidth, nodeHeight)
-      console.log("offset!", xyoff)
       xy[0] = xy[0] + xyoff[0]
       xy[1] = xy[1] + xyoff[1]
     xy
@@ -92,4 +90,7 @@ class Response extends Stimulus
 
 
 
-exports.ResponseDat
+exports.ResponseData =
+class ResponseData
+
+  constructor: (@data) ->

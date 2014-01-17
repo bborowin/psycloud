@@ -9,8 +9,10 @@ Bacon = require("baconjs")
 DefaultComponentFactory = require("./components/factory").DefaultComponentFactory
 Background = require("./components/canvas/background").Background
 Kinetic = require("../jslibs/kinetic").Kinetic
+
 Stimulus = require("./stimresp").Stimulus
 Response = require("./stimresp").Response
+ResponseData = require("./stimresp").ResponseData
 
 exports.EventData =
 class EventData
@@ -66,11 +68,11 @@ exports.StimFactory =
       response = @buildResponse(responseSpec.Next, context)
       @makeEvent(stim, response, context)
 
-    makeStimulus: (name, params,context) -> throw "unimplemented"
+    makeStimulus: (name, params,context) -> throw new Error("unimplemented")
 
-    makeResponse: (name, params, context) -> throw "unimplemented"
+    makeResponse: (name, params, context) -> throw new Error("unimplemented")
 
-    makeEvent: (stim, response, context) -> throw "unimplemented"
+    makeEvent: (stim, response, context) -> throw new Error("unimplemented")
 
 
 exports.MockStimFactory =
@@ -92,25 +94,15 @@ exports.MockStimFactory =
 
 class RunnableNode
 
-  constructor: (@children) ->
-
   @functionList: (nodes, context, callback) ->
     ## for every runnable node, create a function that returns a promise via 'node.start'
-    _.map(nodes, (node) => ( (resp) =>
-      console.log("resp is", resp)
-      console.log("node is", node)
+    _.map(nodes, (node) -> ( (arg) ->
+      if arg instanceof ResponseData
+        console.log("captured a ResponseData object", arg)
+        context.pushData(arg.data)
       callback(node) if callback?
       node.start(context)
     ))
-
-
-  before: (context) ->
-    -> 0
-
-
-  after: (context) ->
-    -> 0
-
 
   @chainFunctions: (funArray) ->
     ## start with a dummy promise
@@ -119,20 +111,37 @@ class RunnableNode
     ## sequentially chain the promise-producing functions in an array 'funArray'
     ## 'result' is the promise chain.
     for fun in funArray
-
       result = result.then(fun,
-        (err) ->
-          throw new Error("Error during execution: ", err)
+      (err) ->
+        throw new Error("Error during execution: ", err)
       )
 
 
     result
+
+  constructor: (@children) ->
+
+
+  before: (context) ->
+    (arg) ->
+      console.log("runnable before arg", arg)
+      arg
+
+
+  after: (context) ->
+    (arg) ->
+      console.log("runnable after arg", arg)
+      arg
+
+
+
 
   numChildren: -> @children.length
 
   length: -> @children.length
 
   start: (context) ->
+
     farray = RunnableNode.functionList(@children, context,
     (node) ->
       console.log("node done", node)
@@ -144,6 +153,15 @@ class RunnableNode
   stop: (context) ->
 
 exports.RunnableNode = RunnableNode
+
+
+exports.FunctionNode =
+class FunctionNode extends RunnableNode
+  constructor: (@fun) ->
+
+  start: (context) ->
+    Q.fcall(@fun)
+
 
 exports.Event =
   class Event extends RunnableNode
@@ -157,7 +175,7 @@ exports.Event =
 
 
     before: (context) ->
-      =>
+      (arg) =>
         self = this
 
         if not context.exState.inPrelude
@@ -170,11 +188,13 @@ exports.Event =
 
         @stimulus.render(context, context.contentLayer)
         context.draw()
-        0
+        arg
+
 
     after: (context) ->
-      =>
+      (arg) =>
         @stimulus.stop(context)
+        arg
 
 
 
@@ -193,7 +213,7 @@ exports.Trial =
     push: (event) -> @children.push(event)
 
     before: (context) ->
-      =>
+      (arg) =>
         self = this
         context.updateState( =>
           context.exState.nextTrial(self)
@@ -205,11 +225,14 @@ exports.Trial =
           context.setBackground(@background)
           context.drawBackground()
 
+        arg
+
 
 
     after: (context, callback) ->
       ## return a function that executes feedback operation
-      =>
+      (arg) =>
+        #console.log("trial after arg", arg)
         if @feedback?
           args = context.trialData()
           idSet = {}
@@ -235,11 +258,12 @@ exports.Trial =
               callback()
           )
 
+
     start: (context, callback) ->
 
       farray = RunnableNode.functionList(@children, context,
         (event) ->
-          #console.log("event callback", event)
+          console.log("event callback", event)
       )
 
       RunnableNode.chainFunctions(_.flatten([@before(context), farray, @after(context, callback)]))
@@ -260,7 +284,7 @@ exports.Block =
 
     before: (context) ->
       self = this
-      =>
+      (arg) =>
 
         context.updateState( =>
           context.exState.nextBlock(self)
@@ -271,12 +295,14 @@ exports.Block =
           spec = @blockSpec.Start.apply(args)
           @showEvent(spec, context)
         else
-          Q.fcall(0)
+          Q.fcall(arg)
+
+
 
 
 
     after: (context) ->
-      =>
+      (arg) =>
 
         if @blockSpec? and @blockSpec.End
           args = _.extend(context.exState.toRecord(), context: context)
@@ -284,7 +310,7 @@ exports.Block =
 
           @showEvent(spec, context)
         else
-          Q.fcall(0)
+          Q.fcall(arg)
 
 
     #after: (context) ->
@@ -298,16 +324,19 @@ exports.Prelude =
     constructor: (children) -> super(children)
 
     before: (context) ->
-      =>
+      (arg) =>
         context.updateState( =>
           context.exState.insidePrelude()
         )
+        arg
 
     after: (context) ->
-      =>
+      (arg) =>
         context.updateState( =>
           context.exState.outsidePrelude()
         )
+
+        arg
 
 
 
@@ -425,6 +454,7 @@ exports.ExperimentContext =
       @exState
 
     pushData: (data, withState=true) ->
+      console.log("pushing data", data)
       if withState
         record = _.extend(@exState.toRecord(), data)
       else

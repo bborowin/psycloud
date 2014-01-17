@@ -74,5 +74,5 @@ module.exports = (grunt) ->
   grunt.loadNpmTasks('grunt-contrib-concat')
   grunt.loadNpmTasks('grunt-contrib-cssmin')
   grunt.loadNpmTasks('powerbuild')
-  grunt.registerTask('default', ['clean', 'powerbuild', 'concat', 'cssmin'])
+  grunt.registerTask('default', ['clean', 'powerbuild:all', 'concat:all', 'cssmin'])
   grunt.registerTask('power', ["powerbuild"])

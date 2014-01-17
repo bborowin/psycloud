@@ -2,33 +2,37 @@
   <library name="Generated files" type="javaScript">
     <properties>
       <sourceFilesUrls>
-        <item url="file://$PROJECT_DIR$/src/stimresp.js" />
-        <item url="file://$PROJECT_DIR$/src/components/first.js" />
-        <item url="file://$PROJECT_DIR$/src/components/group.js" />
-        <item url="file://$PROJECT_DIR$/src/components/canvas/text.js" />
-        <item url="file://$PROJECT_DIR$/examples/oddeven/runner.js" />
-        <item url="file://$PROJECT_DIR$/src/components/factory.js" />
-        <item url="file://$PROJECT_DIR$/src/psycloud.js" />
-        <item url="file://$PROJECT_DIR$/src/components/keypress.js" />
-        <item url="file://$PROJECT_DIR$/src/components/components.js" />
-        <item url="file://$PROJECT_DIR$/src/samplers.js" />
-        <item url="file://$PROJECT_DIR$/src/layout.js" />
         <item url="file://$PROJECT_DIR$/src/components/timeout.js" />
+        <item url="file://$PROJECT_DIR$/src/components/keypress.js" />
+        <item url="file://$PROJECT_DIR$/src/components/canvas/text.js" />
+        <item url="file://$PROJECT_DIR$/src/components/components.js" />
+        <item url="file://$PROJECT_DIR$/Gruntfile.js" />
+        <item url="file://$PROJECT_DIR$/src/components/mousepress.js" />
+        <item url="file://$PROJECT_DIR$/src/layout.js" />
+        <item url="file://$PROJECT_DIR$/src/components/first.js" />
+        <item url="file://$PROJECT_DIR$/src/components/factory.js" />
+        <item url="file://$PROJECT_DIR$/examples/oddeven/runner.js" />
+        <item url="file://$PROJECT_DIR$/src/components/group.js" />
+        <item url="file://$PROJECT_DIR$/src/psycloud.js" />
+        <item url="file://$PROJECT_DIR$/src/stimresp.js" />
+        <item url="file://$PROJECT_DIR$/src/samplers.js" />
       </sourceFilesUrls>
     </properties>
     <CLASSES>
-      <root url="file://$PROJECT_DIR$/src/stimresp.js" />
-      <root url="file://$PROJECT_DIR$/examples/oddeven/runner.js" />
-      <root url="file://$PROJECT_DIR$/src/psycloud.js" />
-      <root url="file://$PROJECT_DIR$/src/samplers.js" />
+      <root url="file://$PROJECT_DIR$/src/components/timeout.js" />
+      <root url="file://$PROJECT_DIR$/src/components/keypress.js" />
+      <root url="file://$PROJECT_DIR$/src/components/canvas/text.js" />
+      <root url="file://$PROJECT_DIR$/src/components/components.js" />
+      <root url="file://$PROJECT_DIR$/src/components/mousepress.js" />
+      <root url="file://$PROJECT_DIR$/Gruntfile.js" />
       <root url="file://$PROJECT_DIR$/src/layout.js" />
       <root url="file://$PROJECT_DIR$/src/components/first.js" />
-      <root url="file://$PROJECT_DIR$/src/components/group.js" />
-      <root url="file://$PROJECT_DIR$/src/components/canvas/text.js" />
       <root url="file://$PROJECT_DIR$/src/components/factory.js" />
-      <root url="file://$PROJECT_DIR$/src/components/keypress.js" />
-      <root url="file://$PROJECT_DIR$/src/components/components.js" />
-      <root url="file://$PROJECT_DIR$/src/components/timeout.js" />
+      <root url="file://$PROJECT_DIR$/examples/oddeven/runner.js" />
+      <root url="file://$PROJECT_DIR$/src/components/group.js" />
+      <root url="file://$PROJECT_DIR$/src/psycloud.js" />
+      <root url="file://$PROJECT_DIR$/src/stimresp.js" />
+      <root url="file://$PROJECT_DIR$/src/samplers.js" />
     </CLASSES>
     <SOURCES />
   </library>
