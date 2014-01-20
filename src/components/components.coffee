@@ -13,3 +13,5 @@ exports.Prompt = require("./prompt").Prompt
 exports.Sequence = require("./sequence").Sequence
 exports.Timeout = require("./timeout").Timeout
 exports.Click = require("./click").Click
+exports.DefaultComponentFactory = require("./factory").DefaultComponentFactory
+exports.componentFactory = require("./factory").componentFactory

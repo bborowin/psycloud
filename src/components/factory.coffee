@@ -107,8 +107,9 @@ class DefaultComponentFactory extends ComponentFactory
 
 
 
-for key, value of (new DefaultComponentFactory().registry)
-  console.log(key, value)
+#for key, value of (new DefaultComponentFactory().registry)
+#  console.log(key, value)
 
 
 exports.DefaultComponentFactory = DefaultComponentFactory
+exports.componentFactory = new DefaultComponentFactory()

@@ -53,7 +53,7 @@
             Text: {
               position: "center",
               origin: "center",
-              content: ["Get Ready for Block " + this.blockNumber + "!", "Press Space Bar to start"]
+              content: ["Get Ready for Block " + this.blockNumber + " of " + context.numBlocks + "!", "Press Space Bar to start"]
             },
             Next: {
               SpaceKey: ""
@@ -61,8 +61,8 @@
           };
         },
         End: function() {
-          console.log("state is ", this.state);
-          console.log("context is", this.context);
+          console.log("Block end", this);
+          console.log("answer Accuracy", this.answer.Accuracy);
           return {
             Text: {
               position: "center",
@@ -109,6 +109,7 @@
                     correct: this.oddeven === "even" ? 'n' : 'm'
                   },
                   Timeout: {
+                    id: "timeout",
                     duration: 1500
                   }
                 }

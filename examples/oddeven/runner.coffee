@@ -57,12 +57,14 @@ window.display =
         Text:
           position: "center"
           origin: "center"
-          content: ["Get Ready for Block #{@blockNumber}!", "Press Space Bar to start"]
+          content: ["Get Ready for Block #{@blockNumber} of #{context.numBlocks}!", "Press Space Bar to start"]
         Next:
           SpaceKey: ""
 
       End: ->
-          Text:
+        console.log("Block end", this)
+        console.log("answer Accuracy", @answer.Accuracy)
+        Text:
           position: "center"
           origin: "center"
           content: ["End of Block #{@blockNumber}", "Press any key to continue"]
@@ -98,6 +100,7 @@ window.display =
                 keys: ['n', 'm']
                 correct: if @oddeven is "even" then 'n' else 'm'
               Timeout:
+                id: "timeout"
                 duration: 1500
 
       Feedback: ->

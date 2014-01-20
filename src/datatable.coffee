@@ -41,7 +41,10 @@ class DataTable
       vars[key] = []
     for rec in records
       for key in allkeys
-        vars[key].push(rec[key] or null)
+        if rec[key]?
+          vars[key].push(rec[key])
+        else
+          vars[key].push(null)
     new DataTable(vars)
 
   @build: (vars = {}) ->

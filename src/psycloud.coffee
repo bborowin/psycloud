@@ -101,6 +101,9 @@ class RunnableNode
         console.log("captured a ResponseData object", arg)
         context.pushData(arg.data)
       callback(node) if callback?
+      console.log("node is", node)
+      console.log("node is of type", node.name)
+      console.log("node has a start method?", node.start?)
       node.start(context)
     ))
 
@@ -113,6 +116,8 @@ class RunnableNode
     for fun in funArray
       result = result.then(fun,
       (err) ->
+        console.log("fun is", fun)
+        console.log("error", err)
         throw new Error("Error during execution: ", err)
       )
 
@@ -122,19 +127,9 @@ class RunnableNode
   constructor: (@children) ->
 
 
-  before: (context) ->
-    (arg) ->
-      console.log("runnable before arg", arg)
-      arg
+  before: (context) -> new FunctionNode(-> 0)
 
-
-  after: (context) ->
-    (arg) ->
-      console.log("runnable after arg", arg)
-      arg
-
-
-
+  after: (context) -> new FunctionNode(-> 0)
 
   numChildren: -> @children.length
 
@@ -142,12 +137,12 @@ class RunnableNode
 
   start: (context) ->
 
-    farray = RunnableNode.functionList(@children, context,
+    farray = RunnableNode.functionList(_.flatten([@before(context), @children, @after(context)]), context,
     (node) ->
       console.log("node done", node)
     )
 
-    RunnableNode.chainFunctions(_.flatten([@before(context), farray, @after(context)]))
+    RunnableNode.chainFunctions(farray)
 
 
   stop: (context) ->
@@ -159,9 +154,33 @@ exports.FunctionNode =
 class FunctionNode extends RunnableNode
   constructor: (@fun) ->
 
-  start: (context) ->
-    Q.fcall(@fun)
+  start: (context) -> Q.fcall(@fun)
 
+exports.FeedbackNode =
+class FeedbackNode extends RunnableNode
+
+  constructor: (@feedback) ->
+
+  numChildren: -> 1
+
+  length: -> 1
+
+  start: (context) ->
+    if @feedback?
+      args = context.trialData().get()
+      idSet = {}
+      for obj in args
+        if obj["id"]?
+          idSet[obj["id"]] = obj
+
+
+      args = _.extend(args, idSet)
+      spec = @feedback.apply(args)
+      event = context.stimFactory.buildEvent(spec, context)
+      event.start(context)
+
+    else
+      Q(0)
 
 exports.Event =
   class Event extends RunnableNode
@@ -175,9 +194,8 @@ exports.Event =
 
 
     before: (context) ->
-      (arg) =>
-        self = this
-
+      self = this
+      new FunctionNode( =>
         if not context.exState.inPrelude
           context.updateState( =>
             context.exState.nextEvent(self)
@@ -188,15 +206,12 @@ exports.Event =
 
         @stimulus.render(context, context.contentLayer)
         context.draw()
-        arg
-
+      )
 
     after: (context) ->
-      (arg) =>
+      new FunctionNode( =>
         @stimulus.stop(context)
-        arg
-
-
+      )
 
     start: (context) ->
       super(context)
@@ -213,7 +228,8 @@ exports.Trial =
     push: (event) -> @children.push(event)
 
     before: (context) ->
-      (arg) =>
+      new FunctionNode ( =>
+        console.log("before FunctionNode, Trial")
         self = this
         context.updateState( =>
           context.exState.nextTrial(self)
@@ -224,49 +240,18 @@ exports.Trial =
         if @background?
           context.setBackground(@background)
           context.drawBackground()
+      )
 
-        arg
-
-
-
-    after: (context, callback) ->
-      ## return a function that executes feedback operation
-      (arg) =>
-        #console.log("trial after arg", arg)
-        if @feedback?
-          args = context.trialData()
-          idSet = {}
-          for obj in args
-             if obj["id"]?
-              idSet[obj["id"]] = obj
-
-
-          console.log("idSet", idSet)
-
-          args = _.extend(args, idSet)
-
-          spec = @feedback.apply(args)
-
-          event = context.stimFactory.buildEvent(spec, context)
-          event.start(context).then(=>
-            if callback?
-              callback()
-          )
-        else
-          Q.fcall(=>
-            if callback?
-              callback()
-          )
-
+    after: (context) -> new FeedbackNode(@feedback)
 
     start: (context, callback) ->
 
-      farray = RunnableNode.functionList(@children, context,
+      farray = RunnableNode.functionList(_.flatten([@before(context), @children, @after(context)]), context,
         (event) ->
           console.log("event callback", event)
       )
 
-      RunnableNode.chainFunctions(_.flatten([@before(context), farray, @after(context, callback)]))
+      RunnableNode.chainFunctions(farray)
 
 
     stop: (context) -> #ev.stop(context) for ev in @events
@@ -284,8 +269,7 @@ exports.Block =
 
     before: (context) ->
       self = this
-      (arg) =>
-
+      new FunctionNode( =>
         context.updateState( =>
           context.exState.nextBlock(self)
         )
@@ -296,48 +280,53 @@ exports.Block =
           @showEvent(spec, context)
         else
           Q.fcall(arg)
-
-
+      )
 
 
 
     after: (context) ->
-      (arg) =>
-
+      new FunctionNode( =>
         if @blockSpec? and @blockSpec.End
-          args = _.extend(context.exState.toRecord(), context: context)
-          spec = @blockSpec.End.apply(args)
+          blockData = context.blockData()
+          ids = _.unique(blockData.select("id"))
+          console.log("END ids", ids)
+          out = {}
+          for curid in ids
+            out[curid] = DataTable.fromRecords(blockData.filter(id: curid).get())
 
+          args = _.extend(context.exState.toRecord(), context: context, out)
+          console.log("block end args")
+          spec = @blockSpec.End.apply(args)
           @showEvent(spec, context)
         else
           Q.fcall(arg)
+      )
 
 
-    #after: (context) ->
+
 
 exports.BlockSeq =
   class BlockSeq extends RunnableNode
     constructor: (children) -> super(children)
+
 
 exports.Prelude =
   class Prelude extends RunnableNode
     constructor: (children) -> super(children)
 
     before: (context) ->
-      (arg) =>
+      new FunctionNode( =>
         context.updateState( =>
           context.exState.insidePrelude()
         )
-        arg
+      )
 
     after: (context) ->
-      (arg) =>
+      new FunctionNode( =>
         context.updateState( =>
           context.exState.outsidePrelude()
         )
-
-        arg
-
+      )
 
 
 
@@ -449,6 +438,8 @@ exports.ExperimentContext =
 
       @currentTrial =  new Trial([], {})
 
+      @numBlocks = 0
+
     updateState: (fun) ->
       @exState = fun(@exState)
       @exState
@@ -472,7 +463,7 @@ exports.ExperimentContext =
       console.log(@log)
 
     trialData: ->
-      ret = @userData().filter({ trialNumber: @exState.trialNumber }).get()
+      ret = @userData().filter({ trialNumber: @exState.trialNumber })
       if ret.length == 1
         ret[0]
       else ret
@@ -494,13 +485,13 @@ exports.ExperimentContext =
         @userData().select(args.name)
 
 
-
-
     showEvent: (event) -> event.start(this)
 
     showStimulus: (stimulus) -> stimulus.render(this)
 
     start: (blockList) ->
+      @numBlocks = blockList.length()
+
       try
         farray = RunnableNode.functionList(blockList, this,
           (block) ->
@@ -733,6 +724,8 @@ class Presenter
         buildTrial(trialSpec.Events, record, @context, trialSpec.Feedback, trialSpec.Background)
       new Block(trials, @display.Block)
     )
+
+
 
     @prelude.start(@context).then(=> @blockList.start(@context))
 

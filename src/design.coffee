@@ -59,6 +59,7 @@ exports.FactorSpec =
 exports.CellTable =
   class CellTable extends VarSpec
     constructor: ( @parents) ->
+
       @parentNames = (fac.name for fac in @parents)
       @name = _.reduce(@parentNames, (n, n1) -> n + ":" + n1)
       @levels = (fac.levels for fac in @parents)
@@ -82,9 +83,9 @@ exports.CellTable =
 
 exports.TaskNode =
   class TaskNode
-    constructor: (@varSpecs, @crossedSet=[]) ->
+    constructor: (@varNodes, @crossedSet=[]) ->
       # extract name of each variable
-      @factorNames = _.map(@varSpecs, (x) -> x.names())
+      @factorNames = _.map(@varNodes, (x) -> x.name)
 
       # store names and variables in object
       @varmap = {}
@@ -228,6 +229,23 @@ exports.VariablesNode =
   class VariablesNode
 
     constructor: (@variables=[], @crossed=[]) ->
+
+exports.ConditionSet =
+class ConditionSet
+
+  @build: (spec) ->
+    _crossed = exports.FactorSetNode.build(spec.Crossed)
+    _uncrossed = for key, value of spec.Uncrossed
+      FactorNode.build(key, value)
+    new ConditionSet(_crossed, _uncrossed)
+
+  constructor: (@crossed, @uncrossed) ->
+    @factorNames = [].concat(@crossed.factorNames).concat(_.map(@uncrossed, (fac) => fac.name))
+
+    @factorArray = _.clone(@crossed.factors)
+    _.forEach(@uncrossed, (fac) => @factorArray.push(fac))
+
+    @factorSet = _.zipObject(@factorNames, @factorArray)
 
 
 exports.TaskSchema =
