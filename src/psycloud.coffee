@@ -6,10 +6,9 @@ DataTable = require("./datatable").DataTable
 #Bacon = require("./lib/Bacon").Bacon
 Bacon = require("baconjs")
 #KineticStimFactory = require("./elements").KineticStimFactory
-DefaultComponentFactory = require("./components/factory").DefaultComponentFactory
+DefaultComponentFactory = require("./factory").DefaultComponentFactory
 Background = require("./components/canvas/background").Background
 Kinetic = require("../jslibs/kinetic").Kinetic
-
 Stimulus = require("./stimresp").Stimulus
 Response = require("./stimresp").Response
 ResponseData = require("./stimresp").ResponseData

@@ -81,6 +81,14 @@ exports.CellTable =
         @table.replicate(reps)
 
 
+
+
+exports.BlockStructure =
+class BlockStructure
+
+  constructor: (@nblocks, @trialsPerBlock) ->
+
+
 exports.TaskNode =
   class TaskNode
     constructor: (@varNodes, @crossedSet=[]) ->
@@ -116,6 +124,12 @@ exports.FactorNode =
 
     constructor: (@name, @levels) ->
       @cellTable = new CellTable([this])
+
+    expand: (nblocks, nreps) -> @cellTable.expand(nblocks, nreps)
+
+
+## UnionDesign
+
 
 
 exports.FactorSetNode =
@@ -217,26 +231,42 @@ exports.ItemNode =
   class ItemNode
 
     @build: (name, spec) ->
-      attrs = new DataTable(spec.attributes)
-      new ItemNode(name, spec.items, attrs, spec.type)
+      if spec.data?
+        console.log("building inode")
+        dtable = DataTable.fromRecords(spec.data)
+        console.log("from Records", dtable)
+        attrs = dtable.dropColumn("item")
+        console.log("attrs", attrs)
+        items = dtable["item"]
+        console.log("item",items)
+        new ItemNode(name, items, attrs, spec.type)
 
     constructor: (@name, @items, @attributes, @type) ->
       if @items.length != @attributes.nrow()
         throw "Number of items must equal number of attributes"
 
+exports.ItemSamplerNode =
+class ItemSamplerNode
 
-exports.VariablesNode =
-  class VariablesNode
+  constructor: (@sampler, @itemNode) ->
 
-    constructor: (@variables=[], @crossed=[]) ->
+
+
+
 
 exports.ConditionSet =
 class ConditionSet
 
   @build: (spec) ->
-    _crossed = exports.FactorSetNode.build(spec.Crossed)
-    _uncrossed = for key, value of spec.Uncrossed
-      FactorNode.build(key, value)
+    if not spec.Crossed? and not spec.Uncrossed
+      ## assume crossed
+      _crossed = exports.FactorSetNode.build(spec.Crossed)
+      _uncrossed = {}
+    else
+      _crossed = exports.FactorSetNode.build(spec.Crossed)
+      _uncrossed = for key, value of spec.Uncrossed
+        FactorNode.build(key, value)
+
     new ConditionSet(_crossed, _uncrossed)
 
   constructor: (@crossed, @uncrossed) ->
@@ -246,6 +276,8 @@ class ConditionSet
     _.forEach(@uncrossed, (fac) => @factorArray.push(fac))
 
     @factorSet = _.zipObject(@factorNames, @factorArray)
+
+  #expand: ()
 
 
 exports.TaskSchema =

@@ -1,14 +1,14 @@
-Module = require("../module").Module
+
 _ = require('lodash')
 
-Canvas = require("./canvas/canvas").Canvas
-Html = require("./html/html").Html
-Components = require("./components")
-Psy = require("../psycloud")
-Layout = require("../layout")
+Canvas = require("./components/canvas/canvas").Canvas
+Html = require("./components/html/html").Html
+Components = require("./components/components")
+Psy = require("./psycloud")
+Layout = require("./layout")
 
 
-class ComponentFactory extends Module
+class ComponentFactory
 
   constructor: (@context) ->
 
@@ -54,12 +54,12 @@ class ComponentFactory extends Module
 exports.ComponentFactory = ComponentFactory
 
 class DefaultComponentFactory extends ComponentFactory
+
   constructor: ->
     @registry = _.merge(Components, Canvas, Html)
 
   make: (name, params, registry) ->
     callee = arguments.callee
-
 
     switch name
       when "Group"
@@ -71,22 +71,14 @@ class DefaultComponentFactory extends ComponentFactory
         layoutName = _.keys(params.layout)[0]
         layoutParams = _.values(params.layout)[0]
         new Components.Group(stims, @makeLayout(layoutName, layoutParams, context))
-
       when "First"
-        console.log("First!")
-        console.log("param", params)
         names = _.keys(params)
-        console.log("first names", names)
         props = _.values(params)
-        console.log("first props", props)
 
         resps = _.map([0...names.length], (i) =>
           callee(names[i], props[i], @registry)
         )
-
         new Components.First(resps)
-
-
       else
         if not registry[name]?
           throw new Error("DefaultComponentFactory:make cannot find component in registry named: ", name)
@@ -104,12 +96,11 @@ class DefaultComponentFactory extends ComponentFactory
     switch name
       when "Grid"
         new Layout.GridLayout(params[0], params[1], {x: 0, y: 0, width: context.width(), height: context.height()})
-
-
-
-#for key, value of (new DefaultComponentFactory().registry)
-#  console.log(key, value)
+      else
+        console.log("unrecognized layout", name)
 
 
 exports.DefaultComponentFactory = DefaultComponentFactory
 exports.componentFactory = new DefaultComponentFactory()
+
+console.log("exports.DefaultComponentFactory", DefaultComponentFactory)

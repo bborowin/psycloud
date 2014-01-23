@@ -34,11 +34,16 @@ class DataTable
   # @param {Array} records the records used to construct the rows of the table
   # @param {Boolean} union take the union of all record keys
   @fromRecords: (records, union = true) ->
+    if not _.isArray(records)
+      throw new Error("DataTable.fromRecords: 'records' arguemnt must be an array of records.")
     allkeys = _.uniq(_.flatten(_.map(records, (rec) ->
       _.keys(rec))))
+
     vars = {}
     for key in allkeys
       vars[key] = []
+
+
     for rec in records
       for key in allkeys
         if rec[key]?
@@ -130,7 +135,12 @@ class DataTable
 
     new DataTable(out)
 
-
+  dropColumn: (colname) ->
+    out = {}
+    for own key, value of this
+      if key != colname
+        out[key] = _.clone(value)
+    new DataTable(out)
 
   subset: (key, filter) ->
     keep = for val in this[key]
@@ -215,6 +225,16 @@ class DataTable
         else
           this[key].push(value)
     this
+
+  shuffle: ->
+    nr = @nrow()
+    ind = [0...nr]
+    sind = _.shuffle(ind)
+    out = []
+    for i in [0...nr]
+      out[i] = @record(sind[i])
+    DataTable.fromRecords(out)
+
 
 
 exports.DataTable = DataTable

@@ -10,10 +10,11 @@ design = require("./design")
 canvas = require("./components/canvas/canvas")
 html = require("./components/html/html")
 components = require("./components/components")
+factory = require("./factory")
 Kinetic = require("../jslibs/kinetic").Kinetic
-
 _ = require('lodash')
 Q = require("q")
+csv = require('../jslibs/jquery.csv.js')
 
 
 include = (lib) ->
@@ -22,7 +23,7 @@ include = (lib) ->
 
 #libs = [Exp, Psy, Dots, utils, datatable, samplers, stimresp, layout]
 
-libs = [Exp, Psy, Dots, utils, datatable, samplers, stimresp, layout, design, canvas, html, components]
+libs = [Exp, Psy, Dots, utils, datatable, samplers, stimresp, layout, design, canvas, html, components, factory]
 
 for lib in libs
   include(lib)
@@ -31,6 +32,8 @@ for lib in libs
 exports.Q = Q
 exports._ = _
 exports.Kinetic = Kinetic
+exports.csv = csv
+#exports.recline = recline
 
 
 

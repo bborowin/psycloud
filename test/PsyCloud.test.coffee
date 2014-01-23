@@ -27,6 +27,20 @@ test 'can concatenate two DataTables with different column names with rbind, uni
   equal(6, dt3.nrow())
 
 
+test 'can drop a column from a DaaTable', ->
+  dt1 = new Psy.DataTable({a: [1,2,3], b:[5,6,7]})
+  dt2 = dt1.dropColumn("a")
+  console.log("dt2 is", dt2)
+  equal(dt2.ncol(), 1)
+
+test 'can shuffle a DataTable', ->
+  dt1 = new Psy.DataTable({a: [1,2,3], b:[5,6,7]})
+  dt2 = dt1.shuffle()
+
+  console.log("unshuffled dt", dt1)
+  console.log("shuffled dt", dt2)
+  equal(dt1.nrow(), dt2.nrow())
+
 module("FactorNode")
 test 'Can create a FactorNode from an object literal', ->
   fnode =
@@ -36,6 +50,7 @@ test 'Can create a FactorNode from an object literal', ->
 
   equal(fac.name, "fac")
   equal(fac.levels.toString(), [1,2,3,4,5].toString(), fac.levels)
+  console.log("expanded factor node", fac.expand(3,3))
 
 module("FactorSetNode")
 test 'can create a FactorSetNode from an object literal', ->
@@ -110,17 +125,37 @@ test 'can bind a new variable to a TrialList', ->
 module("ItemNode")
 test 'can build an ItemNode from object literal', ->
   inode =
-    items: ["a", "b", "c"]
-    attributes:
-      x: [1,2,3]
-      y: [4,5,6]
+    data: [
+      {item: "a", x: 1, y: 4},
+      {item: "b", x: 2, y: 5},
+      {item: "c", x: 3, y: 6}
+    ]
     type: "text"
+
+  console.log("inode", inode)
 
   node = Psy.ItemNode.build("inode", inode)
   equal(node.name, "inode")
   equal(node.attributes.x.toString(), [1,2,3].toString(), node.attributes.x.toString())
   equal(node.attributes.y.toString(), [4,5,6].toString(), node.attributes.x.toString())
 
+
+module("csv")
+test 'can read a csv file using ajax', ->
+  console.log("Psy.csv?", Psy.csv)
+  $.ajax({
+    url: '../data/test.csv',
+    dataType: "text",
+    success: (data) ->
+      console.log(data)
+      console.log(Psy.csv.toObjects(data))
+
+    error: (x) ->
+      console.log(x)
+  })
+
+
+  equal(1,1)
 
 
 module("AbsoluteLayout")
@@ -187,7 +222,9 @@ test 'Can create an Instructions element', ->
           """
 
   #instructions = new Psy.Instructions(prelude.Prelude.Instructions)
+  console.log("Psy is", Psy)
   componentFactory = new Psy.DefaultComponentFactory()
+  console.log("Psy is", Psy)
   instructions = componentFactory.makeStimulus("Instructions", prelude.Prelude.Instructions)
   equal(instructions.pages.length, 2)
 

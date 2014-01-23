@@ -67,6 +67,29 @@
     return equal(6, dt3.nrow());
   });
 
+  test('can drop a column from a DaaTable', function() {
+    var dt1, dt2;
+    dt1 = new Psy.DataTable({
+      a: [1, 2, 3],
+      b: [5, 6, 7]
+    });
+    dt2 = dt1.dropColumn("a");
+    console.log("dt2 is", dt2);
+    return equal(dt2.ncol(), 1);
+  });
+
+  test('can shuffle a DataTable', function() {
+    var dt1, dt2;
+    dt1 = new Psy.DataTable({
+      a: [1, 2, 3],
+      b: [5, 6, 7]
+    });
+    dt2 = dt1.shuffle();
+    console.log("unshuffled dt", dt1);
+    console.log("shuffled dt", dt2);
+    return equal(dt1.nrow(), dt2.nrow());
+  });
+
   module("FactorNode");
 
   test('Can create a FactorNode from an object literal', function() {
@@ -78,7 +101,8 @@
     };
     fac = new Psy.FactorNode.build("fac", fnode.fac);
     equal(fac.name, "fac");
-    return equal(fac.levels.toString(), [1, 2, 3, 4, 5].toString(), fac.levels);
+    equal(fac.levels.toString(), [1, 2, 3, 4, 5].toString(), fac.levels);
+    return console.log("expanded factor node", fac.expand(3, 3));
   });
 
   module("FactorSetNode");
@@ -222,17 +246,46 @@
   test('can build an ItemNode from object literal', function() {
     var inode, node;
     inode = {
-      items: ["a", "b", "c"],
-      attributes: {
-        x: [1, 2, 3],
-        y: [4, 5, 6]
-      },
+      data: [
+        {
+          item: "a",
+          x: 1,
+          y: 4
+        }, {
+          item: "b",
+          x: 2,
+          y: 5
+        }, {
+          item: "c",
+          x: 3,
+          y: 6
+        }
+      ],
       type: "text"
     };
+    console.log("inode", inode);
     node = Psy.ItemNode.build("inode", inode);
     equal(node.name, "inode");
     equal(node.attributes.x.toString(), [1, 2, 3].toString(), node.attributes.x.toString());
     return equal(node.attributes.y.toString(), [4, 5, 6].toString(), node.attributes.x.toString());
+  });
+
+  module("csv");
+
+  test('can read a csv file using ajax', function() {
+    console.log("Psy.csv?", Psy.csv);
+    $.ajax({
+      url: '../data/test.csv',
+      dataType: "text",
+      success: function(data) {
+        console.log(data);
+        return console.log(Psy.csv.toObjects(data));
+      },
+      error: function(x) {
+        return console.log(x);
+      }
+    });
+    return equal(1, 1);
   });
 
   module("AbsoluteLayout");
@@ -312,7 +365,9 @@
         }
       }
     };
+    console.log("Psy is", Psy);
     componentFactory = new Psy.DefaultComponentFactory();
+    console.log("Psy is", Psy);
     instructions = componentFactory.makeStimulus("Instructions", prelude.Prelude.Instructions);
     return equal(instructions.pages.length, 2);
   });
