@@ -270,22 +270,61 @@
     return equal(node.attributes.y.toString(), [4, 5, 6].toString(), node.attributes.x.toString());
   });
 
-  module("csv");
+  module("ItemNode");
 
-  test('can read a csv file using ajax', function() {
-    console.log("Psy.csv?", Psy.csv);
-    $.ajax({
-      url: '../data/test.csv',
-      dataType: "text",
-      success: function(data) {
-        console.log(data);
-        return console.log(Psy.csv.toObjects(data));
+  test('can build an ItemNode from a csv file', function() {
+    var inode, node;
+    inode = {
+      csv: {
+        url: '../data/test.csv'
       },
-      error: function(x) {
-        return console.log(x);
+      type: "text"
+    };
+    node = Psy.ItemNode.build("num", inode);
+    equal(node.name, "csvnode");
+    return equal(node.attributes.color.toString(), ["red", "green"].toString(), node.attributes.color.toString());
+  });
+
+  module("ItemSetNode");
+
+  test('can build an ItemSetNode from a set of object literals', function() {
+    var iset, nodes;
+    nodes = {
+      word: {
+        data: [
+          {
+            word: "hello",
+            x: 1,
+            y: 4
+          }, {
+            word: "goodbye",
+            x: 2,
+            y: 5
+          }, {
+            word: "yahoo",
+            x: 3,
+            y: 6
+          }
+        ]
+      },
+      color: {
+        data: [
+          {
+            color: "red",
+            x: 10
+          }, {
+            color: "green",
+            x: 20
+          }, {
+            color: "blue",
+            x: 30
+          }
+        ]
       }
-    });
-    return equal(1, 1);
+    };
+    iset = Psy.ItemSetNode.build(nodes);
+    console.log("item set is", iset);
+    return deepEqual(["word", "color"], iset.names);
   });
 
   module("AbsoluteLayout");
@@ -309,7 +348,7 @@
   module("Prelude");
 
   test('Can create a Prelude Block froma spec', function() {
-    var block, context, ev, events, key, prelude, value;
+    var block, context, events, key, prelude, value;
     prelude = {
       Prelude: {
         Events: {
@@ -333,16 +372,11 @@
       _results = [];
       for (key in _ref) {
         value = _ref[key];
-        console.log("key", key);
-        console.log("value", value);
-        ev = Psy.buildEvent(value, context);
-        console.log("event", ev);
-        _results.push(ev);
+        _results.push(Psy.buildEvent(value, context));
       }
       return _results;
     })();
     block = new Psy.Block(events);
-    console.log("block", block);
     ok(block);
     return equal(block.length(), 1, block.length());
   });
@@ -365,11 +399,26 @@
         }
       }
     };
-    console.log("Psy is", Psy);
     componentFactory = new Psy.DefaultComponentFactory();
-    console.log("Psy is", Psy);
     instructions = componentFactory.makeStimulus("Instructions", prelude.Prelude.Instructions);
     return equal(instructions.pages.length, 2);
+  });
+
+  module("csv");
+
+  asyncTest('can read a csv file using ajax', 1, function() {
+    console.log("Psy.csv?", Psy.csv);
+    return $.ajax({
+      url: '../data/test.csv',
+      dataType: "text",
+      success: function(data) {
+        ok(true, "successfully fetched csv file", Psy.csv.toObjects(data));
+        return start();
+      },
+      error: function(x) {
+        return console.log(x);
+      }
+    });
   });
 
 }).call(this);

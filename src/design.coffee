@@ -1,6 +1,7 @@
 _ = require('lodash')
 utils = require("./utils")
 DataTable = require("./datatable").DataTable
+csv = require('../jslibs/jquery.csv.js')
 
 
 # ## Factor
@@ -226,31 +227,63 @@ exports.TrialList =
     blockIterator: -> new ArrayIterator(_.map(@blocks, (blk) -> new ArrayIterator(blk)))
 
 
+trimWhiteSpace = (records) ->
+  trimmed = []
+  for i in [0...records.length]
+    record = records[i]
+    out = {}
+    for key, value of record
+      out[key.trim()] = value.trim()
+    trimmed.push(out)
+  trimmed
+
 
 exports.ItemNode =
   class ItemNode
 
     @build: (name, spec) ->
+      if not spec.type?
+        spec.type = "text"
+
       if spec.data?
-        console.log("building inode")
         dtable = DataTable.fromRecords(spec.data)
-        console.log("from Records", dtable)
-        attrs = dtable.dropColumn("item")
-        console.log("attrs", attrs)
-        items = dtable["item"]
-        console.log("item",items)
+        attrs = dtable.dropColumn(name)
+        items = dtable[name]
         new ItemNode(name, items, attrs, spec.type)
+      else if spec.csv?
+        inode = null
+        $.ajax({
+          url: spec.csv.url
+          dataType: "text"
+          async: false
+          success: (data) =>
+            records = trimWhiteSpace(csv.toObjects(data))
+            dtable = DataTable.fromRecords(records)
+            items = dtable[name]
+            attrs = dtable.dropColumn(name)
+            inode = new ItemNode(name, items, attrs, spec.type)
+          error: (x) ->
+            console.log(x)
+        })
+
+        inode
 
     constructor: (@name, @items, @attributes, @type) ->
       if @items.length != @attributes.nrow()
         throw "Number of items must equal number of attributes"
 
-exports.ItemSamplerNode =
-class ItemSamplerNode
+exports.ItemSetNode =
+class ItemSetNode
 
-  constructor: (@sampler, @itemNode) ->
+  @build: (spec) ->
+    nodes = for key, value of spec
+      exports.ItemNode.build(key, value)
 
+    new ItemSetNode(nodes)
 
+  constructor: (@itemNodes) ->
+    @names = _.map(@itemNodes, (n) -> n.name)
+    console.log("names is", @names)
 
 
 
