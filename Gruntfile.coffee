@@ -48,7 +48,7 @@ module.exports = (grunt) ->
         files: ['src/**/*.coffee']
         tasks: ['default']
         options:
-          spawn: false
+          spawn: true
 
 
 

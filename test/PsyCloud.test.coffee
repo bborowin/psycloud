@@ -41,6 +41,29 @@ test 'can shuffle a DataTable', ->
   console.log("shuffled dt", dt2)
   equal(dt1.nrow(), dt2.nrow())
 
+
+module("Sampler")
+test 'Can sample from a basic non-replacing sampler', ->
+  sampler = new Psy.Sampler([0..10])
+  ok(true, sampler.next())
+
+test 'Can sample repeatedly from a basic non-replacing sampler', ->
+  sampler = new Psy.Sampler([0..10])
+  out = ""
+  for i in [0..30]
+    out = out + sampler.next() + " "
+
+  ok(true, out)
+
+test 'Can take N elements from a non-replacing sampler', ->
+  sampler = new Psy.Sampler([0..10])
+  out = sampler.take(8)
+  out = out.concat(sampler.take(8))
+
+  equal(out.length, 16)
+  ok(true, out)
+
+
 module("FactorNode")
 test 'Can create a FactorNode from an object literal', ->
   fnode =
@@ -134,8 +157,8 @@ test 'can build an ItemNode from object literal', ->
 
   console.log("inode", inode)
 
-  node = Psy.ItemNode.build("inode", inode)
-  equal(node.name, "inode")
+  node = Psy.ItemNode.build("item", inode)
+  equal(node.name, "item")
   equal(node.attributes.x.toString(), [1,2,3].toString(), node.attributes.x.toString())
   equal(node.attributes.y.toString(), [4,5,6].toString(), node.attributes.x.toString())
 
@@ -148,8 +171,11 @@ test 'can build an ItemNode from a csv file', ->
     type: "text"
 
   node = Psy.ItemNode.build("num", inode)
-  equal(node.name, "csvnode")
-  equal(node.attributes.color.toString(), ["red", "green"].toString(), node.attributes.color.toString())
+  equal(node.name, "num")
+
+  items = node.sample(2)
+  equal(items.length, 2)
+  deepEqual(node.attributes.color, ["red", "green"], node.attributes.color.toString())
 
 module("ItemSetNode")
 test 'can build an ItemSetNode from a set of object literals', ->
@@ -171,8 +197,8 @@ test 'can build an ItemSetNode from a set of object literals', ->
       ]
 
   iset = Psy.ItemSetNode.build(nodes)
-  console.log("item set is", iset)
   deepEqual(["word", "color"], iset.names)
+
 
 
 module("AbsoluteLayout")

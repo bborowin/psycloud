@@ -4,30 +4,48 @@ DataTable = require("./datatable").DataTable
 
 # ## Sampler
 # basic sampler that does not recycle its elements or allow sampling with replacement
-exports.Sampler =
-  class Sampler
 
-    constructor: (@items) ->
+class Sampler
 
-    sampleFrom: (items, n) ->
-      utils.sample(items, n)
+  constructor: (@items) ->
+    @indexBuffer = _.shuffle([0...@items.length])
 
-    take: (n) ->
-      if n > @items.length
-        throw "cannot take sample larger than the number of items when using non-replacing sampler"
-      @sampleFrom(@items, n)
+  next: ->
+    i =
+      if @indexBuffer.length > 0
+        @indexBuffer.shift()
+      else
+        @indexBuffer = _.shuffle([0...@items.length])
+        @indexBuffer.shift()
 
-    #takeWithout: (n, exclusionSet) ->
-      #  pool = _.difference(@items, exclusionSet)
-      #  res = []
-      #  while (res.length != n)
-      #    sam = @take(1)
-      #    res.push(_.difference(sam, exclusionSet))
-      #    res = _.flatten(res)
-      #  _.flatten(res)
+    @items[i]
+
+  #sampleFrom: (items, n) ->
+  #  for i in [0...n]
+  #    next()
+
+  take: (n) ->
+    if n > @items.length
+      throw "cannot take sample larger than the number of items when using non-replacing sampler"
+
+    @indexBuffer = _.shuffle([0...@items.length])
+    ret = for i in [0...n]
+      @next()
+    ret
+
+exports.Sampler = Sampler
+
+#takeWithout: (n, exclusionSet) ->
+#  pool = _.difference(@items, exclusionSet)
+#  res = []
+#  while (res.length != n)
+#    sam = @take(1)
+#    res.push(_.difference(sam, exclusionSet))
+#    res = _.flatten(res)
+#  _.flatten(res)
 
 exports.ReplacementSampler =
-  class ReplacementSampler extends exports.Sampler
+  class ReplacementSampler extends Sampler
 
     sampleFrom: (items, n) ->
       utils.sample(items, n, true)
@@ -38,14 +56,14 @@ exports.ReplacementSampler =
 
 # ## ExhaustiveSampler
 exports.ExhaustiveSampler =
-  class ExhaustiveSampler extends exports.Sampler
+  class ExhaustiveSampler extends Sampler
 
     @fillBuffer: (items, n) ->
       buf = (_.shuffle(items) for i in [1..n])
       _.flatten(buf)
 
-    constructor: (@items, buflen = 10) ->
-      @buffer = ExhaustiveSampler.fillBuffer(@items, buflen)
+    constructor: (@items) ->
+      @buffer = ExhaustiveSampler.fillBuffer(@items, 10)
 
     take: (n) ->
       # the sampling strategy is **exhaustive**, which means that all items will be sampled once before any item is sampled twice.

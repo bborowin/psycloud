@@ -2,7 +2,7 @@ _ = require('lodash')
 utils = require("./utils")
 DataTable = require("./datatable").DataTable
 csv = require('../jslibs/jquery.csv.js')
-
+sampler = require("./samplers")
 
 # ## Factor
 exports.Factor =
@@ -195,7 +195,7 @@ exports.TrialList =
       @blocks = []
       @blocks.push([]) for i in [0...nblocks]
 
-    add: (block, trial, type="main") ->
+    add: (block, trial) ->
       #if (block >= @blocks.length)
       #blen = @blocks.length
       #throw "block argument #{block} exceeds number of blocks in TrialList #{blen}"
@@ -245,11 +245,16 @@ exports.ItemNode =
       if not spec.type?
         spec.type = "text"
 
+      snode = if spec.sampler?
+        SamplerNode.build(spec.sampler)
+      else
+        new SamplerNode("default", {})
+
       if spec.data?
         dtable = DataTable.fromRecords(spec.data)
         attrs = dtable.dropColumn(name)
         items = dtable[name]
-        new ItemNode(name, items, attrs, spec.type)
+        new ItemNode(name, items, attrs, spec.type, snode.makeSampler(items))
       else if spec.csv?
         inode = null
         $.ajax({
@@ -261,16 +266,21 @@ exports.ItemNode =
             dtable = DataTable.fromRecords(records)
             items = dtable[name]
             attrs = dtable.dropColumn(name)
-            inode = new ItemNode(name, items, attrs, spec.type)
+            inode = new ItemNode(name, items, attrs, spec.type, snode.makeSampler(items))
           error: (x) ->
             console.log(x)
         })
 
+
+
         inode
 
-    constructor: (@name, @items, @attributes, @type) ->
+    constructor: (@name, @items, @attributes, @type, @sampler) ->
       if @items.length != @attributes.nrow()
         throw "Number of items must equal number of attributes"
+
+    sample: (n) ->
+      @sampler.take(n)
 
 exports.ItemSetNode =
 class ItemSetNode
@@ -283,9 +293,28 @@ class ItemSetNode
 
   constructor: (@itemNodes) ->
     @names = _.map(@itemNodes, (n) -> n.name)
-    console.log("names is", @names)
 
 
+SamplerNode =
+class SamplerNode
+
+  @build: (spec) ->
+    if not spec.type?
+      spec.type = "default"
+    new SamplerNode(spec.type, spec)
+
+  constructor: (type, params) ->
+    @makeSampler = switch type
+      when "default"
+        (items) -> new sampler.Sampler(items, params)
+      when "exhaustive"
+        (items) -> new sampler.ExhaustiveSampler(items, params)
+      when "replacement"
+        (items) -> new sampler.ReplacementSampler(items, params)
+      else
+        throw new Error("unrecognized sampler type", type)
+
+exports.SamplerNode = SamplerNode
 
 exports.ConditionSet =
 class ConditionSet

@@ -90,6 +90,33 @@
     return equal(dt1.nrow(), dt2.nrow());
   });
 
+  module("Sampler");
+
+  test('Can sample from a basic non-replacing sampler', function() {
+    var sampler;
+    sampler = new Psy.Sampler([0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]);
+    return ok(true, sampler.next());
+  });
+
+  test('Can sample repeatedly from a basic non-replacing sampler', function() {
+    var i, out, sampler, _i;
+    sampler = new Psy.Sampler([0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]);
+    out = "";
+    for (i = _i = 0; _i <= 30; i = ++_i) {
+      out = out + sampler.next() + " ";
+    }
+    return ok(true, out);
+  });
+
+  test('Can take N elements from a non-replacing sampler', function() {
+    var out, sampler;
+    sampler = new Psy.Sampler([0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]);
+    out = sampler.take(8);
+    out = out.concat(sampler.take(8));
+    equal(out.length, 16);
+    return ok(true, out);
+  });
+
   module("FactorNode");
 
   test('Can create a FactorNode from an object literal', function() {
@@ -264,8 +291,8 @@
       type: "text"
     };
     console.log("inode", inode);
-    node = Psy.ItemNode.build("inode", inode);
-    equal(node.name, "inode");
+    node = Psy.ItemNode.build("item", inode);
+    equal(node.name, "item");
     equal(node.attributes.x.toString(), [1, 2, 3].toString(), node.attributes.x.toString());
     return equal(node.attributes.y.toString(), [4, 5, 6].toString(), node.attributes.x.toString());
   });
@@ -273,7 +300,7 @@
   module("ItemNode");
 
   test('can build an ItemNode from a csv file', function() {
-    var inode, node;
+    var inode, items, node;
     inode = {
       csv: {
         url: '../data/test.csv'
@@ -281,8 +308,10 @@
       type: "text"
     };
     node = Psy.ItemNode.build("num", inode);
-    equal(node.name, "csvnode");
-    return equal(node.attributes.color.toString(), ["red", "green"].toString(), node.attributes.color.toString());
+    equal(node.name, "num");
+    items = node.sample(2);
+    equal(items.length, 2);
+    return deepEqual(node.attributes.color, ["red", "green"], node.attributes.color.toString());
   });
 
   module("ItemSetNode");
@@ -323,7 +352,6 @@
       }
     };
     iset = Psy.ItemSetNode.build(nodes);
-    console.log("item set is", iset);
     return deepEqual(["word", "color"], iset.names);
   });
 
