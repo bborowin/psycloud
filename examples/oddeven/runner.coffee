@@ -18,7 +18,7 @@ fnode = Psy.FactorSetNode.build(factorSet)
 
 # add a column to design called 'num' that contains the odd or even numerals
 trials = @trials.bind ((record) =>
-  if record.oddeven is "odd" then num: oddSampler.take(1)[0] else num: evenSampler.take(1)[0])
+  if record.oddeven is "odd" then num: oddSampler.takeOne() else num: evenSampler.takeOne())
 
 trials.shuffle()
 
@@ -62,7 +62,6 @@ window.display =
           SpaceKey: ""
 
       End: ->
-        console.log("Block end", this)
         console.log("answer Accuracy", @answer.Accuracy)
         Text:
           position: "center"
@@ -88,7 +87,7 @@ window.display =
               duration: 500
         2:
           Text:
-            content: @num
+            content: @trial.num
             position: "center"
             origin: "center"
             fontSize: 175
@@ -98,7 +97,7 @@ window.display =
               KeyPress:
                 id: "answer"
                 keys: ['n', 'm']
-                correct: if @oddeven is "even" then 'n' else 'm'
+                correct: if @trial.oddeven is "even" then 'n' else 'm'
               Timeout:
                 id: "timeout"
                 duration: 1500

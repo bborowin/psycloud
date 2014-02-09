@@ -33,6 +33,9 @@ class Sampler
       @next()
     ret
 
+  takeOne: ->
+    @take(1)[0]
+
 exports.Sampler = Sampler
 
 #takeWithout: (n, exclusionSet) ->

@@ -24,11 +24,11 @@
   trials = this.trials.bind((function(record) {
     if (record.oddeven === "odd") {
       return {
-        num: oddSampler.take(1)[0]
+        num: oddSampler.takeOne()
       };
     } else {
       return {
-        num: evenSampler.take(1)[0]
+        num: evenSampler.takeOne()
       };
     }
   }));
@@ -61,7 +61,6 @@
           };
         },
         End: function() {
-          console.log("Block end", this);
           console.log("answer Accuracy", this.answer.Accuracy);
           return {
             Text: {
@@ -95,7 +94,7 @@
             },
             2: {
               Text: {
-                content: this.num,
+                content: this.trial.num,
                 position: "center",
                 origin: "center",
                 fontSize: 175,
@@ -106,7 +105,7 @@
                   KeyPress: {
                     id: "answer",
                     keys: ['n', 'm'],
-                    correct: this.oddeven === "even" ? 'n' : 'm'
+                    correct: this.trial.oddeven === "even" ? 'n' : 'm'
                   },
                   Timeout: {
                     id: "timeout",
