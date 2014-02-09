@@ -1,10 +1,9 @@
 _ = require('lodash')
 lay = require("./layout")
-Module = require("./module").Module
 
 
 exports.Stimulus =
-class Stimulus extends Module
+class Stimulus
 
   __standardDefaults: { x:0, y:0, origin: "top-left"}
 
@@ -90,7 +89,7 @@ class Stimulus extends Module
   #id: -> @spec.id or _.uniqueId()
 
 exports.Response =
-class Response extends Stimulus
+class Response extends exports.Stimulus
 
   start: (context) -> @activate(context)
 
