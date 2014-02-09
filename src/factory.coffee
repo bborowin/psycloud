@@ -24,6 +24,7 @@ class ComponentFactory
 
   buildEvent: (spec) ->
     if not spec.Next?
+      console.log("error building event with spec: ", spec)
       throw new Error("Event specification does not contain 'Next' element")
 
     stimSpec = _.omit(spec, "Next")
@@ -60,17 +61,35 @@ class DefaultComponentFactory extends ComponentFactory
 
   make: (name, params, registry) ->
     callee = arguments.callee
-
+    console.log("making", name)
     switch name
       when "Group"
+        console.log("building group")
         names = _.map(params.stims, (stim) -> _.keys(stim)[0])
         props = _.map(params.stims, (stim) -> _.values(stim)[0])
         stims = _.map([0...names.length], (i) =>
           callee(names[i], props[i], @registry)
         )
-        layoutName = _.keys(params.layout)[0]
-        layoutParams = _.values(params.layout)[0]
-        new Components.Group(stims, @makeLayout(layoutName, layoutParams, context))
+
+        if params.layout?
+          layoutName = _.keys(params.layout)[0]
+          layoutParams = _.values(params.layout)[0]
+          new Components.Group(stims, @makeLayout(layoutName, layoutParams, context))
+        else
+          new Components.Group(stims)
+
+      when "Background"
+        console.log("building background", params)
+        names = _.keys(params)
+        props = _.values(params)
+        console.log("names", names)
+        console.log("props", props)
+        stims = _.map([0...names.length], (i) =>
+          callee(names[i], props[i], @registry)
+        )
+
+        new Canvas.Background(stims)
+
       when "First"
         names = _.keys(params)
         props = _.values(params)
@@ -81,6 +100,7 @@ class DefaultComponentFactory extends ComponentFactory
         new Components.First(resps)
       else
         if not registry[name]?
+          console.log("registry is", registry)
           throw new Error("DefaultComponentFactory:make cannot find component in registry named: ", name)
         new registry[name](params)
 

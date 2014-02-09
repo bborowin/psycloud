@@ -4,7 +4,7 @@ Kinetic = require("../../../jslibs/kinetic").Kinetic
 class Circle extends Stimulus
 
   defaults:
-    x: 0, y: 0, radius: 50, fill: 'red', opacity: 1
+    x: 0, y: 0, radius: 50, fill: 'red', opacity: 1, origin: "center"
 
   render: (context, layer) ->
     circ = new Kinetic.Circle({ x: 0, y: 0, radius: @spec.radius, fill: @spec.fill, stroke: @spec.stroke, strokeWidth: @spec.strokeWidth, opacity: @spec.opacity })

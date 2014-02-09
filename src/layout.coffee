@@ -71,7 +71,6 @@ exports.Layout =
         Math.min(val, d)
 
 
-
 exports.AbsoluteLayout =
   class AbsoluteLayout extends exports.Layout
 
@@ -94,7 +93,7 @@ exports.AbsoluteLayout =
 
 
 exports.GridLayout =
-  class GridLayout extends Layout
+  class GridLayout extends exports.Layout
     constructor: (@rows, @cols, @bounds) ->
       @ncells = @rows*@cols
       @cells = @computeCells()

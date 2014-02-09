@@ -6,7 +6,7 @@ _ = require('lodash')
 class Text extends Stimulus
 
   defaults:
-    content: "Text", x: 5, y: 5, width: null, fill: "black", fontSize: 40, fontFamily: "Arial", lineHeight: 1, textAlign: "center", position: null
+    content: "Text", x: 5, y: 5, width: null, fill: "black", fontSize: 40, fontFamily: "Arial", textAlign: "center", position: null
 
   constructor: (spec = {}) ->
     super(spec)
@@ -25,7 +25,7 @@ class Text extends Stimulus
       fontSize: @spec.fontSize,
       fontFamily: @spec.fontFamily,
       fill: @spec.fill
-      lineHeight: @spec.lineHeight
+      lineHeight: @spec.lineHeight or 1
       width: @spec.width
       listening: false
       align: @spec.textAlign

@@ -14,7 +14,9 @@ factory = require("./factory")
 Kinetic = require("../jslibs/kinetic").Kinetic
 _ = require('lodash')
 Q = require("q")
+
 csv = require('../jslibs/jquery.csv.js')
+{match} = require("coffee-pattern")
 
 
 include = (lib) ->
@@ -23,7 +25,7 @@ include = (lib) ->
 
 #libs = [Exp, Psy, Dots, utils, datatable, samplers, stimresp, layout]
 
-libs = [Exp, Psy, Dots, utils, datatable, samplers, stimresp, layout, design, canvas, html, components, factory]
+libs = [Exp, Psy, Dots, utils, datatable, samplers, stimresp, layout, design, canvas, html, components, factory, match]
 
 for lib in libs
   include(lib)
@@ -33,6 +35,7 @@ exports.Q = Q
 exports._ = _
 exports.Kinetic = Kinetic
 exports.csv = csv
+exports.match = match
 #exports.recline = recline
 
 

@@ -90,6 +90,9 @@ exports.sample = (elements, n, replace=false) ->
     for i in [0...n]
       elements[Math.floor(Math.random() * elements.length)]
 
+exports.oneOf = (elements) -> elements[Math.floor(Math.random() * elements.length)]
+
+
 
 exports.doTimer = (length, oncomplete) ->
   start = getTimestamp()
@@ -104,3 +107,31 @@ exports.doTimer = (length, oncomplete) ->
       setTimeout instance, half
 
   setTimeout instance, 1
+
+
+exports.match = (record, matcher) ->
+  rkeys = _.keys(record)
+  mkeys = _.keys(matcher)
+
+  console.log("record keys", rkeys)
+  console.log("matcher keys", mkeys)
+
+
+record = {}
+record.flanker = "congruent"
+record.centerColor = "red"
+
+
+###
+  matcher =
+  flanker:
+    congruent: -> @centerColor
+    incongruent: -> match @centerColor,
+      red: -> 1
+      green: ->2
+      blue: ->3
+
+
+exports.match(record, matcher)
+
+####

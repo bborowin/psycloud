@@ -14,6 +14,6 @@ exports.Prompt = require("./prompt").Prompt
 exports.Sequence = require("./sequence").Sequence
 exports.Timeout = require("./timeout").Timeout
 exports.Click = require("./click").Click
-
+exports.Nothing = require("./nothing").Nothing
 
 #console.log("ZZZ exports.DefaultComponentFactory", require("./factory").DefaultComponentFactory)

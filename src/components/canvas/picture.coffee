@@ -30,3 +30,4 @@ class Picture extends Stimulus
 
 
 exports.Picture = Picture
+

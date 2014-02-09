@@ -46,8 +46,12 @@ class Stimulus extends Module
 
     @name = this.constructor.name
 
-  xyoffset: (origin, nodeWidth, nodeHeight) ->
+    @initialize()
 
+  initialize: ->
+
+  xyoffset: (origin, nodeWidth, nodeHeight) ->
+    console.log("origin is", origin)
     switch origin
       when "center" then [-nodeWidth/2, -nodeHeight/2]
       when "center-left" or "left-center" then [0, -nodeHeight/2]
@@ -58,13 +62,17 @@ class Stimulus extends Module
       when "bottom-left" or "left-bottom" then [0,-nodeHeight]
       when "bottom-right" or "right-bottom" then [-nodeWidth,-nodeHeight]
       when "bottom-center" or "center-bottom" then [-nodeWidth/2,-nodeHeight]
+      else
+        throw new Error("failed to match 'origin' argument:", origin)
 
   computeCoordinates: (context, position, nodeWidth=0, nodeHeight=0) ->
-    xy = if position
+    xy = if position?
       @layout.computePosition([context.width(), context.height()], position)
-    else if @spec.x and @spec.y
+    else if @spec.x? and @spec.y?
       [@layout.convertToCoordinate(@spec.x, context.width()), @layout.convertToCoordinate(@spec.y, context.height())]
     else [0,0]
+
+    console.log("origin", @spec.origin)
 
     if @spec.origin?
       xyoff = @xyoffset(@spec.origin, nodeWidth, nodeHeight)

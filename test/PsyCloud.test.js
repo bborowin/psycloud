@@ -185,6 +185,69 @@
     return deepEqual(["wordtype", "repnum", "lag", "novel", "color"], _.keys(xs.factorSet));
   });
 
+  module("Task");
+
+  test('can build a task with one set of crossed variables', function() {
+    var task;
+    return task = {
+      Task: {
+        name: "task1",
+        Conditions: {
+          Crossed: {
+            wordtype: {
+              levels: ["word", "pseudo"]
+            },
+            repnum: {
+              levels: [1, 2, 3, 4, 5, 6]
+            },
+            lag: {
+              levels: [1, 2, 4, 8, 16, 32]
+            }
+          }
+        },
+        Items: {
+          word: {
+            data: [
+              {
+                word: "hello",
+                x: 1,
+                y: 4
+              }, {
+                word: "goodbye",
+                x: 2,
+                y: 5
+              }, {
+                word: "yahoo",
+                x: 3,
+                y: 6
+              }
+            ],
+            sampler: {
+              type: "replacement"
+            }
+          },
+          color: {
+            data: [
+              {
+                color: "red",
+                x: 10
+              }, {
+                color: "green",
+                x: 20
+              }, {
+                color: "blue",
+                x: 30
+              }
+            ],
+            sampler: {
+              type: "replacement"
+            }
+          }
+        }
+      }
+    };
+  });
+
   module("TrialList");
 
   test('can build a TrialList', function() {
@@ -334,7 +397,10 @@
             x: 3,
             y: 6
           }
-        ]
+        ],
+        sampler: {
+          type: "replacement"
+        }
       },
       color: {
         data: [
@@ -348,10 +414,14 @@
             color: "blue",
             x: 30
           }
-        ]
+        ],
+        sampler: {
+          type: "replacement"
+        }
       }
     };
     iset = Psy.ItemSetNode.build(nodes);
+    console.log("item set sample 50", Psy.DataTable.fromRecords(iset.sample(50)));
     return deepEqual(["word", "color"], iset.names);
   });
 

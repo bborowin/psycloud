@@ -16,7 +16,6 @@ class Background extends Stimulus
       fill: @fill
     })
 
-
     layer.add(background)
 
     for stim in @stims

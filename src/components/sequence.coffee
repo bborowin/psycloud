@@ -2,7 +2,7 @@ Stimulus = require("../stimresp").Stimulus
 Timeout = require("./timeout").Timeout
 Q = require("q")
 utils = require("../utils")
-
+_ = require("lodash")
 
 class Sequence extends Stimulus
 

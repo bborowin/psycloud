@@ -44,7 +44,9 @@
     "taffydb": "~2.7.2",
     "coffee-script": "~1.6.3",
     "lodash": "~2.4.1",
-    "mousetrap": "0.0.1"
+    "mousetrap": "0.0.1",
+    "coffee-pattern": "0.0.6",
+    "skinny-coffee-machine": "~0.2.1"
   },
   "scripts": {
     "test": "grunt ci"

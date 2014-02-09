@@ -294,6 +294,19 @@ class ItemSetNode
   constructor: (@itemNodes) ->
     @names = _.map(@itemNodes, (n) -> n.name)
 
+  sample: (n) ->
+    items = _.map(@itemNodes, (node) -> node.sample(n) )
+    out = []
+    for i in [0...n]
+      record = {}
+      for name, j in @names
+        record[name] = items[j][i]
+      out.push(record)
+
+    out
+
+
+
 
 SamplerNode =
 class SamplerNode

@@ -1,6 +1,8 @@
 
 Kinetic = Psy.Kinetic
 
+_ = Psy._
+
 @stage = new Kinetic.Stage({
   container: 'container',
   width: $("#container").width(),
@@ -132,6 +134,13 @@ Kinetic = Psy.Kinetic
       "Default Arrow": makeTrial(new Canvas.Arrow(), SpaceKey)
       "Blue Arrow, length 200": makeTrial(new Canvas.Arrow({length: 200, fill: "blue"}), SpaceKey)
       "Blue Arrow, black stroke": makeTrial(new Canvas.Arrow({length: 200, fill: "blue", stroke: "black", strokeWidth: 4}), SpaceKey)
+      "Arrow Origin Test": makeTrial(new Psy.Group(
+        _.flatten(for org, index in ["top-left", "center", "bottom-right"]
+          clrs = ["red", "blue", "green"]
+          [new Canvas.Arrow({x:200, y:200, origin: org, length: 200, origin: org, fill: clrs[index]}), new Canvas.Circle({x: 200 * index, y:200 * index, fill: "black", radius: 5})])
+      ), SpaceKey)
+
+
       "Rotating Arrow": makeTrial(new Psy.Sequence(
         for i in [0 .. 360] by 2
           new Canvas.Arrow({x:300, y:300, length: 200, fill: "black", angle: i})

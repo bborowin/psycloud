@@ -12,6 +12,9 @@ Kinetic = require("../jslibs/kinetic").Kinetic
 Stimulus = require("./stimresp").Stimulus
 Response = require("./stimresp").Response
 ResponseData = require("./stimresp").ResponseData
+#StateMachine = require("skinny-coffee-machine")
+
+
 
 exports.EventData =
 class EventData
@@ -75,7 +78,7 @@ exports.StimFactory =
 
 
 exports.MockStimFactory =
-  class MockStimFactory extends StimFactory
+  class MockStimFactory extends exports.StimFactory
     makeStimulus: (name, params, context) ->
       ret = {}
       ret[name] = params
@@ -91,18 +94,17 @@ exports.MockStimFactory =
 
 
 
+
+
+
+
 class RunnableNode
 
   @functionList: (nodes, context, callback) ->
     ## for every runnable node, create a function that returns a promise via 'node.start'
     _.map(nodes, (node) -> ( (arg) ->
-      if arg instanceof ResponseData
-        console.log("captured a ResponseData object", arg)
-        context.pushData(arg.data)
+      context.handleValue(arg)
       callback(node) if callback?
-      console.log("node is", node)
-      console.log("node is of type", node.name)
-      console.log("node has a start method?", node.start?)
       node.start(context)
     ))
 
@@ -115,8 +117,7 @@ class RunnableNode
     for fun in funArray
       result = result.then(fun,
       (err) ->
-        console.log("fun is", fun)
-        console.log("error", err)
+        console.log("error message: ", err)
         throw new Error("Error during execution: ", err)
       )
 
@@ -151,9 +152,12 @@ exports.RunnableNode = RunnableNode
 
 exports.FunctionNode =
 class FunctionNode extends RunnableNode
+
   constructor: (@fun) ->
 
   start: (context) -> Q.fcall(@fun)
+
+functionNode = (fun) -> new FunctionNode(fun)
 
 exports.FeedbackNode =
 class FeedbackNode extends RunnableNode
@@ -194,7 +198,8 @@ exports.Event =
 
     before: (context) ->
       self = this
-      new FunctionNode( =>
+
+      functionNode( =>
         if not context.exState.inPrelude
           context.updateState( =>
             context.exState.nextEvent(self)
@@ -208,7 +213,7 @@ exports.Event =
       )
 
     after: (context) ->
-      new FunctionNode( =>
+      functionNode( =>
         @stimulus.stop(context)
       )
 
@@ -227,9 +232,8 @@ exports.Trial =
     push: (event) -> @children.push(event)
 
     before: (context) ->
-      new FunctionNode ( =>
-        console.log("before FunctionNode, Trial")
-        self = this
+      self = this
+      functionNode ( =>
         context.updateState( =>
           context.exState.nextTrial(self)
         )
@@ -268,7 +272,7 @@ exports.Block =
 
     before: (context) ->
       self = this
-      new FunctionNode( =>
+      functionNode( =>
         context.updateState( =>
           context.exState.nextBlock(self)
         )
@@ -278,13 +282,13 @@ exports.Block =
           spec = @blockSpec.Start.apply(args)
           @showEvent(spec, context)
         else
-          Q.fcall(arg)
+          Q.fcall(0)
       )
 
 
 
     after: (context) ->
-      new FunctionNode( =>
+      functionNode ( =>
         if @blockSpec? and @blockSpec.End
           blockData = context.blockData()
           ids = _.unique(blockData.select("id"))
@@ -298,7 +302,7 @@ exports.Block =
           spec = @blockSpec.End.apply(args)
           @showEvent(spec, context)
         else
-          Q.fcall(arg)
+          Q.fcall(0)
       )
 
 
@@ -314,18 +318,37 @@ exports.Prelude =
     constructor: (children) -> super(children)
 
     before: (context) ->
-      new FunctionNode( =>
+      functionNode ( =>
         context.updateState( =>
           context.exState.insidePrelude()
         )
       )
 
     after: (context) ->
-      new FunctionNode( =>
+      functionNode ( =>
         context.updateState( =>
           context.exState.outsidePrelude()
         )
       )
+
+
+exports.Coda =
+  class Coda extends RunnableNode
+    constructor: (children) -> super(children)
+
+    #before: (context) ->
+    #  functionNode ( =>
+        #context.updateState( =>
+          # done
+        #)
+    #  )
+
+    #after: (context) ->
+    #  functionNode ( =>
+        #context.updateState( =>
+        #  # done
+        #)
+    #  )
 
 
 
@@ -423,6 +446,7 @@ exports.ExperimentContext =
   class ExperimentContext
     constructor: (stimFactory) ->
 
+
       @stimFactory = stimFactory
 
       @userData = TAFFY({})
@@ -452,6 +476,34 @@ exports.ExperimentContext =
 
       @userData.insert(record)
 
+    handleValue: (arg) ->
+      if arg? and arg instanceof ResponseData
+        @pushData(arg.data)
+
+
+    width: -> 0
+
+    height: -> 0
+
+    offsetX: -> 0
+
+    offsetY: -> 0
+
+    centerX: -> @width()/2 + @offsetX()
+
+    centerY: -> @height()/2 + @offsetY()
+
+    screenInfo: ->
+      {
+        width: @width()
+        height: @height()
+        offset:
+          x: @offsetX()
+          y: @offsetY()
+        center:
+          x: @centerX()
+          y: @centerY()
+      }
 
 
     logEvent: (key, value) ->
@@ -647,6 +699,8 @@ exports.KineticContext = KineticContext
 buildStimulus = (spec, context) ->
   stimType = _.keys(spec)[0]
   params = _.values(spec)[0]
+  console.log("stimType", stimType)
+  console.log("params", params)
   context.stimFactory.makeStimulus(stimType, params, context)
 
 buildResponse =  (spec, context) ->
@@ -679,27 +733,40 @@ buildTrial = (eventSpec, record, context, feedback, backgroundSpec) ->
     context.stimFactory.buildEvent(value)
 
   if backgroundSpec?
-    background = context.stimFactory.buildStimulus(backgroundSpec)
+    background = context.stimFactory.makeStimulus("Background", backgroundSpec)
     new Trial(events, record, feedback, background)
   else
     new Trial(events, record, feedback)
 
 
 
-
-buildPrelude = (preludeSpec, context) ->
-  events = for key, value of preludeSpec
+makeEventSeq = (spec, context) ->
+  for key, value of spec
     stimSpec = _.omit(value, "Next")
     responseSpec = _.pick(value, "Next")
+
+    console.log("building stim", stimSpec)
 
     stim = buildStimulus(stimSpec, context)
     response = buildResponse(responseSpec.Next, context)
     context.stimFactory.makeEvent(stim, response, context)
 
 
+buildPrelude = (preludeSpec, context) ->
+  events = makeEventSeq(preludeSpec, context)
   new Prelude(events)
 
+buildCoda = (codaSpec, context) ->
+  events = makeEventSeq(codaSpec, context)
+  new Coda(events)
 
+__dummySpec =
+  Events:
+    1:
+      Nothing: ""
+      Next:
+        Timeout:
+          duration: 0
 
 
 exports.Presenter =
@@ -710,7 +777,15 @@ class Presenter
     @prelude = if @display.Prelude?
       buildPrelude(@display.Prelude.Events, @context)
     else
-      new Prelude([])
+      buildPrelude(__dummySpec.Events, @context)
+
+
+    @coda = if @display.Coda?
+      buildCoda(@display.Coda.Events, @context)
+    else
+      console.log("building dummy coda")
+      buildCoda(__dummySpec.Events, @context)
+
 
 
 
@@ -719,14 +794,18 @@ class Presenter
     @blockList = new BlockSeq(for block in @trialList.blocks
       trials = for trialNum in [0...block.length]
         record = _.clone(block[trialNum])
-        trialSpec = @trialBuilder.apply(record)
+
+        args = {}
+        args.trial = record
+        args.screen = @context.screenInfo()
+
+        trialSpec = @trialBuilder.apply(args)
         buildTrial(trialSpec.Events, record, @context, trialSpec.Feedback, trialSpec.Background)
       new Block(trials, @display.Block)
     )
 
 
-
-    @prelude.start(@context).then(=> @blockList.start(@context))
+    @prelude.start(@context).then(=> @blockList.start(@context)).then( => console.log("inside coda"); @coda.start(@context))
 
 
 # Experiment
