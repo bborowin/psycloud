@@ -16,14 +16,12 @@ fnode = Psy.FactorSetNode.build(factorSet)
 @trials = fnode.trialList(5, 5)
 
 
-@trials = @trials.bind ((record) =>
+@trials = @trials.bind (record) ->
   flankerArrow: Psy.match record.flanker,
       congruent: record.centerArrow
       incongruent: -> Psy.match record.centerArrow,
           left: "right"
           right: "left"
-
-  )
 
 
 

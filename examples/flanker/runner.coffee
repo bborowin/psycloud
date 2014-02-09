@@ -30,7 +30,7 @@ fnode = Psy.FactorSetNode.build(factorSet)
 #  )
 
 console.log("psy match", )
-@trials = @trials.bind ( (record) =>
+@trials = @trials.bind (record) ->
   flankerColor: Psy.match record.flanker,
       congruent: record.centerColor
       incongruent: -> Psy.match record.centerColor,
@@ -38,8 +38,6 @@ console.log("psy match", )
           green: Psy.oneOf ["blue", "yellow"]
           blue: Psy.oneOf ["red", "green"]
           yellow: Psy.oneOf ["red", "green"]
-
-  )
 
 
 

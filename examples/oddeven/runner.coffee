@@ -17,8 +17,8 @@ fnode = Psy.FactorSetNode.build(factorSet)
 @trials = fnode.trialList(5, 5)
 
 # add a column to design called 'num' that contains the odd or even numerals
-trials = @trials.bind ((record) =>
-  if record.oddeven is "odd" then num: oddSampler.takeOne() else num: evenSampler.takeOne())
+trials = @trials.bind (record) ->
+  if record.oddeven is "odd" then num: oddSampler.takeOne() else num: evenSampler.takeOne()
 
 trials.shuffle()
 
