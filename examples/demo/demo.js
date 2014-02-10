@@ -232,7 +232,16 @@
         }), SpaceKey)
       },
       Rectangle: {
-        "Default Rect": makeTrial(new Canvas.Rectangle(), SpaceKey),
+        "Default Rect": makeTrial(new Canvas.Rectangle({
+          x: 5,
+          y: 5
+        }), SpaceKey),
+        "Unfilled Rect": makeTrial(new Canvas.Rectangle({
+          x: 5,
+          y: 5,
+          fill: false,
+          stroke: "black"
+        }), SpaceKey),
         "Green Square 500 by 500": makeTrial(new Canvas.Rectangle({
           width: 500,
           height: 500,

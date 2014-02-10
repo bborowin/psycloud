@@ -162,25 +162,19 @@
                 ]
               },
               Next: {
-                First: {
-                  KeyPress: {
-                    id: "answer",
-                    keys: ['g', 'h'],
-                    correct: this.trial.centerArrow === "left" ? 'g' : 'h'
-                  },
-                  Timeout: {
-                    id: "timeout",
-                    duration: 1500
-                  }
+                KeyPress: {
+                  id: "answer",
+                  keys: ['g', 'h'],
+                  correct: this.trial.centerArrow === "left" ? 'g' : 'h',
+                  timeout: 1500
                 }
               }
             }
           },
           Feedback: function() {
-            var _ref;
             return {
               Blank: {
-                fill: ((_ref = this.answer) != null ? _ref.Accuracy : void 0) ? "green" : "red",
+                fill: this.answer.Accuracy ? "green" : "red",
                 opacity: .1
               },
               Next: {

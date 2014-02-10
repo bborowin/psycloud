@@ -51,13 +51,20 @@ module.exports = (grunt) ->
           spawn: true
 
 
+    concat_sourcemap:
+      options:
+        sourceRoot: ".."
+      all:
+        files:
+          "build/psycloud_bundle.js": ['build/psycloud.js', 'build/psycloud.js.map', 'jslibs/jquery-1.7.js', 'vex.combined.min.js']
+
 
     concat:
       min:
         src: ['build/psycloud.min.js', 'jslibs/jquery-1.7.min.js', 'vex.combined.min.js']
         dest: 'build/psycloud_bundle.min.js'
       all:
-        src: ['build/psycloud.js', 'jslibs/jquery-1.7.min.js', 'vex.combined.min.js']
+        src: ['build/psycloud.js', 'jslibs/jquery-1.7.js', 'vex.combined.min.js']
         dest: 'build/psycloud_bundle.js'
 
     cssmin: 
@@ -65,14 +72,20 @@ module.exports = (grunt) ->
         files: 
           'build/psycloud_bundle.css': ['css/*.css']
 
+    shell:
+      codo:
+        command: 'codo src'
 
 
 
+
+  grunt.loadNpmTasks('grunt-shell')
   grunt.loadNpmTasks('grunt-contrib-watch');
+  grunt.loadNpmTasks('grunt-concat-sourcemap');
   grunt.loadNpmTasks('grunt-contrib-coffee')
   grunt.loadNpmTasks('grunt-contrib-clean')
   grunt.loadNpmTasks('grunt-contrib-concat')
   grunt.loadNpmTasks('grunt-contrib-cssmin')
   grunt.loadNpmTasks('powerbuild')
-  grunt.registerTask('default', ['clean', 'powerbuild:all', 'concat:all', 'cssmin'])
+  grunt.registerTask('default', ['clean', 'powerbuild:all', 'concat_sourcemap:all', 'cssmin', 'shell'])
   grunt.registerTask('power', ["powerbuild"])

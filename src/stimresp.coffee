@@ -5,7 +5,7 @@ lay = require("./layout")
 exports.Stimulus =
 class Stimulus
 
-  __standardDefaults: { x:0, y:0, origin: "top-left"}
+  @standardDefaults: { x:0, y:0, origin: "top-left"}
 
   defaults: {}
 
@@ -24,7 +24,7 @@ class Stimulus
 
   constructor: (spec={}) ->
     @spec = _.defaults(spec, @defaults)
-    @spec = _.defaults(spec, @__standardDefaults)
+    @spec = _.defaults(spec, Stimulus.standardDefaults)
     @spec = _.omit(@spec, (value, key) -> not value?)
 
     @name = @constructor.name

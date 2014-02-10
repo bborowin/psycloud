@@ -52,13 +52,9 @@ for i in [1..9]
 
 
 class KeyResponse extends Response
+
   defaults:
-    keys: ['1', '2'], correct: ['1']
-
-
-
-class KeyPress extends KeyResponse
-
+    keys: ['1', '2'], correct: ['1'], timeout: null
 
   createResponseData: (timeStamp, startTime, Acc, char) ->
     resp =
@@ -72,10 +68,31 @@ class KeyPress extends KeyResponse
     resp
 
 
+  resolveOnTimeout: (deferred, timeout) ->
+    utils.doTimer(timeout, (diff) =>
+      if !deferred.isResolved
+        timeStamp = utils.getTimestamp()
+        Acc = false
+        resp = @createResponseData(timeStamp, @startTime, Acc, '')
+        deferred.resolve(new ResponseData(resp))
+    )
+
+
+
+
+class KeyPress extends KeyResponse
+
+
+
   activate: (context) ->
     @startTime = utils.getTimestamp()
     deferred = Q.defer()
     keyStream = context.keypressStream()
+
+    if @spec.timeout?
+      resolveOnTimeout(deferred, @spec.timeout)
+
+
     keyStream.filter((event) =>
       char = String.fromCharCode(event.keyCode)
       _.contains(@spec.keys, char)).take(1).onValue( (filtered) =>

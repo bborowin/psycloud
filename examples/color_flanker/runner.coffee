@@ -141,14 +141,12 @@ window.display =
             ]
 
           Next:
-            First:
-              KeyPress:
-                id: "answer"
-                keys: ['g', 'h']
-                correct: if @trial.centerColor is "red" or @trial.centerColor is "green" then 'g' else 'h'
-              Timeout:
-                id: "timeout"
-                duration: 1500
+            KeyPress:
+              id: "answer"
+              keys: ['g', 'h']
+              correct: if @trial.centerColor is "red" or @trial.centerColor is "green" then 'g' else 'h'
+              timeout: 1000
+
       Feedback: ->
         Text:
           content: if @answer?.Accuracy then "C" else "X"

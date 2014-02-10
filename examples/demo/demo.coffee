@@ -111,7 +111,8 @@ _ = Psy._
       "5 X 5 Dashed GridLines": makeTrial(new Canvas.GridLines({rows:5, cols:5, dashArray: [10,5]}), SpaceKey)
 
     Rectangle:
-      "Default Rect": makeTrial(new Canvas.Rectangle(), SpaceKey)
+      "Default Rect": makeTrial(new Canvas.Rectangle(x:5, y:5), SpaceKey)
+      "Unfilled Rect": makeTrial(new Canvas.Rectangle(x:5, y:5, fill: false, stroke: "black"), SpaceKey)
       "Green Square 500 by 500": makeTrial(new Canvas.Rectangle({width: 500, height: 500, fill: "green"}), SpaceKey)
       "Green Square Blue Stroke": makeTrial(new Canvas.Rectangle({width: 500, height: 500, fill: "green", stroke: "blue"}), SpaceKey)
       "Default Rect, x 50%, y 50%": makeTrial(new Canvas.Rectangle({position: ["50%","50%"]}), SpaceKey)

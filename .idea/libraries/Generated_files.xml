@@ -26,29 +26,33 @@
         <item url="file://$PROJECT_DIR$/node_modules/coffee-pattern/pattern.js" />
         <item url="file://$PROJECT_DIR$/src/stimresp.js" />
         <item url="file://$PROJECT_DIR$/src/samplers.js" />
-        <item url="file://$PROJECT_DIR$/src/components/viewport.js" />
         <item url="file://$PROJECT_DIR$/src/dotmotion.js" />
         <item url="file://$PROJECT_DIR$/examples/demo/demo.js" />
         <item url="file://$PROJECT_DIR$/examples/flanker/runner.js" />
         <item url="file://$PROJECT_DIR$/src/test.js" />
         <item url="file://$PROJECT_DIR$/src/layout.js" />
+        <item url="file://$PROJECT_DIR$/node_modules/grunt-concat-sourcemap/test/fixtures/file4.js" />
+        <item url="file://$PROJECT_DIR$/src/components/canvas/rectangle.js" />
         <item url="file://$PROJECT_DIR$/src/elements.js" />
         <item url="file://$PROJECT_DIR$/examples/oddeven/runner.js" />
         <item url="file://$PROJECT_DIR$/src/main.js" />
         <item url="file://$PROJECT_DIR$/src/components/canvas/clear.js" />
         <item url="file://$PROJECT_DIR$/test/PsyCloud.test.js" />
-        <item url="file://$PROJECT_DIR$/src/components/Nothing.js" />
+        <item url="file://$PROJECT_DIR$/src/components/nothing.js" />
         <item url="file://$PROJECT_DIR$/src/components/canvas/circle.js" />
         <item url="file://$PROJECT_DIR$/src/components/canvas/picture.js" />
         <item url="file://$PROJECT_DIR$/src/components/canvas/arrow.js" />
         <item url="file://$PROJECT_DIR$/src/components/sequence.js" />
         <item url="file://$PROJECT_DIR$/src/components/canvas/canvasborder.js" />
+        <item url="file://$PROJECT_DIR$/src/components/canvas/gridlines.js" />
         <item url="file://$PROJECT_DIR$/src/components/canvas/background.js" />
       </sourceFilesUrls>
     </properties>
     <CLASSES>
       <root url="file://$PROJECT_DIR$/PsyCloud.test.js" />
       <root url="file://$PROJECT_DIR$/PsyCloud.test.js" />
+      <root url="file://$PROJECT_DIR$/src/components/viewport.js" />
+      <root url="file://$PROJECT_DIR$/src/components/viewport.js" />
       <root url="file://$PROJECT_DIR$/src/components/timeout.js" />
       <root url="file://$PROJECT_DIR$/src/components/keypress.js" />
       <root url="file://$PROJECT_DIR$/src/components/canvas/text.js" />
@@ -73,11 +77,12 @@
       <root url="file://$PROJECT_DIR$/test/test_recline.js" />
       <root url="file://$PROJECT_DIR$/src/stimresp.js" />
       <root url="file://$PROJECT_DIR$/src/samplers.js" />
-      <root url="file://$PROJECT_DIR$/src/components/viewport.js" />
       <root url="file://$PROJECT_DIR$/src/dotmotion.js" />
-      <root url="file://$PROJECT_DIR$/examples/flanker/runner.js" />
+      <root url="file://$PROJECT_DIR$/examples/color_flanker/runner.js" />
       <root url="file://$PROJECT_DIR$/examples/demo/demo.js" />
       <root url="file://$PROJECT_DIR$/src/test.js" />
+      <root url="file://$PROJECT_DIR$/src/components/canvas/rectangle.js" />
+      <root url="file://$PROJECT_DIR$/node_modules/grunt-concat-sourcemap/test/fixtures/file4.js" />
       <root url="file://$PROJECT_DIR$/src/layout.js" />
       <root url="file://$PROJECT_DIR$/src/elements.js" />
       <root url="file://$PROJECT_DIR$/src/main.js" />
@@ -90,6 +95,7 @@
       <root url="file://$PROJECT_DIR$/src/components/canvas/arrow.js" />
       <root url="file://$PROJECT_DIR$/src/components/sequence.js" />
       <root url="file://$PROJECT_DIR$/src/components/canvas/canvasborder.js" />
+      <root url="file://$PROJECT_DIR$/src/components/canvas/gridlines.js" />
       <root url="file://$PROJECT_DIR$/src/components/canvas/background.js" />
     </CLASSES>
     <SOURCES />

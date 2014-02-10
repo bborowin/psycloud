@@ -4,7 +4,22 @@ Kinetic = require("../../../jslibs/kinetic").Kinetic
 class Arrow extends Stimulus
 
   defaults:
-    x: 100, y: 100, length: 100, direction: "right", thickness: 40, fill: "red", arrowSize: 25, angle: null
+    x: 100, y: 100, length: 100, direction: "right", thickness: 40, fill: "black", arrowSize: 25, angle: null
+
+
+  # Construct a new Arrow.
+  #
+  # @param [Object] spec component parameters
+  # @option options [Int] x the x coordinate
+  # @option options [Int] y the y coordinate
+  # @option options [Int] length the length of the arrow
+  # @option options [String] the direction direction the arrow is pointing (one of: 'left', 'right', 'up', 'down')
+  # @option options [Int] thickness the thickness of the arrow shaft
+  # @option options [String] fill the color of the arrow
+  # @option options [Int] arrowSize the length of the equilateral triangle for the arrow head
+  # @option options [Number] angle the arrow rotation (where 0 is pointing right, 180 left)
+  constructor: (spec = {}) ->
+    super(spec)
 
 
   initialize: ->
@@ -47,24 +62,15 @@ class Arrow extends Stimulus
 
     })
 
-    console.log("arrowhead width", @arrowHead.getWidth())
-    console.log("arrowhead height", @arrowHead.getHeight())
-    console.log("shaft width", @arrowShaft.getWidth())
-    console.log("shaft height", @arrowShaft.getHeight())
 
     computedLength = shaftLength + @spec.arrowSize
     computedHeight = @spec.thickness
     @group = new Kinetic.Group({x: 0, y: 0, rotationDeg: @angle, offset: [computedLength/2, @spec.thickness/2]})
-    #@group = new Kinetic.Group({x: 0, y: 0, rotationDeg: @angle})
-    #@group = new Kinetic.Group({x: 0, y: 0})
     @group.add(@arrowShaft)
     @group.add(@arrowHead)
 
-    console.log("computed height", computedHeight)
-
     coords = @computeCoordinates(context, @spec.position, computedLength, computedHeight)
 
-    console.log("coords", coords)
 
     # need to recenter
     @group.setPosition({x: coords[0] + computedLength/2, y: coords[1] + @spec.thickness/2})

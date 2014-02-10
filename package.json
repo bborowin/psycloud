@@ -46,7 +46,9 @@
     "lodash": "~2.4.1",
     "mousetrap": "0.0.1",
     "coffee-pattern": "0.0.6",
-    "skinny-coffee-machine": "~0.2.1"
+    "skinny-coffee-machine": "~0.2.1",
+    "grunt-concat-sourcemap": "~0.4.1",
+    "grunt-shell": "~0.6.4"
   },
   "scripts": {
     "test": "grunt ci"

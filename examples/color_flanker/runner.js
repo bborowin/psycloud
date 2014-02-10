@@ -138,16 +138,11 @@
                 ]
               },
               Next: {
-                First: {
-                  KeyPress: {
-                    id: "answer",
-                    keys: ['g', 'h'],
-                    correct: this.trial.centerColor === "red" || this.trial.centerColor === "green" ? 'g' : 'h'
-                  },
-                  Timeout: {
-                    id: "timeout",
-                    duration: 1500
-                  }
+                KeyPress: {
+                  id: "answer",
+                  keys: ['g', 'h'],
+                  correct: this.trial.centerColor === "red" || this.trial.centerColor === "green" ? 'g' : 'h',
+                  timeout: 1000
                 }
               }
             }

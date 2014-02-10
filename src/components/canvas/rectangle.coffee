@@ -3,9 +3,20 @@ Kinetic = require("../../../jslibs/kinetic").Kinetic
 
 class Rectangle extends Stimulus
 
-  defaults:
-    x: 0, y: 0, width: 100, height: 100, fill: 'red', opacity: 1
 
+
+  defaults:
+    x: 0, y: 0, width: 100, height: 100, opacity: 1, fill: "black"
+
+  # Construct a new Rectangle.
+  #
+  # @param [Object] spec component parameters
+  # @option options [Int] x the x coordinate
+  # @option options [Int] y the y coordinate
+  # @option options [Int] width the width of the rectangle
+  # @option options [Int] height the height of the rectangle
+  # @option options [String] fill the color of the rectangle
+  # @option options [String] stroke the color of the outline
   constructor: (spec = {}) ->
     super(spec)
 

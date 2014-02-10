@@ -157,17 +157,15 @@ window.display =
             ]
 
           Next:
-            First:
-              KeyPress:
-                id: "answer"
-                keys: ['g', 'h']
-                correct: if @trial.centerArrow is "left" then 'g' else 'h'
-              Timeout:
-                id: "timeout"
-                duration: 1500
+            KeyPress:
+              id: "answer"
+              keys: ['g', 'h']
+              correct: if @trial.centerArrow is "left" then 'g' else 'h'
+              timeout: 1500
+
       Feedback: ->
         Blank:
-          fill: if @answer?.Accuracy then "green" else "red"
+          fill: if @answer.Accuracy then "green" else "red"
           opacity: .1
         Next:
           Timeout:
