@@ -8,7 +8,7 @@ class HtmlLink extends html.HtmlStimulus
     super(spec)
     @html = $("""<a href='#'>#{@spec.label}</a>""")
     @el.append(@html)
-    @positionElement(@el)
+    #@positionElement(@el)
 
 
 exports.HtmlLink = HtmlLink

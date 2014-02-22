@@ -117,9 +117,9 @@ class RunnableNode
     for fun in funArray
       result = result.then(fun,
       (err) ->
-        console.log("error message: ", err)
-        throw new Error("Error during execution: ", err)
-      )
+        console.log("error stack: ", err.stack))
+        #throw new Error("Error during execution: ", err)
+
 
 
     result
@@ -208,7 +208,8 @@ exports.Event =
         if not @stimulus.overlay
           context.clearContent()
 
-        @stimulus.render(context, context.contentLayer)
+        p = @stimulus.render(context)
+        p.present(context)
         context.draw()
       )
 
@@ -217,8 +218,7 @@ exports.Event =
         @stimulus.stop(context)
       )
 
-    start: (context) ->
-      super(context)
+    start: (context) -> super(context)
 
 
 exports.Trial =
@@ -241,6 +241,7 @@ exports.Trial =
         context.clearBackground()
 
         if @background?
+          console.log("drawing background")
           context.setBackground(@background)
           context.drawBackground()
       )
@@ -538,7 +539,11 @@ exports.ExperimentContext =
 
     showEvent: (event) -> event.start(this)
 
-    showStimulus: (stimulus) -> stimulus.render(this)
+    showStimulus: (stimulus) ->
+      p = stimulus.render(this)
+      p.present(this)
+      console.log("show Stimulus, drawing")
+      @draw()
 
     start: (blockList) ->
       @numBlocks = blockList.length()
@@ -631,7 +636,9 @@ class KineticContext extends exports.ExperimentContext
   setBackground: (newBackground) ->
     @background = newBackground
     @backgroundLayer.removeChildren()
-    @background.render(this, @backgroundLayer)
+    p = @background.render(this)
+    p.present(this, @backgroundLayer)
+    #@drawBackground()
 
   drawBackground: ->
     @backgroundLayer.draw()
@@ -667,7 +674,11 @@ class KineticContext extends exports.ExperimentContext
   offsetY: ->
     @stage.getOffsetY()
 
-  showStimulus: (stimulus) -> stimulus.render(this, @contentLayer)
+  showStimulus: (stimulus) ->
+    p = stimulus.render(this)
+    p.present(this)
+    console.log("show Stimulus, drawing")
+    @draw()
 
 
   keydownStream: -> Bacon.fromEventTarget(window, "keydown")

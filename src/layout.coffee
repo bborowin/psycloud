@@ -3,6 +3,7 @@ _ = require('lodash')
 
 isPercentage = (perc) -> _.isString(perc) and perc.slice(-1) is "%"
 
+
 isPositionLabel = (pos) ->
   _.contains(["center", "center-left", "center-right","top-left", "top-right", "top-center", "bottom-left", "bottom-right", "bottom-center",
               "left-center", "right-center","left-top", "right-top", "center-top", "left-bottom", "right-bottom", "center-bottom"], pos)
@@ -27,11 +28,9 @@ convertPercentageToFraction = (perc, dim) ->
   frac * dim
 
 convertToCoordinate = (val, d) ->
-  #console.log("converting to coordinate!!!!!!!!", val)
   if isPercentage val
     val = convertPercentageToFraction(val, d)
   else if isPositionLabel val
-    #console.log("found a position label:", val)
     ret = positionToCoord(val, 0, 0, d[0], d[1], [0,0])
     #console.log("position coordinate", ret)
     ret
@@ -75,8 +74,7 @@ exports.AbsoluteLayout =
   class AbsoluteLayout extends exports.Layout
 
     computePosition: (dim, constraints) ->
-      #console.log("dim", dim)
-      #console.log("constraints", constraints)
+
       if _.isArray(constraints)
         ## assume coordinate array of length 2
         x = convertToCoordinate(constraints[0], dim[0])
@@ -91,9 +89,9 @@ exports.AbsoluteLayout =
 #class DefaultLayout extends exports.Layout
 
 
-
 exports.GridLayout =
   class GridLayout extends exports.Layout
+
     constructor: (@rows, @cols, @bounds) ->
       @ncells = @rows*@cols
       @cells = @computeCells()
@@ -103,10 +101,14 @@ exports.GridLayout =
     #cellPosition: (dim, constraints) ->
 
     computePosition: (dim, constraints) ->
-      if dim[0] != @bounds.width and dim[1] != @bounds.height
-        @bounds.width = dim[0]
-        @bounds.height = dim[1]
-        @cells = @computeCells()
+      #if dim[0] != @bounds.width and dim[1] != @bounds.height
+      #  @bounds.width = dim[0]
+      #  @bounds.height = dim[1]
+      #  @cells = @computeCells()
+      if constraints[0] > (@rows-1)
+        throw new Error("GridLayout.computePosition: illegal row position #{constraints[0]} for grid with dimensions (#{@rows}, #{@cols})")
+      if constraints[1] > (@cols-1)
+        throw new Error("GridLayout.computePosition: illegal column position #{constraints[0]} for grid with dimensions (#{@rows}, #{@cols})")
 
       cell = @cells[constraints[0]][constraints[1]]
 

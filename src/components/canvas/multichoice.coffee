@@ -1,7 +1,7 @@
-Stimulus = require("../../stimresp").Stimulus
 Kinetic = require("../../../jslibs/kinetic").Kinetic
+KStimulus = require("../../stimresp").KineticStimulus
 
-class MultipleChoice extends Stimulus
+class MultipleChoice extends KStimulus
 
   defaults:
     question: "What is your name?", options: ["Bill", "John", "Fred"], x: 10, y: 10, fill: "black", fontSize: 24, fontFamily: "Arial", textAlign: "center", position: null
@@ -21,7 +21,7 @@ class MultipleChoice extends Stimulus
     @choices = for i in [0...@spec.options.length]
       new Kinetic.Text({
         x: @spec.x + 5
-        y: questionText.getHeight() * (i + 1) + 30
+        y: @questionText.getHeight() * (i + 1) + 30
         text: (i + 1) + ") " + @spec.options[i]
         fontSize: @spec.fontSize
         fontFamily: @spec.fontFamily

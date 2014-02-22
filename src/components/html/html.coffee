@@ -1,4 +1,5 @@
-Stimulus = require("../../stimresp").Stimulus
+GStimulus = require("../../stimresp").GraphicalStimulus
+Drawable= require("../../stimresp").Drawable
 Response = require("../../stimresp").Response
 Mixen = require("mixen")
 #$ = require("jqueryify")
@@ -16,7 +17,6 @@ class HtmlMixin
     @el  = $(@el)
 
   positionElement: (el, x, y) ->
-    console.log("placing element at", x, y)
     el.css({
       position: "absolute"
       left: x
@@ -31,37 +31,50 @@ class HtmlMixin
       top: "50%"
     })
 
-  #render: (context, layer) ->
-  #  console.log("element width is", @el.width())
-  #  console.log("element height is", @el.height())
-  #  coords = @computeCoords(context, @spec.position, @el.width(), @el.height())
-  #  positionElement(@el, coords[0], coords[1])
-  #  context.appendHtml(@el)
-  #  super(context, layer)
 
 
-HMixStim = Mixen(HtmlMixin,Stimulus)
+HMixStim = Mixen(HtmlMixin,GStimulus)
 HMixResp =  Mixen(HtmlMixin,Response)
 
 class HtmlStimulus extends HMixStim
-  constructor: () ->
-    super
+  constructor: (spec) ->
+    super(spec)
 
-  render: (context, layer) ->
+  presentable: (element) ->
+    new (class extends Drawable
+
+      constructor: (@element) ->
+
+      x: -> @element.position().left
+
+      y: -> @element.position().top
+
+      width: -> @element.width()
+
+      height: -> @element.height()
+
+      present: (context) -> @element.show()
+
+    )(element)
+
+  render: (context) ->
+    console.log("rendering html stimulus", @name)
 
     @el.hide()
     context.appendHtml(@el)
+    console.log("@spec.position",  @spec.position)
+    console.log("@spec.x",  @spec.x)
+    console.log("@spec.y",  @spec.y)
+    console.log("@el width", @el.width())
+    console.log("@el height", @el.height())
     coords = @computeCoordinates(context, @spec.position, @el.width(), @el.height())
     console.log("coords", coords)
     @positionElement(@el, coords[0], coords[1])
-    @el.show()
-    console.log("element width is", @el.width())
-    console.log("element height is", @el.height())
-    console.log("spec.position", @spec.position)
-    console.log("spec.x", @spec.x)
-    console.log("spec.y", @spec.y)
 
-    super(context, layer)
+    @presentable(@el)
+    #@el.show()
+
+    #super(context, layer)
 
 class HtmlResponse extends HMixResp
   constructor: () ->

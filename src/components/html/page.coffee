@@ -10,7 +10,7 @@ class Page extends HtmlStimulus
     super(spec)
     @el.append(@spec.html)
 
-  render: (context, layer) ->
+  render: (context) ->
     context.appendHtml(@el)
 
 

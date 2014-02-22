@@ -17,3 +17,23 @@ console.log(trial.Trial.apply(args))
 
 
 
+drawable =
+  (knode) -> (context) -> console.log("hello?", knode, "context", context)
+
+f = drawable("mycontext")
+f("arrow")
+
+class X
+
+  constructor: (@z) ->
+
+  x: -> console.log("X", @z)
+
+Y = new (class extends X
+)("hh")
+
+Y.x()
+
+
+
+

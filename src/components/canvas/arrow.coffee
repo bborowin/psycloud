@@ -1,7 +1,7 @@
-Stimulus = require("../../stimresp").Stimulus
+KStimulus = require("../../stimresp").KineticStimulus
 Kinetic = require("../../../jslibs/kinetic").Kinetic
 
-class Arrow extends Stimulus
+class Arrow extends KStimulus
 
   defaults:
     x: 100, y: 100, length: 100, direction: "right", thickness: 40, fill: "black", arrowSize: 25, angle: null
@@ -51,6 +51,7 @@ class Arrow extends Stimulus
         cx.lineTo(shaftLength, _this.spec.thickness + _this.spec.arrowSize / 2.0)
 
         cx.closePath()
+
         cx.fillStrokeShape(this)
 
       fill: _this.spec.fill
@@ -59,25 +60,25 @@ class Arrow extends Stimulus
       opacity: @spec.opacity
       width: _this.spec.arrowSize
       height: _this.spec.arrowSize + _this.spec.thickness
+     # x: shaftLength
+     # y: 0
 
     })
 
 
-    computedLength = shaftLength + @spec.arrowSize
-    computedHeight = @spec.thickness
-    @group = new Kinetic.Group({x: 0, y: 0, rotationDeg: @angle, offset: [computedLength/2, @spec.thickness/2]})
-    @group.add(@arrowShaft)
-    @group.add(@arrowHead)
+    len = shaftLength + @spec.arrowSize
+    height = @spec.thickness
 
-    coords = @computeCoordinates(context, @spec.position, computedLength, computedHeight)
+    @node = new Kinetic.Group({x: 0, y: 0, rotationDeg: @angle, offset: [len/2, height/2]})
+    @node.add(@arrowShaft)
+    @node.add(@arrowHead)
 
 
+  render: (context) ->
+    coords = @computeCoordinates(context, @spec.position, @arrowShaft.getWidth(), @arrowShaft.getHeight())
     # need to recenter
-    @group.setPosition({x: coords[0] + computedLength/2, y: coords[1] + @spec.thickness/2})
-
-
-  render: (context, layer) ->
-    layer.add(@group)
+    @node.setPosition({x: coords[0] + (@arrowShaft.getWidth()+@spec.arrowSize)/2, y: coords[1] + @spec.thickness/2})
+    @presentable(@node)
 
 
 

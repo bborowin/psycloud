@@ -1,5 +1,6 @@
 Stimulus = require("../stimresp").Stimulus
-
+ContainerDrawable = require("../stimresp").ContainerDrawable
+layout = require("../layout")
 
 class Group extends Stimulus
 
@@ -11,12 +12,35 @@ class Group extends Stimulus
       for stim in @stims
         stim.layout = layout
 
-  render: (context, layer) ->
-    for stim in @stims
-      stim.render(context, layer)
+  render: (context) ->
+    console.log("rendering group stim")
+    nodes = for stim in @stims
+      stim.render(context)
+
+    new ContainerDrawable(nodes)
+
 
 
 exports.Group = Group
+
+
+class Grid extends Group
+
+  constructor: (@stims, @rows, @columns, @bounds) ->
+    console.log("Grid bounds", @bounds)
+    console.log("rows", @rows)
+    console.log("cols", @cols)
+
+    @layout = new layout.GridLayout(@rows, @columns, @bounds)
+    console.log("layout:", @layout)
+    for stim in @stims
+      stim.layout = @layout
+
+
+
+exports.Grid = Grid
+
+
 
 
 

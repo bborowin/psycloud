@@ -26,6 +26,7 @@ _ = Psy._
 @gridlayout = new Psy.GridLayout(8,8, {x:0, y:0, width:@stage.getWidth(), height:@stage.getHeight()})
 
 @makeTrial = (stim, resp, bg=new Canvas.Background([],  "white")) ->
+  console.log("making", stim)
   =>
     console.log("starting trial!")
     stim.reset()
@@ -109,6 +110,8 @@ _ = Psy._
       "Default GridLines": makeTrial(new Canvas.GridLines(), SpaceKey)
       "5 X 5 GridLines": makeTrial(new Canvas.GridLines({rows:5, cols:5}), SpaceKey)
       "5 X 5 Dashed GridLines": makeTrial(new Canvas.GridLines({rows:5, cols:5, dashArray: [10,5]}), SpaceKey)
+      "5 X 5 Dashed GridLines smaller grid": makeTrial(new Canvas.GridLines({rows:5, cols:5, x:200, y:200, width: 300, height:300, dashArray: [10,5]}), SpaceKey)
+
 
     Rectangle:
       "Default Rect": makeTrial(new Canvas.Rectangle(x:5, y:5), SpaceKey)
@@ -118,6 +121,21 @@ _ = Psy._
       "Default Rect, x 50%, y 50%": makeTrial(new Canvas.Rectangle({position: ["50%","50%"]}), SpaceKey)
       "Default Rect, grid 3,3 [0,0]": makeTrial(new Canvas.Rectangle({position: [0,0], layout: new Psy.GridLayout(3,3, {x:0, y:0, width:800, height:800})}), SpaceKey)
       "Default Rect, grid 3,3 [2,2]": makeTrial(new Canvas.Rectangle({position: [2,2], layout: new Psy.GridLayout(3,3, {x:0, y:0, width:stage.getWidth(), height:stage.getHeight()})}), SpaceKey)
+      "Default Rect, grid 3,3 offset 200, 200 [0,0]": makeTrial(new Canvas.Rectangle({position: [0,0], origin: "center", layout: new Psy.GridLayout(3,3, {x:100, y:100, width:stage.getWidth()-200, height:stage.getHeight()-200})}), SpaceKey)
+      "Rect Grid": makeTrial(new Psy.Grid(
+          _.flatten(for row in [0...3]
+            for col in [0...3]
+              new Canvas.Rectangle({position: [row,col], width: 50, height: 50, origin: "center"}))
+          , 3, 3, { x: 200, y: 200, width: 300, height: 300 }), SpaceKey)
+
+    LabeledElement:
+      "Labeled Rect": makeTrial(new Canvas.LabeledElement(new Canvas.Rectangle(x:5, y:5), { align: "center"}), SpaceKey)
+      "Labeled Arrow": makeTrial(new Canvas.LabeledElement(new Canvas.Arrow(angle: 45), { fontSize: 24, align: "left" }), SpaceKey)
+      "Labeled Rect above": makeTrial(new Canvas.LabeledElement(new Canvas.Rectangle(x: 400, y: 400), {position:"above"}), SpaceKey)
+      "Labeled Circle above": makeTrial(new Canvas.LabeledElement(new Canvas.Circle(x: 400, y: 400, radius: 50), {position:"above"}), SpaceKey)
+      "Labeled Circle below": makeTrial(new Canvas.LabeledElement(new Canvas.Circle(x: 400, y: 400, radius: 50), {position:"below"}), SpaceKey)
+      "Labeled Circle right": makeTrial(new Canvas.LabeledElement(new Canvas.Circle(x: 400, y: 400, radius: 50), {position:"right"}), SpaceKey)
+      "Labeled Circle left": makeTrial(new Canvas.LabeledElement(new Canvas.Circle(x: 400, y: 400, radius: 50), {position:"left"}), SpaceKey)
 
 
     Circle:
@@ -130,6 +148,15 @@ _ = Psy._
         for org in ["top-left", "top-right", "top-center", "center-left", "center-right", "center", "bottom-left", "bottom-right", "bottom-center"]
           new Canvas.Circle({position: org, radius: 50, origin: "center", fill: '#'+(Math.random()*0xFFFFFF<<0).toString(16)})
       ), SpaceKey)
+      "Row of Circles": makeTrial(new Psy.Grid(
+        for col in [0...3]
+          new Canvas.Circle({position: [0,col], radius: 25, origin: "center"})
+        , 1, 3, { x: 200, y: 200, width: 300, height: 300 }), SpaceKey)
+      "Column of Circles": makeTrial(new Psy.Grid(
+        for row in [0...3]
+          new Canvas.Circle({position: [row,0], radius: 25, origin: "center"})
+        , 3, 1, { x: 200, y: 200, width: 300, height: 300 }), SpaceKey)
+
 
     Arrow:
       "Default Arrow": makeTrial(new Canvas.Arrow(), SpaceKey)
@@ -223,7 +250,7 @@ _ = Psy._
 
     """), SpaceKey)
 
-      "An External URL": makeTrial(new Psy.Html.Markdown({url: "./resources/page-1.md"}), SpaceKey)
+      #"An External URL": makeTrial(new Psy.Html.Markdown({url: "./resources/page-1.md"}), SpaceKey)
 
 
     Page:
@@ -309,6 +336,10 @@ _ = Psy._
           new Canvas.Rectangle({position: [2,3], width: 80, height: 80, fill: "blue", layout: gridlayout}),
           new Canvas.Rectangle({position: [2,4], width: 80, height: 80, fill: "yellow", layout: gridlayout})
         ], [100], true, 9), SpaceKey)
+
+  Tasks:
+    "Arrow Flanker": -> "../arrow_flanker_index.html"
+
 
   Response: null
 

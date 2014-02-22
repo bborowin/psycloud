@@ -1,7 +1,7 @@
-Stimulus = require("../../stimresp").Stimulus
 Kinetic = require("../../../jslibs/kinetic").Kinetic
+KStimulus = require("../../stimresp").KineticStimulus
 
-class Picture extends Stimulus
+class Picture extends KStimulus
   defaults:
     url: "http://www.html5canvastutorials.com/demos/assets/yoda.jpg", x: 0, y: 0
 
@@ -25,8 +25,7 @@ class Picture extends Stimulus
     @imageObj.src = @spec.url
 
 
-  render: (context, layer) ->
-    layer.add(@image)
+  render: (context) -> @presentable(@image)
 
 
 exports.Picture = Picture

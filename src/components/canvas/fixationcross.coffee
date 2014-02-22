@@ -1,12 +1,23 @@
-Stimulus = require("../../stimresp").Stimulus
 Kinetic = require("../../../jslibs/kinetic").Kinetic
+KStimulus = require("../../stimresp").KineticStimulus
 
-class FixationCross extends Stimulus
+
+# A crosshair consisting of intersecting horizontal and vertical lines
+class FixationCross extends KStimulus
 
   defaults:
     strokeWidth: 8, length: 150, fill: 'black'
 
-  render: (context, layer) ->
+  # Construct a new FixationCross.
+  #
+  # @param [Object] spec component parameters
+  # @option options [Int] strokeWidth the thickness of the crosshair lines
+  # @option options [Int] length the length of the lines
+  # @option options [String] fill the color of the lines
+  constructor: (spec = {}) ->
+    super(spec)
+
+  render: (context) ->
     x = context.width() / 2
     y = context.height() / 2
 
@@ -15,7 +26,7 @@ class FixationCross extends Stimulus
     group = new Kinetic.Group()
     group.add(horz)
     group.add(vert)
-
-    layer.add(group)
+    #layer.add(group)
+    @presentable(group)
 
 exports.FixationCross = FixationCross

@@ -1,15 +1,15 @@
 Kinetic = require("../../../jslibs/kinetic").Kinetic
-Stimulus = require("../../stimresp").Stimulus
+KStimulus = require("../../stimresp").KineticStimulus
 
 
-class Blank extends Stimulus
+class Blank extends KStimulus
 
   defaults:
     fill: "white", opacity: 1
 
-  render: (context, layer) ->
+  render: (context) ->
     blank = new Kinetic.Rect({ x: 0, y: 0, width: context.width(), height: context.height(), fill: @spec.fill, opacity: @spec.opacity })
-    layer.add(blank)
+    @presentable(blank)
 
 
 exports.Blank = Blank

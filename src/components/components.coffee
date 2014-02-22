@@ -5,6 +5,7 @@ exports.Sound = require("./sound").Sound
 exports.Confirm = require("./confirm").Confirm
 exports.First = require("./first").First
 exports.Group = require("./group").Group
+exports.Grid = require("./group").Grid
 KP = require("./keypress")
 exports.KeyPress = KP.KeyPress
 exports.SpaceKey = KP.SpaceKey

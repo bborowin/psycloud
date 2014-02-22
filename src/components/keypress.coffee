@@ -90,7 +90,7 @@ class KeyPress extends KeyResponse
     keyStream = context.keypressStream()
 
     if @spec.timeout?
-      resolveOnTimeout(deferred, @spec.timeout)
+      @resolveOnTimeout(deferred, @spec.timeout)
 
 
     keyStream.filter((event) =>

@@ -1,24 +1,24 @@
-Stimulus = require("../../stimresp").Stimulus
+
 layout = require("../../layout")
 Kinetic = require("../../../jslibs/kinetic").Kinetic
 _ = require('lodash')
+KStimulus = require("../../stimresp").KineticStimulus
 
-class Text extends Stimulus
+
+class Text extends KStimulus
 
   defaults:
-    content: "Text", x: 5, y: 5, width: null, fill: "black", fontSize: 40, fontFamily: "Arial", textAlign: "center", position: null
+    content: "Text", x: 5, y: 5, width: null, fill: "black", fontSize: 40, fontFamily: "Arial", align: "center", position: null
 
   constructor: (spec = {}) ->
-    super(spec)
-    if (_.isArray(@spec.content))
-      @spec.content = @spec.content.join("\n")
+    if (spec.content? and _.isArray(spec.content))
+      spec.content = spec.content.join(' \n ')
       if not spec.lineHeight?
-        @spec.lineHeight = 2
+        spec.lineHeight = 2
+    super(spec)
 
-  render: (context, layer) ->
-    #coords = @computeCoordinates(context, @spec.position, @spec.width, @spec.height)
-
-    text = new Kinetic.Text({
+  initialize: ->
+    @text = new Kinetic.Text({
       x: 0,
       y: 0,
       text: @spec.content,
@@ -28,22 +28,15 @@ class Text extends Stimulus
       lineHeight: @spec.lineHeight or 1
       width: @spec.width
       listening: false
-      align: @spec.textAlign
+      align: @spec.align
       #padding: 20
     })
 
 
-
-    coords = @computeCoordinates(context, @spec.position, text.getWidth(), text.getHeight())
-
-    #if @spec.position
-    #  xy = layout.positionToCoord(@spec.position, -text.getWidth() / 2, -text.getHeight() / 2, context.width(), context.height(),
-    #    [@spec.x, @spec.y])
-    #  text.setPosition({x: xy[0], y: xy[1]})
-
-    text.setPosition({x: coords[0], y: coords[1]})
-
-    layer.add(text)
+  render: (context, layer) ->
+    coords = @computeCoordinates(context, @spec.position, @text.getWidth(), @text.getHeight())
+    @text.setPosition({x: coords[0], y: coords[1]})
+    @presentable(@text)
 
 
 

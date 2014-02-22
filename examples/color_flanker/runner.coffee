@@ -96,14 +96,13 @@ window.display =
           AnyKey: ""
 
     Trial: ->
-      diameter = 190
+      diameter = 170
 
       Background:
         Blank:
           fill: "gray"
         CanvasBorder:
           stroke: "black"
-
 
       Events:
         1:

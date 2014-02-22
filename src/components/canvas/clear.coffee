@@ -1,11 +1,12 @@
 
-Stimulus = require("../../stimresp").Stimulus
+GStimulus = require("../../stimresp").GraphicalStimulus
+ActionPresentable = require("../../stimresp").ActionPresentable
 
+# clears the content of the canvas
+class Clear extends GStimulus
 
-class Clear extends Stimulus
-
-  render: (context, layer) ->
-    context.clearContent(true)
+  render: (context) ->
+    new ActionPresentable( (context) -> context.clearContent(true))
 
 
 exports.Clear = Clear

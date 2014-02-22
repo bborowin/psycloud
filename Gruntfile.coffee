@@ -56,7 +56,7 @@ module.exports = (grunt) ->
         sourceRoot: ".."
       all:
         files:
-          "build/psycloud_bundle.js": ['build/psycloud.js', 'build/psycloud.js.map', 'jslibs/jquery-1.7.js', 'vex.combined.min.js']
+          "build/psycloud_bundle.js": ['build/psycloud.js', 'jslibs/jquery-1.7.js', 'vex.combined.min.js']
 
 
     concat:

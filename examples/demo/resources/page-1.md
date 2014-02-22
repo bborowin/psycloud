@@ -1,16 +1,12 @@
 This is an external Markdown File
 ----------------------------------
 
-
-
 A list:
 
 
 * Red
 * Blue
 * Green
-
-
 
 
 > This is a blockquote with two paragraphs. Lorem ipsum dolor sit amet,

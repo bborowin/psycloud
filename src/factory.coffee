@@ -59,6 +59,8 @@ class DefaultComponentFactory extends ComponentFactory
   constructor: ->
     @registry = _.merge(Components, Canvas, Html)
 
+
+
   make: (name, params, registry) ->
     callee = arguments.callee
     console.log("making", name)
@@ -77,6 +79,16 @@ class DefaultComponentFactory extends ComponentFactory
           new Components.Group(stims, @makeLayout(layoutName, layoutParams, context))
         else
           new Components.Group(stims)
+
+      when "Grid"
+        names = _.map(params.stims, (stim) -> _.keys(stim)[0])
+        props = _.map(params.stims, (stim) -> _.values(stim)[0])
+        stims = _.map([0...names.length], (i) =>
+          callee(names[i], props[i], @registry)
+        )
+
+        new Components.Grid(stims, params.rows or 3, params.columns or 3, params.bounds or null)
+
 
       when "Background"
         console.log("building background", params)

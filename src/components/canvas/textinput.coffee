@@ -1,8 +1,8 @@
-Stimulus = require("../../stimresp").Stimulus
 utils = require("../../utils")
 Kinetic = require("../../../jslibs/kinetic").Kinetic
+KStimulus = require("../../stimresp").KineticStimulus
 
-class TextInput extends Stimulus
+class TextInput extends KStimulus
   defaults:
     x: 100, y: 100, width: 200, height: 40, defaultValue: "", fill: "#FAF5E6", stroke: "#0099FF", strokeWidth: 1, content: ""
 
@@ -47,10 +47,15 @@ class TextInput extends Stimulus
     , layer)
 
 
+
+
+
+
+
+
   render: (context, layer) ->
     textRect = new Kinetic.Rect({x: @spec.x, y: @spec.y, width: @spec.width, height: @spec.height, fill: @spec.fill, cornerRadius: 4, lineJoin: "round", stroke: @spec.stroke, strokeWidth: @spec.strokeWidth})
     textContent = @spec.content
-
 
     fsize = .85 * @spec.height
 

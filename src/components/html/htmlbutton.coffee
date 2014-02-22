@@ -8,11 +8,10 @@ class HtmlButton extends html.HtmlStimulus
 
   constructor: (spec = {}) ->
     super(spec)
-
     @el.addClass("ui button")
     @el.addClass(@spec.class)
     @el.append(@spec.label)
-    @positionElement(@el)
+    #@positionElement(@el)
 
 
 exports.HtmlButton = HtmlButton

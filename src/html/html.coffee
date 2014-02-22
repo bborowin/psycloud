@@ -1,4 +1,4 @@
-Stimulus = require("../../stimresp").Stimulus
+GStimulus = require("../../stimresp").GraphicalStimulus
 Response = require("../../stimresp").Response
 Mixen = require("mixen")
 #$ = require("jqueryify")
@@ -40,19 +40,20 @@ class HtmlMixin
   #  super(context, layer)
 
 
-HMixStim = Mixen(HtmlMixin,Stimulus)
+HMixStim = Mixen(HtmlMixin,GStimulus)
 HMixResp =  Mixen(HtmlMixin,Response)
 
 class HtmlStimulus extends HMixStim
   constructor: () ->
     super
 
-  render: (context, layer) ->
-
+  render: (context) ->
+    console.log("RENDERING HTML STIMULUS!!!!")
     @el.hide()
     context.appendHtml(@el)
     coords = @computeCoordinates(context, @spec.position, @el.width(), @el.height())
     console.log("coords", coords)
+    console.log("positioning html element")
     @positionElement(@el, coords[0], coords[1])
     @el.show()
     console.log("element width is", @el.width())
@@ -61,7 +62,7 @@ class HtmlStimulus extends HMixStim
     console.log("spec.x", @spec.x)
     console.log("spec.y", @spec.y)
 
-    super(context, layer)
+    super(context)
 
 class HtmlResponse extends HMixResp
   constructor: () ->

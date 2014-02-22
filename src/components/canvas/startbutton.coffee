@@ -1,12 +1,13 @@
-Stimulus = require("../../stimresp").Stimulus
 Kinetic = require("../../../jslibs/kinetic").Kinetic
+KStimulus = require("../../stimresp").KineticStimulus
 
-class StartButton extends Stimulus
+class StartButton extends KStimulus
 
   defaults:
     width: 150, height: 75
 
-  render: (context, layer) ->
+
+  render: (context) ->
     xcenter = context.width() / 2
     ycenter = context.height() / 2
 
@@ -17,6 +18,6 @@ class StartButton extends Stimulus
     group.add(button)
     group.add(text)
 
-    layer.add(group)
+    @presentable(group)
 
 exports.StartButton = StartButton
