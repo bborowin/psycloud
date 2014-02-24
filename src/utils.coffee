@@ -37,9 +37,56 @@ exports.asArray = (value) ->
   else
     _.toArray(value)
 
+
+swap = (arr, a, b) ->
+  temp = arr[a]
+  arr[a] = arr[b]
+  arr[b] = temp
+
+factorial = (n) ->
+  val = 1
+  i = 1
+
+  while i < n
+    val *= i
+    i++
+  val
+
+exports.permute = (perm, maxlen=1000) ->
+  console.log("maxlen", maxlen)
+  total = factorial(perm.length)
+  console.log("total", total)
+  j = 0
+  i = 0
+  inc = 1
+
+  out = []
+
+  maxlen = maxlen - 1
+
+  while j < total and out.length < maxlen
+    console.log("j", j)
+    while i < perm.length - 1 and i >= 0 and out.length < maxlen
+      out.push(perm.slice(0))
+      swap perm, i, i + 1
+      i += inc
+    out.push(perm.slice(0))
+    if inc is 1
+      swap perm, 0, 1
+    else
+      swap perm, perm.length - 1, perm.length - 2
+    j++
+    inc *= -1
+    i += inc
+  out
+
+###
 exports.permute = (input) ->
+  input = _.unique(input)
   permArr = []
   usedChars = []
+
+  maxlen = _.min([input.length, maxlen])
 
   exports.main = main = (input) ->
 
@@ -56,7 +103,7 @@ exports.permute = (input) ->
     permArr
 
   main(input)
-
+###
 
 exports.rep = (vec, times) ->
   if not (times instanceof Array)
@@ -92,7 +139,12 @@ exports.sample = (elements, n, replace=false) ->
 
 exports.oneOf = (elements) -> elements[Math.floor(Math.random() * elements.length)]
 
+#exports.in = (x, set) -> _.contains(x,set)
 
+exports.inSet = (set...) ->
+  set = _.unique(_.flatten(set))
+  (a) ->
+    _.contains(set, a)
 
 exports.doTimer = (length, oncomplete) ->
   start = getTimestamp()
@@ -109,29 +161,4 @@ exports.doTimer = (length, oncomplete) ->
   setTimeout instance, 1
 
 
-exports.match = (record, matcher) ->
-  rkeys = _.keys(record)
-  mkeys = _.keys(matcher)
 
-  console.log("record keys", rkeys)
-  console.log("matcher keys", mkeys)
-
-
-record = {}
-record.flanker = "congruent"
-record.centerColor = "red"
-
-
-###
-  matcher =
-  flanker:
-    congruent: -> @centerColor
-    incongruent: -> match @centerColor,
-      red: -> 1
-      green: ->2
-      blue: ->3
-
-
-exports.match(record, matcher)
-
-####

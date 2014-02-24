@@ -6,6 +6,28 @@
 
   _ = Psy._;
 
+
+  /*
+  
+    Task:
+      name: "arrow_flanker"
+  
+      Conditions:
+        Crossed:
+            flanker:
+              levels: ["congruent", "incongruent"]
+            centerArrow:
+              levels: ["left", "right"]
+        Uncrossed:
+            flankerArrow:
+              levels: ["left", "right"]
+              choose: (trial) -> ...
+  
+  
+      Items:
+        flankerArrow:
+   */
+
   factorSet = {
     flanker: {
       levels: ["congruent", "incongruent"]

@@ -33,7 +33,7 @@ exports.VarSpec =
 
 
 exports.FactorSpec =
-  class FactorSpec extends VarSpec
+  class FactorSpec extends exports.VarSpec
 
     constructor: (@name, @levels) ->
       @factorSet = {}
@@ -58,7 +58,7 @@ exports.FactorSpec =
 
 
 exports.CellTable =
-  class CellTable extends VarSpec
+  class CellTable extends exports.VarSpec
     constructor: ( @parents) ->
 
       @parentNames = (fac.name for fac in @parents)
@@ -70,6 +70,7 @@ exports.CellTable =
 
     names: -> @parentNames
 
+    cells: -> @table.toRecordArray()
 
     conditions: ->
       for i in [0...@table.nrow()]
@@ -117,20 +118,42 @@ exports.TaskNode =
 
 
 
-exports.FactorNode =
-  class FactorNode
+FactorNode =
+class FactorNode
+  @build: (name, spec) ->
+    new FactorNode(name, spec.levels)
 
-    @build: (name, spec) ->
-      new FactorNode(name, spec.levels)
+  constructor: (@name, @levels) ->
+    @cellTable = new CellTable([this])
 
-    constructor: (@name, @levels) ->
-      @cellTable = new CellTable([this])
+  choose: -> utils.oneOf(@levels)
 
-    expand: (nblocks, nreps) -> @cellTable.expand(nblocks, nreps)
+  chooseK: (k) -> utils.permute(@levels, k)
 
+  chooseDependent: (recArray) -> @chooseK(recArray.length)
+
+  expand: (nblocks, nreps) -> @cellTable.expand(nblocks, nreps)
+
+exports.FactorNode = FactorNode
+
+DependentFactorNode =
+class DependentFactorNode
+  @build: (name, spec) ->
+    new DependentFactorNode(name, spec.levels, spec.choose)
+
+  constructor: (@name, @levels, @chooseFun) ->
+    @cellTable = new CellTable([this])
+
+  choose: (record) -> @chooseFun(record)
+
+  chooseDependent: (recArray) ->
+    _.map(recArray, (rec) => @choose(rec))
+
+  expand: (nblocks, nreps) -> @cellTable.expand(nblocks, nreps)
+
+exports.DependentFactorNode = DependentFactorNode
 
 ## UnionDesign
-
 
 
 exports.FactorSetNode =
@@ -138,7 +161,7 @@ exports.FactorSetNode =
 
     @build: (spec) ->
       fnodes = for key, value of spec
-        FactorNode.build(key, value)
+        exports.FactorNode.build(key, value)
 
       new FactorSetNode(fnodes)
 
@@ -154,6 +177,8 @@ exports.FactorSetNode =
     levels: -> @cellTable.levels
 
     conditions: -> @cellTable.conditions()
+
+    cells: -> @cellTable.cells()
 
     expand: (nblocks, nreps) -> @cellTable.expand(nblocks, nreps)
 
@@ -187,44 +212,60 @@ exports.ArrayIterator =
       map: (f) -> _.map(@arr, (el) -> f(el))
 
 
-exports.TrialList =
-  class TrialList
+class TrialList
 
+  @fromBlockArray: (blocks) ->
+    tlist = new TrialList(blocks.length)
+    for i in [0...blocks.length]
+      for rec in blocks[i].toRecordArray()
+        tlist.add(i, rec)
 
-    constructor: (nblocks) ->
-      @blocks = []
-      @blocks.push([]) for i in [0...nblocks]
+    tlist
 
-    add: (block, trial) ->
-      #if (block >= @blocks.length)
-      #blen = @blocks.length
-      #throw "block argument #{block} exceeds number of blocks in TrialList #{blen}"
-      #trial.$TYPE = type
-      @blocks[block].push(trial)
+  constructor: (nblocks) ->
+    @blocks = []
+    @blocks.push([]) for i in [0...nblocks]
 
-    get: (block, trialNum) ->
-      @blocks[block][trialNum]
+  add: (block, trial) ->
+    if (block >= @blocks.length)
+      blen = @blocks.length
+      throw new Error("block index #{block} exceeds number of blocks in TrialList #{blen}")
 
-    getBlock: (block) -> @blocks[block]
+    #trial.$TYPE = type
+    @blocks[block].push(trial)
 
-    nblocks: -> @blocks.length
+  get: (block, trialNum) ->
+    @blocks[block][trialNum]
 
-    ntrials: ->
-      nt = _.map(@blocks, (b) -> b.length)
-      _.reduce(nt, (x0,x1) -> x0 + x1)
+  getBlock: (block) ->
+    @blocks[block]
 
-    shuffle: ->
-      @blocks = _.map(@blocks, (blk) -> _.shuffle(blk))
+  nblocks: ->
+    @blocks.length
 
-    bind: (fun) ->
-      out = new TrialList(@blocks.length)
-      for blk, i in @blocks
-        for trial in blk
-          ret = fun(trial)
-          out.add(i, _.assign(trial, ret))
-      out
+  ntrials: ->
+    nt = _.map(@blocks, (b) ->
+      b.length)
+    _.reduce(nt, (x0, x1) ->
+      x0 + x1)
 
-    blockIterator: -> new ArrayIterator(_.map(@blocks, (blk) -> new ArrayIterator(blk)))
+  shuffle: ->
+    @blocks = _.map(@blocks, (blk) ->
+      _.shuffle(blk))
+
+  bind: (fun) ->
+    out = new TrialList(@blocks.length)
+    for blk, i in @blocks
+      for trial in blk
+        ret = fun(trial)
+        out.add(i, _.assign(trial, ret))
+    out
+
+  blockIterator: ->
+    new ArrayIterator(_.map(@blocks, (blk) ->
+      new ArrayIterator(blk)))
+
+exports.TrialList = TrialList
 
 
 trimWhiteSpace = (records) ->
@@ -340,7 +381,7 @@ class ConditionSet
     else
       _crossed = exports.FactorSetNode.build(spec.Crossed)
       _uncrossed = for key, value of spec.Uncrossed
-        FactorNode.build(key, value)
+        DependentFactorNode.build(key, value)
 
     new ConditionSet(_crossed, _uncrossed)
 
@@ -348,11 +389,21 @@ class ConditionSet
     @factorNames = [].concat(@crossed.factorNames).concat(_.map(@uncrossed, (fac) => fac.name))
 
     @factorArray = _.clone(@crossed.factors)
+
     _.forEach(@uncrossed, (fac) => @factorArray.push(fac))
 
     @factorSet = _.zipObject(@factorNames, @factorArray)
 
-  #expand: ()
+  expand: (nblocks, nreps) ->
+    cellTab = @crossed.expand(nblocks, nreps)
+    for blk in cellTab
+      for i in [0...@uncrossed.length]
+        blk.bindcol(@uncrossed[i].name, @uncrossed[i].chooseDependent(blk.toRecordArray()))
+    console.log("cellTab is", cellTab)
+    TrialList.fromBlockArray(cellTab)
+
+
+
 
 
 exports.TaskSchema =
@@ -361,7 +412,7 @@ exports.TaskSchema =
     @build: (spec) ->
       schema= {}
       for key, value of spec
-        schema[key] = FactorSetNode.build(value)
+        schema[key] = exports.FactorSetNode.build(value)
 
       new TaskSchema(schema)
 

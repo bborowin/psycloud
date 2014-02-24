@@ -60,6 +60,8 @@ class GraphicalStimulus extends exports.Stimulus
 
   drawable: (knode) -> (context) -> console.log("GraphicalStimulus: drawable, no op")
 
+  toPixels: (arg, dim) -> lay.toPixels(arg,dim)
+
   xyoffset: (origin, nodeWidth, nodeHeight) ->
     switch origin
       when "center" then [-nodeWidth/2, -nodeHeight/2]
@@ -211,7 +213,7 @@ class KineticDrawable extends exports.Drawable
   present: (context, layer) ->
     console.log("presenting ", @nodes)
     for node in @nodes
-      if not layer
+      if not layer?
         context.contentLayer.add(node)
       else
         console.log("drawing in layer supplied as arg")
@@ -239,9 +241,6 @@ class KineticDrawable extends exports.Drawable
 
 
 
-
-
-
 exports.ContainerDrawable =
 class ContainerDrawable extends exports.Drawable
 
@@ -249,13 +248,10 @@ class ContainerDrawable extends exports.Drawable
       console.log("creating container drawable")
 
     present: (context, layer) ->
-      console.log("presenting container drawables")
       for node in @nodes
         if not layer
-          console.log("SUPPLIED LAYER!")
-          node.present(context)
+           node.present(context)
         else
-          console.log("default layer")
           node.present(context, layer)
 
 exports.Response =

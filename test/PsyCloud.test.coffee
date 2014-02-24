@@ -1,4 +1,6 @@
 _ = Psy._
+match = Psy.match
+
 
 
 module("DataTable")
@@ -110,9 +112,37 @@ test 'can build a ConditionSet from object literal', ->
         levels: ["red", "green", "blue"]
 
   xs = Psy.ConditionSet.build(cset)
-  console.log("xs", xs)
+  console.log("conditions set", xs)
   deepEqual(["wordtype", "repnum", "lag", "novel", "color"], xs.factorNames)
   deepEqual(["wordtype", "repnum", "lag", "novel", "color"], _.keys(xs.factorSet))
+
+test 'can build a ConditionSet from object literal with choose function', ->
+  cset =
+    Crossed:
+      wordtype:
+        levels: ["word", "pseudo"]
+      repnum:
+        levels: [1,2,3,4,5,6]
+      lag:
+        levels: [1,2,4,8,16,32]
+    Uncrossed:
+      novel:
+        levels: ["a", "b", "c"]
+        choose: (trial) ->
+          match trial.lag,
+            Psy.inSet(1,2), "a",
+            Psy.inSet(4,8), "b",
+            Psy.inSet(16,32), "c"
+
+      color:
+        levels: ["red", "green", "blue"]
+        choose: (trial) -> "red"
+
+
+  xs = Psy.ConditionSet.build(cset)
+  ex = xs.expand(5,5)
+  console.log("expanded", ex)
+  expect(0)
 
 
 module("Task")
@@ -150,11 +180,7 @@ test 'can build a task with one set of crossed variables', ->
 
           sampler:
             type: "replacement"
-
-
-
-
-
+  expect(0)
 
 
 

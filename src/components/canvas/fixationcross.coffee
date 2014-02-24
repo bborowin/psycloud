@@ -21,8 +21,11 @@ class FixationCross extends KStimulus
     x = context.width() / 2
     y = context.height() / 2
 
-    horz = new Kinetic.Rect({ x: x - @spec.length / 2, y: y, width: @spec.length, height: @spec.strokeWidth, fill: @spec.fill })
-    vert = new Kinetic.Rect({ x: x - @spec.strokeWidth / 2, y: y - @spec.length / 2 + @spec.strokeWidth / 2, width: @spec.strokeWidth, height: @spec.length, fill: @spec.fill })
+    len = @toPixels(@spec.length, context.width())
+    console.log("FIX len is", len)
+
+    horz = new Kinetic.Rect({ x: x - len / 2, y: y, width: len, height: @spec.strokeWidth, fill: @spec.fill })
+    vert = new Kinetic.Rect({ x: x - @spec.strokeWidth / 2, y: y - len / 2 + @spec.strokeWidth / 2, width: @spec.strokeWidth, height: len, fill: @spec.fill })
     group = new Kinetic.Group()
     group.add(horz)
     group.add(vert)

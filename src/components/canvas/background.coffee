@@ -25,7 +25,6 @@ class Background extends GStimulus
     drawables.push(new KineticDrawable(background))
 
 
-
     for stim in @stims
       drawables.push(stim.render(context))
 

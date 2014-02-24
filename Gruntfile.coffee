@@ -46,9 +46,9 @@ module.exports = (grunt) ->
     watch:
       scripts:
         files: ['src/**/*.coffee']
-        tasks: ['default']
+        tasks: ['code']
         options:
-          spawn: true
+          spawn: false
 
 
     concat_sourcemap:
@@ -87,5 +87,6 @@ module.exports = (grunt) ->
   grunt.loadNpmTasks('grunt-contrib-concat')
   grunt.loadNpmTasks('grunt-contrib-cssmin')
   grunt.loadNpmTasks('powerbuild')
+  grunt.registerTask('code', ['clean', 'powerbuild:all', 'concat_sourcemap:all'])
   grunt.registerTask('default', ['clean', 'powerbuild:all', 'concat_sourcemap:all', 'cssmin', 'shell'])
   grunt.registerTask('power', ["powerbuild"])

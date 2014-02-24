@@ -21,6 +21,17 @@ positionToCoord = (pos, offx, offy, width, height, xy) ->
     when "bottom-center" or "center-bottom" then [offx + width * .5, offy + height * 5/6]
     else xy
 
+
+toPixels = (arg, dim) ->
+  if _.isNumber(arg)
+    arg
+  else if isPercentage(arg)
+    convertPercentageToFraction(arg, dim)
+  else
+    throw new Error("toPixels: argument must either be a Number or a String-based Percentage value: ", arg)
+
+
+
 convertPercentageToFraction = (perc, dim) ->
   frac = parseFloat(perc)/100
   frac = Math.min(1,frac)
@@ -115,3 +126,4 @@ exports.GridLayout =
       [cell.x + cell.width/2, cell.y + cell.height/2]
 
 exports.positionToCoord = positionToCoord
+exports.toPixels = toPixels

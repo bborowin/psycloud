@@ -89,6 +89,9 @@
         "Fixation 200px": makeTrial(new Canvas.FixationCross({
           length: 200
         }), AnyKey),
+        "Fixation 50%": makeTrial(new Canvas.FixationCross({
+          length: '50%'
+        }), AnyKey),
         "Fixation stroke width 20px": makeTrial(new Canvas.FixationCross({
           strokeWidth: 20
         }), AnyKey)

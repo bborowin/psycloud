@@ -195,6 +195,12 @@ class DataTable
   colnames: ->
     Object.keys(this)
 
+  toRecordArray: ->
+    rec = []
+    for i in [0...@nrow()]
+      rec.push(@record(i))
+    rec
+
   record: (index) ->
     rec = {}
     for own name, value of this
