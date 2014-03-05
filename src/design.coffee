@@ -399,28 +399,20 @@ class ConditionSet
     for blk in cellTab
       for i in [0...@uncrossed.length]
         blk.bindcol(@uncrossed[i].name, @uncrossed[i].chooseDependent(blk.toRecordArray()))
-    console.log("cellTab is", cellTab)
+
     TrialList.fromBlockArray(cellTab)
 
 
 
 
 
-exports.TaskSchema =
-  class TaskSchema
+#exports.Task =
+#class Task
 
-    @build: (spec) ->
-      schema= {}
-      for key, value of spec
-        schema[key] = exports.FactorSetNode.build(value)
+#  @build: (spec) ->
 
-      new TaskSchema(schema)
+#  constructor: (@name, @yy) ->
 
-    constructor: (@schema) ->
-
-    trialTypes: -> _.keys(@schema)
-
-    factors: (type) -> @schema[type]
 
 # ## ExpDesign
 # A class that represents an experimental design consisting of an array of one or more **blocks**

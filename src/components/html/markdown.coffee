@@ -9,6 +9,8 @@ class Markdown extends html.HtmlStimulus
     super(spec)
     if _.isString(spec)
       @spec = {}
+      @spec.x=0
+      @spec.y=0
       @spec.content = spec
 
 
