@@ -42,7 +42,7 @@
     "codo": "~2.0.3",
     "q": "~1.0.0",
     "taffydb": "~2.7.2",
-    "coffee-script": "~1.6.3",
+    "coffee-script": "~1.7.1",
     "lodash": "~2.4.1",
     "mousetrap": "0.0.1",
     "coffee-pattern": "0.0.6",

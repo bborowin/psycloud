@@ -16,7 +16,7 @@ _ = require('lodash')
 Q = require("q")
 
 csv = require('../jslibs/jquery.csv.js')
-match = require("coffee-pattern")
+{match} = require("coffee-pattern")
 
 
 include = (lib) ->
