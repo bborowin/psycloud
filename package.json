@@ -34,7 +34,7 @@
     "grunt-release": "~0.5.1",
     "teacup": "~0.2.10",
     "baconjs": "~0.7.0",
-    "grunt-contrib-coffee": "~0.8.0",
+    "grunt-contrib-coffee": "^0.10.1",
     "mixen": "~0.5.2",
     "marked": "~0.3.0",
     "grunt-contrib-concat": "~0.3.0",
