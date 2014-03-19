@@ -4,11 +4,11 @@ module.exports = (grunt) ->
 
   grunt.initConfig
     clean:
-      all: ['build']
+      all: ['build', 'lib']
 
     coffee:
       options:
-        sourceMap: true
+        sourceMap: false
       all:
         src: '**/*.coffee'
         dest: 'lib'
@@ -17,30 +17,29 @@ module.exports = (grunt) ->
         expand: true
         ext: '.js'
 
-
     powerbuild:
       options:
-        sourceMap: true
+        sourceMap: false
         node: false
-        entryPoints: 'src/main.coffee'
+        entryPoints: 'lib/main.js'
         export: "Psy"
         output: 'build/psycloud.js'
-        handlers:
-          '.coffee': (src, canonicalName) ->
-            console.log("compiling", canonicalName)
-            {js, v3SourceMap} = coffee.compile src, sourceMap: true, bare: true
-            return {code: js, map: v3SourceMap}
+        #handlers:
+        #  '.coffee': (src, canonicalName) ->
+        #    console.log("compiling", canonicalName)
+        #    {js, v3SourceMap} = coffee.compile src, sourceMap: true, bare: true
+        #    return {code: js, map: v3SourceMap}
 
       all:
         files: [
-          {src: "src/main.coffee", dest: 'build/psycloud.js'}
+          {src: "lib/main.js", dest: 'build/psycloud.js'}
         ]
       min:
         options:
           minify: true
           compress: true
         files: [
-          {src: "src/main.coffee", dest: 'build/psycloud.min.js'}
+          {src: "lib/main.js", dest: 'build/psycloud.min.js'}
         ]
 
     watch:
