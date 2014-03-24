@@ -1,6 +1,7 @@
 _ = require('lodash')
 lay = require("./layout")
 Kinetic = require("../jslibs/kinetic")
+signals = require("smokesignals")
 
 exports.Stimulus =
 class Stimulus
@@ -11,6 +12,7 @@ class Stimulus
   defaults: {}
 
   constructor: (spec={}) ->
+    signals.convert(this)
     @spec = _.defaults(spec, @defaults)
     @spec = _.defaults(spec, @standardDefaults)
     @spec = _.omit(@spec, (value, key) -> not value?)
@@ -100,9 +102,9 @@ class GraphicalStimulus extends exports.Stimulus
 exports.KineticStimulus =
 class KineticStimulus extends exports.GraphicalStimulus
 
-  presentable: (nodes) ->
+  presentable: (nodes, onPresent) ->
     console.log("creating presentable of", nodes)
-    new KineticDrawable(nodes)
+    new KineticDrawable(nodes, onPresent)
 
 
   @nodeSize: (node) ->
@@ -181,9 +183,13 @@ class Presentable
 
 exports.ActionPresentable =
 class ActionPresentable extends exports.Presentable
-  constructor: (@action)
 
-  present: (context) -> @action.apply(context)
+  constructor: (@action) ->
+    console.log("constructiong action presentable, action is", @action)
+
+  present: (context) ->
+    console.log("inside action presentable, context is", context, "action is", @action)
+    @action(context)
 
 
 exports.Drawable =
@@ -204,9 +210,10 @@ class Drawable extends exports.Presentable
 exports.KineticDrawable =
 class KineticDrawable extends exports.Drawable
 
-  constructor: (@nodes) ->
+  constructor: (@nodes, @onPresent) ->
     if not _.isArray(@nodes)
       @nodes = [@nodes]
+
 
     # all nodes must be of type "Kinetic.Node"
 
@@ -218,6 +225,10 @@ class KineticDrawable extends exports.Drawable
       else
         console.log("drawing in layer supplied as arg")
         layer.add(node)
+
+      if @onPresent?
+        console.log("calling onPresent!")
+        @onPresent(context)
 
   x: ->
     xs = _.map(@nodes, (node) -> exports.KineticStimulus.nodePosition(node).x)
@@ -257,9 +268,13 @@ class ContainerDrawable extends exports.Drawable
 exports.Response =
 class Response extends exports.Stimulus
 
-  start: (context) -> @activate(context)
+  start: (context, stimulus) ->
+    console.log("response caputured stimulus", stimulus)
+    console.log("calling activate", @activate)
+    @activate(context, stimulus)
 
-  activate: (context) ->
+  activate: (context, stimulus) ->
+    console.log("Respnonse.activate", context, stimulus)
 
 
 

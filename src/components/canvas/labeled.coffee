@@ -6,7 +6,7 @@ class LabeledElement extends StimResp.Stimulus
 
 
   defaults:
-    position: "below", content: "Label", align: "center", gap: 10, fontSize: 32, fill: "black", fontFamily: "Arial"
+    position: "below", content: "Label", align: "center", gap: 10, fontSize: 24, fill: "black", fontFamily: "Arial"
 
   # Construct a new LabeledElement.
   #
@@ -43,7 +43,9 @@ class LabeledElement extends StimResp.Stimulus
       when "above" then @text.setPosition({x: target.x(), y: target.y() - @text.getTextHeight()})
       when "left" then @text.setPosition({x: target.x() - @text.getTextWidth() - @spec.gap, y: target.y()})
       when "right" then @text.setPosition({x: target.x() + target.width() + @spec.gap, y: target.y()})
-
+      when "over" then @text.setPosition({x: target.x() + target.width()/2 - @text.getWidth()/2, y: target.y() + target.height()/2 - @text.getTextHeight()/2})
+      else
+        throw new Error("illegal option", @spec.position)
 
     new StimResp.ContainerDrawable([target, new StimResp.KineticDrawable(@text)])
 

@@ -139,6 +139,120 @@ exports.sample = (elements, n, replace=false) ->
 
 exports.oneOf = (elements) -> elements[Math.floor(Math.random() * elements.length)]
 
+exports.genPoints = (n, bbox={X: 0, y: 0, width: 1, height: 1}) ->
+  out = []
+  for i in [0...n]
+    x = Math.random() * bbox.width + bbox.x
+    y = Math.random() * bbox.height + bbox.y
+    out.push([x,y])
+  out
+
+exports.euclidean = (a, b) ->
+  sum = 0
+  for n in [0...a.length]
+    sum = sum + Math.pow(a[n]-b[n], 2)
+
+  return Math.sqrt(sum)
+
+exports.order = (els) ->
+  toSort = els.slice(0)
+
+  for i in [0...toSort.length]
+    toSort[i] = [toSort[i], i]
+
+  toSort.sort (left, right) ->
+    (if left[0] < right[0] then -1 else 1)
+
+  sortIndices = []
+
+  for j in [0...toSort.length]
+    sortIndices.push toSort[j][1]
+
+  sortIndices
+
+
+console.log("order", exports.order([100, 4,3,100000, 2,1000]))
+
+
+exports.distanceMatrix = (pts) ->
+  for i in [0...pts.length]
+    for j in [0...pts.length]
+      exports.euclidean(pts[i], pts[j])
+
+
+
+
+exports.whichMin = (vals) ->
+  min = vals[0]
+  imin = 0
+  for i in [0...vals.length]
+    if vals[i] < min
+      min = vals[i]
+      imin = i
+
+  imin
+
+exports.nearestTo = (pt, pointSet, k) ->
+  D = for i in [0...pointSet.length]
+    exports.euclidean(pt, pointSet[i])
+
+  Dord = exports.order(D)
+
+  for i in [0...k]
+    {index: Dord[i], distance: D[Dord[i]]}
+
+exports.nearestNeighbors = (pointSet, k) ->
+  D = exports.distanceMatrix(pointSet)
+
+  dlin = []
+  ind = []
+  for i in [0...D.length]
+    for j in [0...D.length] when i != j and i < j
+      dlin.push(D[i][j])
+      ind.push([i,j])
+
+  dord = exports.order(dlin)
+
+  out = []
+  for i in [0...k]
+    out.push({ index: ind[dord[i]], distance: dlin[dord[i]] })
+  out
+
+
+
+
+exports.pathLength = (pts) ->
+  if pts.length <= 1
+    0
+  else
+    len = 0
+    for i in [0...(pts.length-1)]
+      len += exports.euclidean(pts[i], pts[i+1])
+    len
+
+
+exports.nearestFromIndex = (pts, index) ->
+  D = for i in [0...pts.length]  when i != index
+    exports.euclidean(pts[index], pts[i])
+
+  imin = exports.whichMin(D)
+
+  if imin < index
+    imin
+  else
+    imin + 1
+
+
+
+console.log(exports.distanceMatrix([ [0,1], [1,2], [2,2]]))
+console.log(exports.nearestFromIndex([ [0,1], [1,2], [2,2], [0,1.2]], 1))
+
+console.log(exports.nearestTo([0,1], [ [0,1], [1,2], [2,2], [0,1.2]], 2))
+console.log(exports.nearestNeighbors([ [0,1], [1,2], [2,2], [0,1.2], [0,1.001]], 2))
+
+console.log(exports.pathLength([ [0,1], [0,2], [0,3], [0,4], [0,5]]))
+
+
 #exports.in = (x, set) -> _.contains(x,set)
 
 exports.inSet = (set...) ->

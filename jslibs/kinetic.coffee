@@ -1,1 +1,1 @@
-exports.Kinetic = require("./kinetic-v4.7.1.js")
+exports.Kinetic = require("./kinetic-v5.0.1.js")

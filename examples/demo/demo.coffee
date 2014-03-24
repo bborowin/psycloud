@@ -28,7 +28,9 @@ _ = Psy._
 @makeTrial = (stim, resp, bg=new Canvas.Background([],  "white")) ->
   console.log("making", stim)
   =>
-    console.log("starting trial!")
+    console.log("starting trial! with", stim)
+    console.log("resp is", resp)
+
     stim.reset()
     resp.reset()
     new Psy.Trial([new Psy.Event(stim, resp), ClearEvent], {}, null, bg)
@@ -134,10 +136,22 @@ _ = Psy._
       "Labeled Rect": makeTrial(new Canvas.LabeledElement(new Canvas.Rectangle(x:5, y:5), { align: "center"}), SpaceKey)
       "Labeled Arrow": makeTrial(new Canvas.LabeledElement(new Canvas.Arrow(angle: 45), { fontSize: 24, align: "left" }), SpaceKey)
       "Labeled Rect above": makeTrial(new Canvas.LabeledElement(new Canvas.Rectangle(x: 400, y: 400), {position:"above"}), SpaceKey)
+      "Labeled Rect over": makeTrial(new Canvas.LabeledElement(new Canvas.Rectangle(x: 400, y: 400, fill: "gray"), {position:"over"}), SpaceKey)
       "Labeled Circle above": makeTrial(new Canvas.LabeledElement(new Canvas.Circle(x: 400, y: 400, radius: 50), {position:"above"}), SpaceKey)
       "Labeled Circle below": makeTrial(new Canvas.LabeledElement(new Canvas.Circle(x: 400, y: 400, radius: 50), {position:"below"}), SpaceKey)
       "Labeled Circle right": makeTrial(new Canvas.LabeledElement(new Canvas.Circle(x: 400, y: 400, radius: 50), {position:"right"}), SpaceKey)
       "Labeled Circle left": makeTrial(new Canvas.LabeledElement(new Canvas.Circle(x: 400, y: 400, radius: 50), {position:"left"}), SpaceKey)
+      "Labeled Circle over": makeTrial(new Canvas.LabeledElement(new Canvas.Circle(x: 400, y: 400, radius: 50), {position:"over"}), SpaceKey)
+
+    MessageBox:
+      "Default": makeTrial(new Canvas.MessageBox(), SpaceKey)
+      "One line, lime background": makeTrial(new Canvas.MessageBox(content: "Welcome to our task!", width: 200, background: "lime"), SpaceKey)
+      "Multiple lines, lime background": makeTrial(new Canvas.MessageBox({
+          content: "Welcome to our task!
+                    This is a really cool task!
+                    Enjoy!",
+          width: 200,
+          background: "lime"}), SpaceKey)
 
 
     Circle:
@@ -338,6 +352,10 @@ _ = Psy._
           new Canvas.Rectangle({position: [2,3], width: 80, height: 80, fill: "blue", layout: gridlayout}),
           new Canvas.Rectangle({position: [2,4], width: 80, height: 80, fill: "yellow", layout: gridlayout})
         ], [100], true, 9), SpaceKey)
+
+  NeuroPsych:
+    TrailsA:
+      "Default": makeTrial(new Psy.TrailsA(), new Psy.Receiver({id: "trail_completed"}))
 
   Tasks:
     "Arrow Flanker": -> "../arrow_flanker_index.html"

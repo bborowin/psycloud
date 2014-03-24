@@ -9,7 +9,7 @@ class First extends Response
 
   #start: (context) -> @activate(context)
 
-  activate: (context) ->
+  activate: (context, stimulus) ->
     console.log("activating first")
     _done = false
     deferred = Q.defer()

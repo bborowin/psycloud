@@ -15,5 +15,7 @@ Canvas.StartButton = require("./startbutton").StartButton
 Canvas.Text = require("./text").Text
 Canvas.TextInput = require("./textinput").TextInput
 Canvas.LabeledElement = require("./labeled").LabeledElement
+Canvas.MessageBox = require("./messagebox").MessageBox
+Canvas.TrailsA = require("./trails").TrailsA
 
 exports.Canvas = Canvas

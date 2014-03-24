@@ -48,7 +48,8 @@
     console.log("making", stim);
     return (function(_this) {
       return function() {
-        console.log("starting trial!");
+        console.log("starting trial! with", stim);
+        console.log("resp is", resp);
         stim.reset();
         resp.reset();
         return new Psy.Trial([new Psy.Event(stim, resp), ClearEvent], {}, null, bg);
@@ -344,6 +345,13 @@
         }), {
           position: "above"
         }), SpaceKey),
+        "Labeled Rect over": makeTrial(new Canvas.LabeledElement(new Canvas.Rectangle({
+          x: 400,
+          y: 400,
+          fill: "gray"
+        }), {
+          position: "over"
+        }), SpaceKey),
         "Labeled Circle above": makeTrial(new Canvas.LabeledElement(new Canvas.Circle({
           x: 400,
           y: 400,
@@ -371,6 +379,26 @@
           radius: 50
         }), {
           position: "left"
+        }), SpaceKey),
+        "Labeled Circle over": makeTrial(new Canvas.LabeledElement(new Canvas.Circle({
+          x: 400,
+          y: 400,
+          radius: 50
+        }), {
+          position: "over"
+        }), SpaceKey)
+      },
+      MessageBox: {
+        "Default": makeTrial(new Canvas.MessageBox(), SpaceKey),
+        "One line, lime background": makeTrial(new Canvas.MessageBox({
+          content: "Welcome to our task!",
+          width: 200,
+          background: "lime"
+        }), SpaceKey),
+        "Multiple lines, lime background": makeTrial(new Canvas.MessageBox({
+          content: "Welcome to our task! This is a really cool task! Enjoy!",
+          width: 200,
+          background: "lime"
         }), SpaceKey)
       },
       Circle: {
@@ -720,6 +748,13 @@
             layout: gridlayout
           })
         ], [100], true, 9), SpaceKey)
+      }
+    },
+    NeuroPsych: {
+      TrailsA: {
+        "Default": makeTrial(new Psy.TrailsA(), new Psy.Receiver({
+          id: "trail_completed"
+        }))
       }
     },
     Tasks: {

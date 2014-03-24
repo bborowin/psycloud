@@ -6,7 +6,10 @@ ActionPresentable = require("../../stimresp").ActionPresentable
 class Clear extends GStimulus
 
   render: (context) ->
-    new ActionPresentable( (context) -> context.clearContent(true))
+    action = (ctx) =>
+      context.clearContent(true)
+
+    new ActionPresentable(action)
 
 
 exports.Clear = Clear

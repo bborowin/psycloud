@@ -83,7 +83,6 @@ class KeyResponse extends Response
 class KeyPress extends KeyResponse
 
 
-
   activate: (context) ->
     @startTime = utils.getTimestamp()
     deferred = Q.defer()
@@ -96,11 +95,10 @@ class KeyPress extends KeyResponse
     keyStream.filter((event) =>
       char = String.fromCharCode(event.keyCode)
       _.contains(@spec.keys, char)).take(1).onValue( (filtered) =>
-      timeStamp = utils.getTimestamp()
-      Acc = _.contains(@spec.correct, String.fromCharCode(filtered.keyCode))
-      resp = @createResponseData(timeStamp, @startTime, Acc, String.fromCharCode(filtered.keyCode))
-
-      deferred.resolve(new ResponseData(resp)))
+        timeStamp = utils.getTimestamp()
+        Acc = _.contains(@spec.correct, String.fromCharCode(filtered.keyCode))
+        resp = @createResponseData(timeStamp, @startTime, Acc, String.fromCharCode(filtered.keyCode))
+        deferred.resolve(new ResponseData(resp)))
 
     deferred.promise
 

@@ -60,13 +60,12 @@ class DefaultComponentFactory extends ComponentFactory
     @registry = _.merge(Components, Canvas, Html)
 
 
-
   make: (name, params, registry) ->
     callee = arguments.callee
-    console.log("making", name)
+
     switch name
       when "Group"
-        console.log("building group")
+
         names = _.map(params.stims, (stim) -> _.keys(stim)[0])
         props = _.map(params.stims, (stim) -> _.values(stim)[0])
         stims = _.map([0...names.length], (i) =>

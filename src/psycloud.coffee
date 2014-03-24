@@ -189,7 +189,12 @@ exports.Event =
   class Event extends RunnableNode
 
     constructor: (@stimulus, @response) ->
-      super([@response])
+      node = {
+        start: (context) =>
+          @response.start(context, stimulus)
+      }
+
+      super([node])
 
     stop: (context) ->
       @stimulus.stop(context)
@@ -208,8 +213,7 @@ exports.Event =
         if not @stimulus.overlay
           context.clearContent()
 
-        p = @stimulus.render(context)
-        p.present(context)
+        @stimulus.render(context).present(context)
         context.draw()
       )
 
@@ -218,7 +222,7 @@ exports.Event =
         @stimulus.stop(context)
       )
 
-    start: (context) -> super(context)
+    #start: (context) -> super(context)
 
 
 exports.Trial =

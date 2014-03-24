@@ -51,7 +51,7 @@ class Sequence extends Stimulus
       present: (context) =>
         result = Q.resolve(0)
         for i in [0...@times]
-          console.log("i ", i)
+
           result = result.then(=>
             @genseq(context)
           )
