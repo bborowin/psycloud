@@ -60,11 +60,12 @@ exports.FactorSpec =
 exports.CellTable =
   class CellTable extends exports.VarSpec
     constructor: ( @parents) ->
-
+      console.log("building cell table parents", @parents)
       @parentNames = (fac.name for fac in @parents)
       @name = _.reduce(@parentNames, (n, n1) -> n + ":" + n1)
       @levels = (fac.levels for fac in @parents)
       @factorSet = _.zipObject(@parentNames, @levels)
+      console.log("expanding table", @factorSet)
       @table = DataTable.expand(@factorSet)
     #@expanded = @expand(@nblocks, @reps)
 
@@ -121,7 +122,12 @@ exports.TaskNode =
 FactorNode =
 class FactorNode
   @build: (name, spec) ->
-    new FactorNode(name, spec.levels)
+    if not spec.levels? and _.isArray(spec)
+      # levels provided as value
+      new FactorNode(name, spec)
+    else
+      # levels in 'levels' property
+      new FactorNode(name, spec.levels)
 
   constructor: (@name, @levels) ->
     @cellTable = new CellTable([this])
@@ -160,9 +166,12 @@ exports.FactorSetNode =
   class FactorSetNode
 
     @build: (spec) ->
+      console.log("building", spec)
       fnodes = for key, value of spec
+        console.log("key is", key)
+        console.log("value is", value)
         exports.FactorNode.build(key, value)
-
+      console.log("fnodes", fnodes)
       new FactorSetNode(fnodes)
 
     constructor: (@factors) ->
@@ -170,7 +179,7 @@ exports.FactorSetNode =
       @varmap = {}
       for i in [0...@factorNames.length]
         @varmap[@factorNames[i]] = @factors[i]
-
+      console.log("constructing cell table of", @factors)
       @cellTable = new CellTable(@factors)
       @name = @cellTable.name
 

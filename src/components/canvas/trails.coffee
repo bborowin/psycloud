@@ -5,12 +5,15 @@ utils = require("../../utils")
 
 class TrailsA extends KStimulus
 
-  constructor: () ->
-    super()
-    @circleRadius = 25
+  defaults:
+    npoints: 25, circleRadius: 25, circleFill: "blue"
 
-    @minDist = @circleRadius * 4
-    @npoints = 25
+  constructor: (spec) ->
+    super(spec)
+
+    @minDist = @spec.circleRadius * 4
+    @circleRadius = @spec.circleRadius
+    @npoints = @spec.npoints
     @maxIter = 100
 
   layoutPoints: (context) ->
@@ -45,10 +48,8 @@ class TrailsA extends KStimulus
     ## remove from set
     remaining.splice(first,1)
 
-    path = []
-    indices = []
-    path.push(pts[first])
-    indices.push(first)
+    path = [pts[first]]
+    indices = [first]
 
     for index in remaining
       ## find the index
@@ -57,18 +58,22 @@ class TrailsA extends KStimulus
 
     path
 
+
+
   addCircleListener: (circle) ->
     outer = this
     circle.on "click", ->
       if this.attrs.id == "circle_".concat(outer.pathIndex + 1)
-        this.fill("khaki")
+        if outer.pathIndex == (outer.npoints-1)
+          this.fill("red")
+          setTimeout((-> outer.emit("trail_completed")), 200)
+        else
+          this.fill("khaki")
 
         outer.emit("trail_move", {
           index: outer.pathIndex
           node_id: this.attrs.id
         })
-
-        outer.emit("trail_completed") if outer.pathIndex == (outer.npoints-1)
 
         if outer.pathIndex == 0
           outer.path.points([this.getPosition().x, this.getPosition().y])
@@ -84,13 +89,17 @@ class TrailsA extends KStimulus
 
   render: (context) ->
     @points = @orderPoints(@layoutPoints(context))
-    @path = new Kinetic.Line({stroke: "black", strokeWidth: 2})
+    @path = new Kinetic.Line({stroke: "khaki", strokeWidth: 2})
     @pathIndex = 0
 
     @group = new Kinetic.Group()
 
     for point, i in @points
-      circle = new Kinetic.Circle({ x: point[0], y: point[1], radius: @circleRadius, fill: "blue", id: "circle_" + (i+1)})
+      if i is 0
+        circle = new Kinetic.Circle({ x: point[0], y: point[1], radius: @circleRadius, fill: @spec.circleFill, stroke: "khaki", strokeWidth: 2, id: "circle_" + (i+1)})
+      else
+        circle = new Kinetic.Circle({ x: point[0], y: point[1], radius: @circleRadius, fill: @spec.circleFill, id: "circle_" + (i+1)})
+
       @addCircleListener(circle)
       label = new Kinetic.Text({ x: point[0], y: point[1], text: (i+1), fontSize: 24, fontFamily: "Arial", fill: "white", listening: false})
 

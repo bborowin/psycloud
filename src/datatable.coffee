@@ -208,11 +208,17 @@ class DataTable
     rec
 
   replicate: (nreps) ->
-    out = {}
-    for own name, value of this
-      out[name] = _.flatten(_.times(nreps, (n) =>
-        value))
-    new DataTable(out)
+    if nreps < 1
+      throw new Error("DataTable.replicate: nreps must be greater than or equal to 1")
+    #else if nreps == 1
+    #  console.log("replicating once with extend")
+    #  _.extend({}, this)
+    else
+      out = {}
+      for own name, value of this
+        out[name] = _.flatten(_.times(nreps, (n) =>
+          value))
+      new DataTable(out)
 
   bindcol: (name, column) ->
     if (column.length != @nrow())

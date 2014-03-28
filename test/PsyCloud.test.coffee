@@ -29,7 +29,7 @@ test 'can concatenate two DataTables with different column names with rbind, uni
   equal(6, dt3.nrow())
 
 
-test 'can drop a column from a DaaTable', ->
+test 'can drop a column from a DataTable', ->
   dt1 = new Psy.DataTable({a: [1,2,3], b:[5,6,7]})
   dt2 = dt1.dropColumn("a")
   console.log("dt2 is", dt2)
@@ -42,6 +42,12 @@ test 'can shuffle a DataTable', ->
   console.log("unshuffled dt", dt1)
   console.log("shuffled dt", dt2)
   equal(dt1.nrow(), dt2.nrow())
+
+test 'DataTable replicate 1 yields cloned copy', ->
+  dt1 = new Psy.DataTable({a: [1,2,3], b:[5,6,7]})
+  dt2 = dt1.replicate(1)
+
+  deepEqual(dt1, dt2)
 
 
 module("Sampler")

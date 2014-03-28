@@ -12,7 +12,7 @@ Kinetic = require("../jslibs/kinetic").Kinetic
 Stimulus = require("./stimresp").Stimulus
 Response = require("./stimresp").Response
 ResponseData = require("./stimresp").ResponseData
-#StateMachine = require("skinny-coffee-machine")
+StateMachine = require("../jslibs/state-machine")
 
 
 
@@ -41,7 +41,6 @@ class EventDataLog
     len = @eventStack.length - 1
     for i in [len .. 0]
       return @eventStack[i] if @eventStack[i].id is id
-
 
 
 
@@ -354,6 +353,41 @@ exports.Coda =
         #  # done
         #)
     #  )
+
+
+#fsm = StateMachine.create({
+#  initial: 'init', final: 'end',
+#  events: [
+#    { name: 'toPrelude',  from: 'init',  to: 'prelude' },
+#    { name: 'toBlockStart', from: ['prelude', 'trial','block_end'] to: 'block_start'  },
+#    { name: 'nextTrial', from: ['event',  to: 'trial' },
+#  ]
+#});
+
+
+
+
+#@ExState = new SkinnyCoffeeMachine
+#  default: 'init'
+#
+#  events:
+#    inPrelude:
+#      init: 'inPrelude'
+#    next:
+#      blockStart: "trial"
+#      trial: "event"
+
+#
+#    turnOff:
+#      on: 'off'
+#  on:
+#    turnOn:  (from, to) -> "#{from.toUpperCase()} to #{to.toUpperCase()}"
+#    turnOff: (from, to) -> "#{from.toUpperCase()} to #{to.toUpperCase()}"
+#  before:
+#    turnOff: (from, to) -> "Before switching to #{to.toUpperCase()}"
+#  after:
+#    turnOn:  (from, to) -> "After switching to #{to.toUpperCase()}"
+#    turnOff: (from, to) -> "After switching to #{to.toUpperCase()}"
 
 
 
@@ -745,6 +779,7 @@ buildEvent = (spec, context) ->
 
 buildTrial = (eventSpec, record, context, feedback, backgroundSpec) ->
   events = for key, value of eventSpec
+    console.log("building event", key, ", ", value)
     context.stimFactory.buildEvent(value)
 
   if backgroundSpec?
@@ -788,10 +823,13 @@ exports.Presenter =
 class Presenter
   constructor: (@trialList, @display, @context) ->
     @trialBuilder = @display.Trial
+    console.log("trialBuilder", @trialBuilder)
 
     @prelude = if @display.Prelude?
+      console.log("building prelude")
       buildPrelude(@display.Prelude.Events, @context)
     else
+      console.log("dummy prelude")
       buildPrelude(__dummySpec.Events, @context)
 
 
@@ -805,16 +843,21 @@ class Presenter
 
 
   start: () ->
-
+    console.log("Presenter.start")
     @blockList = new BlockSeq(for block in @trialList.blocks
+      console.log("building block", block)
       trials = for trialNum in [0...block.length]
+        console.log("building trial", trialNum)
         record = _.clone(block[trialNum])
 
         args = {}
         args.trial = record
         args.screen = @context.screenInfo()
 
+        console.log("args", args)
+
         trialSpec = @trialBuilder.apply(args)
+        console.log("building trial spec", trialSpec, "with record", record)
         buildTrial(trialSpec.Events, record, @context, trialSpec.Feedback, trialSpec.Background)
       new Block(trials, @display.Block)
     )

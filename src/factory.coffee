@@ -1,5 +1,7 @@
 
 _ = require('lodash')
+didyoumean = require("didyoumean")
+didyoumean.caseSensitive = true
 
 Canvas = require("./components/canvas/canvas").Canvas
 Html = require("./components/html/html").Html
@@ -23,6 +25,7 @@ class ComponentFactory
     @makeResponse(responseType, params)
 
   buildEvent: (spec) ->
+    console.log("building event", spec)
     if not spec.Next?
       console.log("error building event with spec: ", spec)
       throw new Error("Event specification does not contain 'Next' element")
@@ -32,6 +35,7 @@ class ComponentFactory
 
     stim = @buildStimulus(stimSpec)
     response = @buildResponse(responseSpec.Next)
+
     @makeEvent(stim, response)
 
   make: (name, params, registry) ->
@@ -90,11 +94,8 @@ class DefaultComponentFactory extends ComponentFactory
 
 
       when "Background"
-        console.log("building background", params)
         names = _.keys(params)
         props = _.values(params)
-        console.log("names", names)
-        console.log("props", props)
         stims = _.map([0...names.length], (i) =>
           callee(names[i], props[i], @registry)
         )
@@ -111,11 +112,11 @@ class DefaultComponentFactory extends ComponentFactory
         new Components.First(resps)
       else
         if not registry[name]?
-          console.log("registry is", registry)
-          throw new Error("DefaultComponentFactory:make cannot find component in registry named: ", name)
+          throw new Error("DefaultComponentFactory: cannot find component named: " + name + "-- did you mean? " + didyoumean(name, _.keys(registry)) + "?")
         new registry[name](params)
 
   makeStimulus: (name, params) ->
+    console.log("making stimulus", name, "with params", params)
     @make(name, params, @registry)
 
   makeResponse: (name, params) ->

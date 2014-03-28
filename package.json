@@ -49,7 +49,8 @@
     "skinny-coffee-machine": "~0.2.1",
     "grunt-concat-sourcemap": "~0.4.1",
     "grunt-shell": "~0.6.4",
-    "smokesignals": "0.0.7"
+    "smokesignals": "0.0.7",
+    "didyoumean": "^1.2.0"
   },
   "scripts": {
     "test": "grunt ci"

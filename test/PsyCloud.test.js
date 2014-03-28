@@ -69,7 +69,7 @@
     return equal(6, dt3.nrow());
   });
 
-  test('can drop a column from a DaaTable', function() {
+  test('can drop a column from a DataTable', function() {
     var dt1, dt2;
     dt1 = new Psy.DataTable({
       a: [1, 2, 3],
@@ -90,6 +90,16 @@
     console.log("unshuffled dt", dt1);
     console.log("shuffled dt", dt2);
     return equal(dt1.nrow(), dt2.nrow());
+  });
+
+  test('DataTable replicate 1 yields cloned copy', function() {
+    var dt1, dt2;
+    dt1 = new Psy.DataTable({
+      a: [1, 2, 3],
+      b: [5, 6, 7]
+    });
+    dt2 = dt1.replicate(1);
+    return deepEqual(dt1, dt2);
   });
 
   module("Sampler");
