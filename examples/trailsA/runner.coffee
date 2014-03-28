@@ -2,14 +2,15 @@
 _ = Psy._
 
 
-
+## this is a task with a simple design: just one factor consisting of three trials.
 factorSet =
   trial: [1,2,3]
 
 console.log("building factorSet")
 fnode = Psy.FactorSetNode.build(factorSet)
 
-# create 1 blocks of trials with 1 complete replications per block
+# create 1 block of trials with 1 complete replications per block.
+# so this will create 3 trials.
 console.log("constructing trial list")
 @trials = fnode.trialList(1,1)
 
@@ -64,6 +65,9 @@ window.display =
           TrailsA:
             npoints: 25
           Next:
+            ## components can emit "signals" that have an id.
+            ## when the user connects the last circle, TrailsA emits "trail_completed"
+            ## end trial when we "receive" a signal called "trail_completed"
             Receiver:
               id: "trail_completed"
 
