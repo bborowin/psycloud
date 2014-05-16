@@ -13,11 +13,12 @@ class Markdown extends html.HtmlStimulus
       @spec.y=0
       @spec.content = spec
 
-
     if @spec.url?
+      console.log("trying to load url", @spec.url)
       $.ajax(
         url: @spec.url
         success: (result) =>
+          console.log("successfully loaded markdown", result)
           @spec.content = result
           @el.append(marked(@spec.content))
         error: (result) =>

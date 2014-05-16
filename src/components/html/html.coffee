@@ -2,6 +2,7 @@ GStimulus = require("../../stimresp").GraphicalStimulus
 Drawable= require("../../stimresp").Drawable
 Response = require("../../stimresp").Response
 Mixen = require("mixen")
+signals = require("smokesignals")
 #$ = require("jqueryify")
 
 
@@ -18,7 +19,7 @@ class HtmlMixin
 
   positionElement: (el, x, y) ->
     el.css({
-      position: "absolute"
+      position: "relative"
       left: x
       top: y
     })
@@ -38,7 +39,13 @@ HMixResp =  Mixen(HtmlMixin,Response)
 
 class HtmlStimulus extends HMixStim
   constructor: (spec) ->
+    #should not be necessary?
     super(spec)
+    signals.convert(this)
+
+  element: -> @el
+
+  html: -> $('<div>').append(@element()).html()
 
   presentable: (element) ->
     new (class extends Drawable
@@ -58,23 +65,14 @@ class HtmlStimulus extends HMixStim
     )(element)
 
   render: (context) ->
-    console.log("rendering html stimulus", @name)
-
     @el.hide()
+
+    # TODO inconsistency here. html elements are added at rendering stage, Kinetic objects are not...
     context.appendHtml(@el)
-    console.log("@spec.position",  @spec.position)
-    console.log("@spec.x",  @spec.x)
-    console.log("@spec.y",  @spec.y)
-    console.log("@el width", @el.width())
-    console.log("@el height", @el.height())
     coords = @computeCoordinates(context, @spec.position, @el.width(), @el.height())
-    console.log("coords", coords)
     @positionElement(@el, coords[0], coords[1])
-
     @presentable(@el)
-    #@el.show()
 
-    #super(context, layer)
 
 class HtmlResponse extends HMixResp
   constructor: () ->
@@ -88,6 +86,7 @@ exports.HtmlResponse = HtmlResponse
 
 Html = {}
 Html.HtmlButton = require("./htmlbutton").HtmlButton
+Html.CheckBox = require("./checkbox").CheckBox
 Html.HtmlLink = require("./htmllink").HtmlLink
 Html.HtmlLabel = require("./htmllabel").HtmlLabel
 Html.HtmlIcon = require("./htmlicon").HtmlIcon
@@ -95,12 +94,13 @@ Html.Instructions = require("./instructions").Instructions
 Html.Markdown = require("./markdown").Markdown
 Html.Message = require("./message").Message
 Html.Page = require("./page").Page
+Html.HtmlRange = require("./htmlrange").HtmlRange
 Html.HtmlResponse = HtmlResponse
 Html.HtmlStimulus = HtmlStimulus
-
-
-
-
-
-
+Html.Likert = require("./likert").Likert
+Html.Slider = require("./slider").Slider
+Html.TextField = require("./textfield").TextField
+Html.DropDown = require("./dropdown").DropDown
+Html.MultiChoice = require("./multichoice").MultiChoice
+Html.Question = require("./question").Question
 exports.Html = Html

@@ -3,9 +3,20 @@ Q = require("q")
 Markdown = require("./markdown").Markdown
 _ = require('lodash')
 
-class Instructions extends html.HtmlResponse
+class Instructions extends html.HtmlStimulus
   constructor: (spec = {}) ->
     super(spec)
+
+    ###
+    @pages =
+
+      if @spec.url
+      if _.isArray(@spec.url)
+        for u in @spec.url
+          md = new Markdown({url: u})
+      else
+        md = new Markdown(@spec.url)
+    ###
 
     @pages = for key, value of @spec.pages
       type = _.keys(value)[0]
@@ -13,7 +24,9 @@ class Instructions extends html.HtmlResponse
       content = _.values(value)[0]
       md = new Markdown(content)
       div = @div()
-      div.addClass("ui stacked segment").append(md.el)
+      div.addClass("ui stacked segment").append(md.element())
+      div.css("overflow-y",  "scroll")
+      div.css("height", 800)
       div
 
     @menu = @div()
@@ -47,6 +60,7 @@ class Instructions extends html.HtmlResponse
     @el.append(@menu)
 
 
+
   activate: (context) ->
     @deferred = Q.defer()
     @deferred.promise
@@ -59,7 +73,8 @@ class Instructions extends html.HtmlResponse
     @el.append(@menu)
 
 
-  render: (context, layer) ->
+  render: (context) ->
+
     @next.click (e) =>
       if (@currentPage < (@pages.length - 1))
         @items[@currentPage].removeClass("active")
@@ -67,8 +82,9 @@ class Instructions extends html.HtmlResponse
         @items[@currentPage].addClass("active")
         @updateEl(@currentPage)
         @render(context)
+        this.emit("next_page")
       else
-        @deferred.resolve(0)
+        this.emit("done")
 
     @back.click (e) =>
       if (@currentPage > 0)
@@ -77,6 +93,7 @@ class Instructions extends html.HtmlResponse
         @items[@currentPage].addClass("active")
         @updateEl(@currentPage)
         @render(context)
+        this.emit("previous_page")
 
     @back.removeClass("disabled") if @currentPage > 0
 
@@ -85,6 +102,7 @@ class Instructions extends html.HtmlResponse
     )
 
     context.appendHtml(@el)
+    @presentable(@el)
 
 
 exports.Instructions = Instructions
