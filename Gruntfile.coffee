@@ -47,7 +47,7 @@ module.exports = (grunt) ->
         files: ['src/**/*.coffee']
         tasks: ['code']
         options:
-          spawn: false
+          spawn: true
 
 
     concat_sourcemap:
@@ -55,21 +55,32 @@ module.exports = (grunt) ->
         sourceRoot: ".."
       all:
         files:
-          "build/psycloud_bundle.js": ['build/psycloud.js', 'jslibs/jquery-1.7.js', 'vex.combined.min.js']
+          "build/psycloud_bundle.js": ['build/psycloud.js', 'jslibs/jqxcore.js', 'jslibs/jqxbuttons.js', 'jslibs/jqxslider.js', 'jslibs/jquery-1.7.js', 'vex.combined.min.js']
 
 
     concat:
       min:
-        src: ['build/psycloud.min.js', 'jslibs/jquery-1.7.min.js', 'vex.combined.min.js']
-        dest: 'build/psycloud_bundle.min.js'
+        #src: ['build/psycloud.min.js', 'jslibs/jquery-1.7.min.js', 'jslibs/jqxcore.js', 'jslibs/jqxbuttons.js', 'jslibs/jqxslider.js', 'vex.combined.min.js']
+        src: ['jslibs/buzz.js', 'jslibs/kinetic-v5.0.1.js', 'jslibs/jquery-1.7.min.js', 'jslibs/jqxcore.js', 'jslibs/jqxbuttons.js', 'jslibs/jqxslider.js', 'vex.combined.min.js', 'jslibs/semantic.js']
+        dest: 'build/psycloud_libs.min.js'
       all:
-        src: ['build/psycloud.js', 'jslibs/jquery-1.7.js', 'vex.combined.min.js']
-        dest: 'build/psycloud_bundle.js'
+        src: ['jslibs/buzz.js', 'jslibs/kinetic-v5.0.1.js', 'jslibs/jquery-1.7.js', 'jslibs/jqxcore.js', 'jslibs/jqxbuttons.js', 'jslibs/jqxslider.js', 'vex.combined.min.js', 'jslibs/semantic.js']
+        dest: 'build/psycloud_libs.js'
 
     cssmin: 
       combine: 
         files: 
           'build/psycloud_bundle.css': ['css/*.css']
+
+    copy:
+      main:
+        files: [
+          expand: true
+          flatten: true
+          src: 'css/images/*'
+          dest: 'build/images'
+        ]
+
 
     shell:
       codo:
@@ -85,8 +96,9 @@ module.exports = (grunt) ->
   grunt.loadNpmTasks('grunt-contrib-clean')
   grunt.loadNpmTasks('grunt-contrib-concat')
   grunt.loadNpmTasks('grunt-contrib-cssmin')
+  grunt.loadNpmTasks('grunt-contrib-copy')
   grunt.loadNpmTasks('powerbuild')
-  grunt.registerTask('code', ['clean', 'powerbuild:all', 'concat_sourcemap:all'])
+  grunt.registerTask('code', ['clean', 'powerbuild:all', 'concat', 'copy'])
   #grunt.registerTask('default', ['clean', 'coffee', 'powerbuild:all', 'concat_sourcemap:all', 'cssmin', 'shell'])
-  grunt.registerTask('default', ['clean', 'coffee', 'powerbuild:all', 'concat', 'cssmin', 'shell'])
+  grunt.registerTask('default', ['clean', 'coffee', 'powerbuild:all', 'concat', 'cssmin', 'copy', 'shell'])
   grunt.registerTask('power', ["powerbuild"])

@@ -76,7 +76,6 @@
       b: [5, 6, 7]
     });
     dt2 = dt1.dropColumn("a");
-    console.log("dt2 is", dt2);
     return equal(dt2.ncol(), 1);
   });
 
@@ -87,8 +86,6 @@
       b: [5, 6, 7]
     });
     dt2 = dt1.shuffle();
-    console.log("unshuffled dt", dt1);
-    console.log("shuffled dt", dt2);
     return equal(dt1.nrow(), dt2.nrow());
   });
 
@@ -100,6 +97,20 @@
     });
     dt2 = dt1.replicate(1);
     return deepEqual(dt1, dt2);
+  });
+
+  test('Can create an empty DataTable and add rows', function() {
+    var dt;
+    dt = new Psy.DataTable();
+    dt.bindrow({
+      x: 1,
+      y: 2
+    });
+    dt.bindrow({
+      x: 2,
+      y: 3
+    });
+    return console.log("data table", dt);
   });
 
   module("Sampler");
@@ -140,8 +151,7 @@
     };
     fac = new Psy.FactorNode.build("fac", fnode.fac);
     equal(fac.name, "fac");
-    equal(fac.levels.toString(), [1, 2, 3, 4, 5].toString(), fac.levels);
-    return console.log("expanded factor node", fac.expand(3, 3));
+    return equal(fac.levels.toString(), [1, 2, 3, 4, 5].toString(), fac.levels);
   });
 
   module("FactorSetNode");
@@ -192,7 +202,6 @@
       }
     };
     xs = Psy.ConditionSet.build(cset);
-    console.log("conditions set", xs);
     deepEqual(["wordtype", "repnum", "lag", "novel", "color"], xs.factorNames);
     return deepEqual(["wordtype", "repnum", "lag", "novel", "color"], _.keys(xs.factorSet));
   });
@@ -401,7 +410,6 @@
       ],
       type: "text"
     };
-    console.log("inode", inode);
     node = Psy.ItemNode.build("item", inode);
     equal(node.name, "item");
     equal(node.attributes.x.toString(), [1, 2, 3].toString(), node.attributes.x.toString());
@@ -565,6 +573,14 @@
         return console.log(x);
       }
     });
+  });
+
+  module("rep");
+
+  test('Psy.rep works with a single value and single times argument', function() {
+    var x;
+    x = Psy.rep("", 3);
+    return deepEqual(x, ["", "", ""]);
   });
 
 }).call(this);

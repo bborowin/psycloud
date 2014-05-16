@@ -108,6 +108,8 @@ exports.permute = (input) ->
 exports.rep = (vec, times) ->
   if not (times instanceof Array)
     times = [times]
+  if not (vec instanceof Array)
+    vec = [vec]
 
   if (times.length != 1 and vec.length != times.length)
     throw "vec.length must equal times.length or times.length must be 1"
@@ -171,7 +173,58 @@ exports.order = (els) ->
   sortIndices
 
 
-console.log("order", exports.order([100, 4,3,100000, 2,1000]))
+exports.table = (els) ->
+  counts = _.reduce(els,
+  (sum, x) ->
+    if sum[x]?
+      sum[x] = sum[x] + 1
+    else
+      sum[x] = 1
+    sum
+  {})
+
+  counts
+
+
+exports.transitionProbs = (els) ->
+  zipped =  _.zip(_.initial(els), _.rest(els))
+  zipped = _.map(zipped, (x) -> {from: x[0], to: x[1]})
+  counts = _.reduce(zipped,
+    (sum, x) ->
+      key = JSON.stringify(x)
+      if sum[key]?
+        sum[key] = sum[key] + 1
+      else
+        sum[key] = 1
+      sum
+    {})
+
+
+  classCounts = exports.table(els)
+
+  counts = for key, value of counts
+    trans = JSON.parse(key)
+    {from: trans.from, to: trans.to, count: value, prob: value/zipped.length, condProb: value/classCounts[trans.from]}
+
+
+  counts
+
+
+
+exports.sd = (els) ->
+  sum = 0
+  for el in els
+    sum = sum + el
+  mu = sum/els.length
+  ss = 0
+  for el in els
+    ss  = ss + Math.pow(el - mu,2)
+
+  Math.sqrt(ss/els.length)
+
+
+
+
 
 
 exports.distanceMatrix = (pts) ->
@@ -180,7 +233,12 @@ exports.distanceMatrix = (pts) ->
       exports.euclidean(pts[i], pts[j])
 
 
+exports.which = (vals, fun) ->
+  out = []
+  for v in vals
+    out.push(v) if fun(v)
 
+  v
 
 exports.whichMin = (vals) ->
   min = vals[0]

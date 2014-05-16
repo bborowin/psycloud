@@ -50,7 +50,13 @@
     "grunt-concat-sourcemap": "~0.4.1",
     "grunt-shell": "~0.6.4",
     "smokesignals": "0.0.7",
-    "didyoumean": "^1.2.0"
+    "didyoumean": "^1.2.0",
+    "navigator": "^1.0.1",
+    "grunt-contrib-copy": "^0.5.0",
+    "phantom": "^0.6.1",
+    "ya-csv": "^0.9.3",
+    "glob": "^3.2.9",
+    "sugar": "^1.4.1"
   },
   "scripts": {
     "test": "grunt ci"

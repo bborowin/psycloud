@@ -1,5 +1,5 @@
 Stimulus = require("../stimresp").Stimulus
-buzz = require("../../jslibs/buzz")
+#buzz = require("../../jslibs/buzz")
 
 class Sound extends Stimulus
 

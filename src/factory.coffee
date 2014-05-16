@@ -64,51 +64,50 @@ class DefaultComponentFactory extends ComponentFactory
     @registry = _.merge(Components, Canvas, Html)
 
 
+  makeNestedStims: (params, callee, registry) ->
+    names = _.map(params.stims, (stim) -> _.keys(stim)[0])
+    props = _.map(params.stims, (stim) -> _.values(stim)[0])
+
+    stims = _.map([0...names.length], (i) =>
+      callee(names[i], props[i], registry)
+    )
+
+
   make: (name, params, registry) ->
     callee = arguments.callee
 
     switch name
       when "Group"
-
-        names = _.map(params.stims, (stim) -> _.keys(stim)[0])
-        props = _.map(params.stims, (stim) -> _.values(stim)[0])
-        stims = _.map([0...names.length], (i) =>
-          callee(names[i], props[i], @registry)
-        )
+        stims = @makeNestedStims(params, callee, @registry)
 
         if params.layout?
           layoutName = _.keys(params.layout)[0]
           layoutParams = _.values(params.layout)[0]
-          new Components.Group(stims, @makeLayout(layoutName, layoutParams, context))
+          new Components.Group(stims, @makeLayout(layoutName, layoutParams, context), params)
         else
-          new Components.Group(stims)
+          new Components.Group(stims, null, params)
+
+      when "CanvasGroup"
+        stims = @makeNestedStims(params, callee, @registry)
+
+        if params.layout?
+          layoutName = _.keys(params.layout)[0]
+          layoutParams = _.values(params.layout)[0]
+          new Components.CanvasGroup(stims, @makeLayout(layoutName, layoutParams, context), params)
+        else
+          new Components.CanvasGroup(stims, null, params)
 
       when "Grid"
-        names = _.map(params.stims, (stim) -> _.keys(stim)[0])
-        props = _.map(params.stims, (stim) -> _.values(stim)[0])
-        stims = _.map([0...names.length], (i) =>
-          callee(names[i], props[i], @registry)
-        )
-
+        stims = @makeNestedStims(params, callee, @registry)
         new Components.Grid(stims, params.rows or 3, params.columns or 3, params.bounds or null)
 
-
       when "Background"
-        names = _.keys(params)
-        props = _.values(params)
-        stims = _.map([0...names.length], (i) =>
-          callee(names[i], props[i], @registry)
-        )
-
+        stims = @makeNestedStims(params, callee, @registry)
         new Canvas.Background(stims)
 
       when "First"
-        names = _.keys(params)
-        props = _.values(params)
+        resps = @makeNestedStims(params, callee, @registry)
 
-        resps = _.map([0...names.length], (i) =>
-          callee(names[i], props[i], @registry)
-        )
         new Components.First(resps)
       else
         if not registry[name]?

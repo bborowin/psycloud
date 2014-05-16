@@ -1,7 +1,7 @@
 
 Base = require("./stimresp")
 _ = require('lodash')
-Kinetic = require("../jslibs/kinetic.js")
+#Kinetic = require("../jslibs/kinetic.js")
 
 
 class DotSet

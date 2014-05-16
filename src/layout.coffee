@@ -31,7 +31,6 @@ toPixels = (arg, dim) ->
     throw new Error("toPixels: argument must either be a Number or a String-based Percentage value: ", arg)
 
 
-
 convertPercentageToFraction = (perc, dim) ->
   frac = parseFloat(perc)/100
   frac = Math.min(1,frac)

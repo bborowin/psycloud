@@ -1,7 +1,16 @@
 _ = require('lodash')
 utils = require("./utils")
+csv = require('../jslibs/jquery.csv.js')
 
 
+loadTable = (url) ->
+  data = $.ajax({
+    url: url
+    dataType: "text"
+    async: false
+  }).responseText
+  records = csv.toObjects(data)
+  DataTable.fromRecords(records)
 
 # Class representing a tabular data set consisiting of a set of fixed-length colmnar variables
 #
@@ -55,11 +64,20 @@ class DataTable
   @build: (vars = {}) ->
     Object.seal(new DataTable(vars))
 
+
+  @rbind: (others...) ->
+    console.log("length of others", others.length)
+    otab = others[0]
+    for i in [1...others.length]
+      console.log("rbinding ", i)
+      otab = DataTable.rbind2(otab, others[i])
+    otab
+
   # concatenate two tables by row
   # @param {DataTable} tab1 the first table
   # @param {DataTable} tab2 the second table
   # @param {Boolean} union if true take the union of all variables, other take intersection
-  @rbind: (tab1, tab2, union = false) ->
+  @rbind2: (tab1, tab2, union = false) ->
     keys1 = _.keys(tab1)
     keys2 = _.keys(tab2)
     sharedKeys =
@@ -135,6 +153,31 @@ class DataTable
 
     new DataTable(out)
 
+  splitBy: (fac) ->
+    if fac.length != this.nrow()
+      throw new Error("splitBy: length 'fac' array must eqaul number of rows in data table")
+
+    levs = _.uniq(fac).sort()
+    indexArray = []
+
+    for i in [0...this.nrow()]
+      lev = fac[i]
+      if indexArray[lev]?
+        indexArray[lev].push(i)
+      else
+        indexArray[lev] = [i]
+
+
+    out = []
+
+    for lev, index in levs
+      rset = for i in indexArray[lev]
+        @record(i)
+      out[lev] = DataTable.fromRecords(rset)
+
+    out
+
+
   dropColumn: (colname) ->
     out = {}
     for own key, value of this
@@ -187,13 +230,22 @@ class DataTable
 
   nrow: ->
     lens = (value.length for own name, value of this)
-    _.max(lens)
+    if lens.length == 0
+      0
+    else
+      _.max(lens)
 
   ncol: ->
     Object.keys(this).length
 
   colnames: ->
     Object.keys(this)
+
+  rows: -> @toRecordArray()
+
+  mapRows: (fun) ->
+    for i in [0...@nrow()]
+      fun(@record(i))
 
   toRecordArray: ->
     rec = []
@@ -227,8 +279,17 @@ class DataTable
     this
 
   bindrow: (rows) ->
+    console.log("binding row", rows)
+    console.log("nrow is", this.nrow())
     if (!_.isArray(rows))
       rows = [rows]
+    if this.nrow() == 0
+      ## if table is empty, take key names from first row
+      console.log("table has no rows")
+      for key in _.keys(rows[0])
+        console.log("adding column name", key)
+        this[key] = []
+
     for record in rows
       console.log(record)
       for own key, value of record
@@ -250,3 +311,4 @@ class DataTable
 
 
 exports.DataTable = DataTable
+exports.loadTable = loadTable

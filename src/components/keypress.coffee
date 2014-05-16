@@ -56,14 +56,15 @@ class KeyResponse extends Response
   defaults:
     keys: ['1', '2'], correct: ['1'], timeout: null
 
-  createResponseData: (timeStamp, startTime, Acc, char) ->
+  createResponseData: (timeStamp, startTime, Acc, char, noResponse=false) ->
     resp =
       name: @name
       id: @id
-      KeyTime: timeStamp
+      keyTime: timeStamp
       RT: timeStamp - startTime
-      Accuracy: Acc
-      KeyChar: char
+      accuracy: Acc
+      keyChar: char
+      nonResponse: noResponse
 
     resp
 
@@ -73,7 +74,7 @@ class KeyResponse extends Response
       if !deferred.isResolved
         timeStamp = utils.getTimestamp()
         Acc = false
-        resp = @createResponseData(timeStamp, @startTime, Acc, '')
+        resp = @createResponseData(timeStamp, @startTime, Acc, '', true)
         deferred.resolve(new ResponseData(resp))
     )
 
@@ -96,7 +97,11 @@ class KeyPress extends KeyResponse
       char = String.fromCharCode(event.keyCode)
       _.contains(@spec.keys, char)).take(1).onValue( (filtered) =>
         timeStamp = utils.getTimestamp()
+        console.log("correct", @spec.correct)
+        console.log("key", String.fromCharCode(filtered.keyCode))
+
         Acc = _.contains(@spec.correct, String.fromCharCode(filtered.keyCode))
+        console.log("acc", Acc)
         resp = @createResponseData(timeStamp, @startTime, Acc, String.fromCharCode(filtered.keyCode))
         deferred.resolve(new ResponseData(resp)))
 
@@ -136,9 +141,9 @@ class AnyKey extends Response
       resp =
         name: "AnyKey"
         id: @id
-        KeyTime: timeStamp
+        keyTime: timeStamp
         RT: timeStamp - @startTime
-        KeyChar: String.fromCharCode(event.keyCode)
+        keyChar: String.fromCharCode(event.keyCode)
       deferred.resolve(new ResponseData(resp)))
 
     deferred.promise

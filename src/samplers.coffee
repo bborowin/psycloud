@@ -5,6 +5,9 @@ DataTable = require("./datatable").DataTable
 # ## Sampler
 # basic sampler that does not recycle its elements or allow sampling with replacement
 
+
+## sampler as an infinite stream??
+
 class Sampler
 
   constructor: (@items) ->
@@ -24,11 +27,24 @@ class Sampler
   #  for i in [0...n]
   #    next()
 
+  takeAmong: (n, among) ->
+    ret = []
+    count = 0
+    while count < n
+      sam = takeOne()
+      if _.contains(among, sam)
+        ret.push(sam)
+        count++
+
+    ret
+
+
   take: (n) ->
     if n > @items.length
       throw "cannot take sample larger than the number of items when using non-replacing sampler"
 
     @indexBuffer = _.shuffle([0...@items.length])
+
     ret = for i in [0...n]
       @next()
     ret
@@ -57,6 +73,30 @@ exports.ReplacementSampler =
       @sampleFrom(@items, n)
 
 
+
+exports.BucketSampler =
+  class BucketSampler extends Sampler
+
+    constructor: (@items) ->
+      @remaining = _.shuffle(@items.slice(0))
+
+    take: (n) ->
+      if n > @remaining.length
+        throw new Error("cannot remove more items than are left in remaining set")
+      @remaining.splice(0,n)
+
+    size: -> @remaining.length
+
+    putBack: (iset) ->
+      if _.isArray(iset)
+        ## check if iset items were in original set?
+        @remaining.push(item) for item in iset
+      else
+        @remaining.push(iset)
+
+      @remaining = _.shuffle(@remaining)
+
+
 # ## ExhaustiveSampler
 exports.ExhaustiveSampler =
   class ExhaustiveSampler extends Sampler
@@ -80,6 +120,7 @@ exports.ExhaustiveSampler =
         buflen = Math.max(n, 10 * @items.length)
         buf = ExhaustiveSampler.fillBuffer(@items, buflen / @items.length)
         # place remaining items from previous buffer at head of the new buffer
+        ## TODO need to put remaining items at end of buffer so that they are not sampled twice in current 'take' operation
         @buffer = @buffer.concat(buf)
         @take(n)
 

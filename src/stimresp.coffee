@@ -1,7 +1,9 @@
 _ = require('lodash')
 lay = require("./layout")
-Kinetic = require("../jslibs/kinetic")
+#Kinetic = require("../jslibs/kinetic")
 signals = require("smokesignals")
+
+{match} = require 'coffee-pattern'
 
 exports.Stimulus =
 class Stimulus
@@ -29,7 +31,7 @@ class Stimulus
     @initialize()
 
 
-  initialize: ->
+  initialize: -> console.log("initialize called!")
 
   get: (name) -> @spec[name]
 
@@ -91,7 +93,6 @@ class GraphicalStimulus extends exports.Stimulus
       xy[1] = xy[1] + xyoff[1]
     xy
 
-
   width: -> 0
 
   height: -> 0
@@ -99,28 +100,22 @@ class GraphicalStimulus extends exports.Stimulus
   bounds: -> { x: 0, y: 0, width: 0, height: 0}
 
 
-exports.KineticStimulus =
+
 class KineticStimulus extends exports.GraphicalStimulus
 
-  presentable: (nodes, onPresent) ->
-    console.log("creating presentable of", nodes)
-    new KineticDrawable(nodes, onPresent)
-
+  presentable: (parent, node, onPresent) ->
+    new KineticDrawable(parent, node, onPresent)
 
   @nodeSize: (node) ->
     if node.getClassName() == "Group"
-      console.log("class is group!")
       KineticStimulus.groupSize(node)
     else
       { width: node.getWidth(), height: node.getHeight() }
 
   @nodePosition: (node) ->
     if node.getClassName() == "Group"
-      console.log("class is group!")
       xb = KineticStimulus.groupXBounds(node)
       yb = KineticStimulus.groupYBounds(node)
-      console.log("xb is", xb)
-      console.log("yb is", yb)
       { x: xb[0], y: yb[0] }
     else
       { x: node.getX(), y: node.getY() }
@@ -176,6 +171,7 @@ class KineticStimulus extends exports.GraphicalStimulus
       { x: x + group.getX(), y: y + group.getY() }
 
 
+
 exports.Presentable =
 class Presentable
 
@@ -210,41 +206,46 @@ class Drawable extends exports.Presentable
 exports.KineticDrawable =
 class KineticDrawable extends exports.Drawable
 
-  constructor: (@nodes, @onPresent) ->
-    if not _.isArray(@nodes)
-      @nodes = [@nodes]
-
-
+  # first argument is @context?
+  # drawable "renders" the node.
+  # drawable
+  constructor: (@parent, @node, @onPresent) ->
     # all nodes must be of type "Kinetic.Node"
 
+  addListeners: (context) ->
+    eventTypes = ["click", "mouseover", "mousedown", "mouseenter", "mouseleave", "mousemove", "mousedown", "mouseup", "dblclick", "dragstart", "dragend"]
+    outer =  this
+    for e in eventTypes
+      if @parent.spec[e]?
+        callback = @parent.spec[e]
+        @node.on(e, (evt) =>
+          callback(outer, context, evt)
+        )
+
+
+  find: (selector) -> @node.find(selector)
+
+
   present: (context, layer) ->
-    console.log("presenting ", @nodes)
-    for node in @nodes
-      if not layer?
-        context.contentLayer.add(node)
-      else
-        console.log("drawing in layer supplied as arg")
-        layer.add(node)
+    @addListeners(context)
+    if not layer?
+      context.contentLayer.add(@node)
+    else
+      layer.add(@node)
 
-      if @onPresent?
-        console.log("calling onPresent!")
-        @onPresent(context)
+    if @onPresent?
+      @onPresent(context)
 
-  x: ->
-    xs = _.map(@nodes, (node) -> exports.KineticStimulus.nodePosition(node).x)
-    _.min(xs)
+  set: (name, value) -> @node[name](value)
 
-  y: ->
-    ys = _.map(@nodes, (node) -> exports.KineticStimulus.nodePosition(node).y)
-    _.min(ys)
+  x: -> KineticStimulus.nodePosition(@node).x
 
-  xmax: ->
-    xs = _.map(@nodes, (node) -> exports.KineticStimulus.nodePosition(node).x + exports.KineticStimulus.nodeSize(node).width)
-    _.max(xs)
+  y: -> KineticStimulus.nodePosition(@node).y
 
-  ymax: ->
-    xs = _.map(@nodes, (node) -> exports.KineticStimulus.nodePosition(node).y + exports.KineticStimulus.nodeSize(node).height)
-    _.max(xs)
+  xmax: -> KineticStimulus.nodePosition(@node).x + KineticStimulus.nodeSize(@node).width
+
+  ymax: -> KineticStimulus.nodePosition(@node).y + KineticStimulus.nodeSize(@node).height
+
 
   width: -> @xmax() - @x()
 
@@ -261,7 +262,7 @@ class ContainerDrawable extends exports.Drawable
     present: (context, layer) ->
       for node in @nodes
         if not layer
-           node.present(context)
+          node.present(context)
         else
           node.present(context, layer)
 
@@ -269,12 +270,10 @@ exports.Response =
 class Response extends exports.Stimulus
 
   start: (context, stimulus) ->
-    console.log("response caputured stimulus", stimulus)
-    console.log("calling activate", @activate)
     @activate(context, stimulus)
 
   activate: (context, stimulus) ->
-    console.log("Respnonse.activate", context, stimulus)
+    console.log("Response.activate", context, stimulus)
 
 
 
@@ -282,3 +281,6 @@ exports.ResponseData =
 class ResponseData
 
   constructor: (@data) ->
+
+
+exports.KineticStimulus = KineticStimulus

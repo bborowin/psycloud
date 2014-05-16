@@ -4,18 +4,26 @@ Response = require("../stimresp").Response
 
 class Click extends Response
 
-  constructor: (@refid) ->
-    super()
+  defaults:
+    id: null
+    name: null
+
 
   activate: (context) ->
 
     ## should be able to handle Kinetic object or html element
-    element = context.stage.get("#" + @refid)
+    if @spec.id?
+      node = "#" + @spec.id
+    else if @spec.name?
+      node = "." + @spec.name
+
+    element = context.stage.get("." + node)
 
     if not element
-      throw new Error("cannot find element with id" + @refid)
+      throw new Error("cannot find element:" + @node)
 
     deferred = Q.defer()
+
     element.on "click", (ev) =>
       deferred.resolve(ev)
 

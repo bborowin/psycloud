@@ -11,7 +11,9 @@ canvas = require("./components/canvas/canvas")
 html = require("./components/html/html")
 components = require("./components/components")
 factory = require("./factory")
-Kinetic = require("../jslibs/kinetic").Kinetic
+sugar = require("sugar")
+
+#Kinetic = require("../jslibs/kinetic").Kinetic
 _ = require('lodash')
 Q = require("q")
 
@@ -33,7 +35,7 @@ for lib in libs
 
 exports.Q = Q
 exports._ = _
-exports.Kinetic = Kinetic
+#exports.Kinetic = Kinetic
 exports.csv = csv
 exports.match = match
 #exports.recline = recline

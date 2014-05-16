@@ -1,6 +1,5 @@
 
-Kinetic = Psy.Kinetic
-
+Psy.Kinetic = Kinetic
 _ = Psy._
 
 @stage = new Kinetic.Stage({
@@ -23,6 +22,12 @@ _ = Psy._
 
 @SpaceOrTimeout5000 = new Psy.First([ new Psy.Timeout({duration: 5000} ),SpaceKey])
 
+@LikertSelection = new Psy.Receiver({ id: "likert_selection"} )
+
+@ChangeReceiver = new Psy.Receiver({ id: "change"} )
+
+@Instructions_Done = new Psy.Receiver({ id: "done"} )
+
 @gridlayout = new Psy.GridLayout(8,8, {x:0, y:0, width:@stage.getWidth(), height:@stage.getHeight()})
 
 @makeTrial = (stim, resp, bg=new Canvas.Background([],  "white")) ->
@@ -34,6 +39,14 @@ _ = Psy._
     stim.reset()
     resp.reset()
     new Psy.Trial([new Psy.Event(stim, resp), ClearEvent], {}, null, bg)
+
+
+@fromEventSpec = (spec) ->
+  =>
+    factory = new Psy.DefaultComponentFactory()
+    event = factory.buildEvent(spec)
+    bg=new Canvas.Background([],  "white")
+    new Psy.Trial([event], {}, null, bg)
 
 
 @makeResponseTrial = (resp, bg=new Canvas.Background([],  "white")) ->
@@ -55,6 +68,10 @@ _ = Psy._
       "Fixation 50%": makeTrial(new Canvas.FixationCross({length: '50%'}),AnyKey)
 
       "Fixation stroke width 20px": makeTrial(new Canvas.FixationCross({strokeWidth: 20}),AnyKey)
+    Title:
+      Default: makeTrial(new Canvas.Title(), SpaceKey)
+      WithOffset100px: makeTrial(new Canvas.Title(content: "This is a title", yoffset: 100), SpaceKey)
+      LeftJustified: makeTrial(new Canvas.Title(content: "This is a title", align: "left"), SpaceKey)
     Text:
       "Positioning with Labels": makeTrial(new Psy.Group(
         [new Canvas.Text({content: "Center", origin: "center", position: "center", fontSize: 20}),
@@ -202,11 +219,63 @@ _ = Psy._
   Media:
     Picture:
       "Default Picture": makeTrial(new Canvas.Picture(), SpaceKey)
-      "Default 300 X 300": makeTrial(new Canvas.Picture({width: 300, height: 300}), SpaceKey)
+      "Default Picture Centered": makeTrial(new Canvas.Picture({position: "center", origin: "center"}), SpaceKey)
+      "300 X 300": makeTrial(new Canvas.Picture({width: 300, height: 300}), SpaceKey)
+      "300 X 300, Red Border": makeTrial(new Canvas.Picture({x: 20, y:20, width: 300, height: 300, stroke: "red", strokeWidth: 10}), SpaceKey)
       "Flicker Two Images 4Hz": makeTrial(new Psy.Sequence(
         [ new Canvas.Picture(url: "images/Sunset.jpg"),
           new Canvas.Picture(url: "images/Shark.jpg")],
         [250,250], clear=true, times=50), SpaceKey)
+
+      "Selectable Set":
+        fromEventSpec({
+
+            CanvasGroup:
+              click: (node, context, evt) ->
+                node.find("Image").each((shape, n) ->
+                  if shape.id() == evt.targetNode.id()
+                    shape.strokeWidth(5)
+                    shape.stroke("red")
+                  else
+                    shape.strokeWidth(0)
+                    shape.stroke("")
+                )
+
+                context.draw()
+              stims: [
+                Picture:
+                  url: "images/Sunset.jpg"
+                  x: 5
+                  y: 20
+                  width: 300
+                  height: 300
+                  id: "a"
+              ,
+                Picture:
+                  url: "images/Shark.jpg"
+                  id: "b"
+                  x: 420
+                  y: 20
+                  width: 300
+                  height: 300
+              ,
+                Picture:
+                  url: "images/Sunset.jpg"
+                  x: 210
+                  y: 350
+                  width: 300
+                  height: 300
+                  id: "c"
+
+              ]
+            Next:
+              SpaceKey: ""
+
+
+          }
+        )
+
+
     Sound:
       Default: makeTrial(new Psy.Sound(), SpaceKey)
 
@@ -226,6 +295,18 @@ _ = Psy._
       XYPositioning: makeTrial(new Psy.Html.HtmlLink({label: "[100,100]", x: 100, y: 100}), SpaceKey)
       PercentagePositioning: makeTrial(new Psy.Html.HtmlLink({label: "[80%,80%]", x: "80%", y: "80%"}), SpaceKey)
 
+    CheckBox:
+      Default: makeTrial(new Psy.Html.CheckBox(), SpaceKey)
+
+    DropDown:
+      Default: makeTrial(new Psy.Html.DropDown(), SpaceKey)
+      Countries: makeTrial(new Psy.Html.DropDown({choices: ["Canada", "USA", "France", "Germany"], name: "Country"}), SpaceKey)
+
+    TextField:
+      Default: makeTrial(new Psy.Html.TextField(), ChangeReceiver)
+      Centered: makeTrial(new Psy.Html.TextField({position: "center"}), ChangeReceiver)
+      PlaceHolder: makeTrial(new Psy.Html.TextField({placeholder: "Hello", position: "center"}), ChangeReceiver)
+
     HtmlButton:
       Default: makeTrial(new Psy.Html.HtmlButton(), SpaceOrTimeout5000)
       PercentagePositioning: makeTrial(new Psy.Html.HtmlButton({label: "[80%,80%]", x: "80%", y: "80%"}), SpaceKey)
@@ -234,6 +315,37 @@ _ = Psy._
         new Psy.Html.HtmlButton({label: "[50%,50%]", x: "50%", y: "50%", class: "circular huge"}),
         new Canvas.FixationCross()
       ]), SpaceKey)
+
+    HtmlRange:
+      Default: makeTrial(new Psy.Html.HtmlRange(), SpaceKey)
+
+    Slider:
+      Default: makeTrial(new Psy.Html.Slider(), SpaceKey)
+
+    Consent:
+      Default: makeTrial(new Psy.Consent({url: "resources/Consent-1.md"}), SpaceKey)
+
+    MultiChoice:
+      Default: makeTrial(new Psy.MultiChoice(), SpaceKey)
+      Countries: makeTrial(new Psy.MultiChoice({choices: ["USA", "Canada", "Mexico", "France"]}), SpaceKey)
+      Centered: makeTrial(new Psy.MultiChoice({choices: ["USA", "Canada", "Mexico", "France"], position: "center", origin: "center"}), SpaceKey)
+
+    Question:
+      DropDown: makeTrial(new Psy.Question({name: "Gender", choices: ["Male", "Female", "Hermaphrodite"], type: "dropdown"}), ChangeReceiver)
+      MultiChoice: makeTrial(new Psy.Question({name: "Gender", choices: ["Male", "Female", "Hermaphrodite"], type: "multichoice"}), ChangeReceiver)
+      TextField: makeTrial(new Psy.Question( {type: "textfield"}), ChangeReceiver)
+      QuestionGroup: makeTrial(new Psy.Group([
+        new Psy.Question({name: "Gender", choices: ["Male", "Female", "Hermaphrodite"], type: "dropdown"}),
+        new Psy.Question({name: "Gender", choices: ["Male", "Female", "Hermaphrodite"], type: "multichoice"}),
+        new Psy.Question( {type: "textfield"})]), ChangeReceiver)
+
+
+
+    Likert:
+      Default: makeTrial(new Psy.Html.Likert(), LikertSelection)
+      "With 3 Choices": makeTrial(new Psy.Html.Likert(choices: ["Hate", "OK", "Totally Love"]), SpaceKey)
+      "With 4 Choices": makeTrial(new Psy.Html.Likert(choices: ["Hate", "OK", "Moderately Amusing", "Totally Love"]), SpaceKey)
+      "With 4 Choices and Title": makeTrial(new Psy.Html.Likert(choices: ["Hate", "OK", "Moderately Amusing", "Totally Love"], title: "Rate the movie"), SpaceKey)
 
     #HtmlRange:
     #  Default: makeTrial(new Psy.Html.HtmlRange(), SpaceKey)
@@ -266,7 +378,15 @@ _ = Psy._
 
     """), SpaceKey)
 
-      #"An External URL": makeTrial(new Psy.Html.Markdown({url: "./resources/page-1.md"}), SpaceKey)
+      "An External URL": makeTrial(new Psy.Html.Markdown({url: "./resources/page-1.md"}), SpaceKey)
+
+    Instructions:
+      "Simple Test": makeTrial(new Psy.Html.Instructions(
+        pages:
+          1: Markdown: "Hello"
+          2: Markdown: "Goodbye"
+          3: Markdown: "Dolly"
+      ), Instructions_Done)
 
 
     Page:
@@ -429,8 +549,6 @@ window.updateTests = (category, name) ->
 $(document).ready =>
   #$('.ui.checkbox').checkbox()
   @autostart = $("#checkid").is(":checked")
-
-
 
   categories = $("#compmenu")
   for key, value of testSet

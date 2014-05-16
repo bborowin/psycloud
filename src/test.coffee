@@ -1,6 +1,21 @@
 
+x = class X
+      zz: 7
+      Y: =>
+        Z: =>
+          @zz
 
 
+console.log("z:", new x().Y().Z())
+
+fun = (args...) ->
+  console.log(args.length)
+  console.log("arg1", args[0])
+  console.log("arg2", args[1])
+  console.log("arg3", args[2])
+
+
+fun([0,1,2]...)
 
 
 x = [

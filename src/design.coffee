@@ -60,12 +60,12 @@ exports.FactorSpec =
 exports.CellTable =
   class CellTable extends exports.VarSpec
     constructor: ( @parents) ->
-      console.log("building cell table parents", @parents)
+
       @parentNames = (fac.name for fac in @parents)
       @name = _.reduce(@parentNames, (n, n1) -> n + ":" + n1)
       @levels = (fac.levels for fac in @parents)
       @factorSet = _.zipObject(@parentNames, @levels)
-      console.log("expanding table", @factorSet)
+
       @table = DataTable.expand(@factorSet)
     #@expanded = @expand(@nblocks, @reps)
 
@@ -166,12 +166,10 @@ exports.FactorSetNode =
   class FactorSetNode
 
     @build: (spec) ->
-      console.log("building", spec)
+
       fnodes = for key, value of spec
-        console.log("key is", key)
-        console.log("value is", value)
         exports.FactorNode.build(key, value)
-      console.log("fnodes", fnodes)
+
       new FactorSetNode(fnodes)
 
     constructor: (@factors) ->
@@ -179,7 +177,6 @@ exports.FactorSetNode =
       @varmap = {}
       for i in [0...@factorNames.length]
         @varmap[@factorNames[i]] = @factors[i]
-      console.log("constructing cell table of", @factors)
       @cellTable = new CellTable(@factors)
       @name = @cellTable.name
 
@@ -224,8 +221,12 @@ exports.ArrayIterator =
 class TrialList
 
   @fromBlockArray: (blocks) ->
+    if !_.isArray(blocks)
+      throw new Error("TrialList.fromBlockArray: 'blocks' argument must be an array")
+
     tlist = new TrialList(blocks.length)
     for i in [0...blocks.length]
+      console.log("blocks[i] is", blocks[i])
       for rec in blocks[i].toRecordArray()
         tlist.add(i, rec)
 

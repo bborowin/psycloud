@@ -1,7 +1,7 @@
 
 #Psy = require("./psycloud")
 Bacon = require("baconjs").Bacon
-Kinetic = require("../jslibs/kinetic")
+#Kinetic = require("../jslibs/kinetic")
 _ = require('lodash')
 Q = require("q")
 marked = require("marked")
@@ -24,7 +24,7 @@ GridLayout = lay.GridLayout
 
 doTimer = utils.doTimer
 disableBrowserBack = utils.disableBrowserBack
-getTimestamp = utils.getTimeStamp
+getTimestamp = utils.getTimestamp
 
 
 

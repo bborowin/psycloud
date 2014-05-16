@@ -8,12 +8,20 @@ Bacon = require("baconjs")
 #KineticStimFactory = require("./elements").KineticStimFactory
 DefaultComponentFactory = require("./factory").DefaultComponentFactory
 Background = require("./components/canvas/background").Background
-Kinetic = require("../jslibs/kinetic").Kinetic
+#Kinetic = require("../jslibs/kinetic").Kinetic
 Stimulus = require("./stimresp").Stimulus
 Response = require("./stimresp").Response
 ResponseData = require("./stimresp").ResponseData
-StateMachine = require("../jslibs/state-machine")
+#StateMachine = require("../jslibs/state-machine")
 
+
+STRIP_COMMENTS = /((\/\/.*$)|(\/\*[\s\S]*?\*\/))/g
+
+getParamNames = (func) ->
+  fnStr = func.toString().replace(STRIP_COMMENTS, "")
+  result = fnStr.slice(fnStr.indexOf("(") + 1, fnStr.indexOf(")")).match(/([^\s,]+)/g)
+  result = []  if result is null
+  result
 
 
 exports.EventData =
@@ -177,6 +185,7 @@ class FeedbackNode extends RunnableNode
 
 
       args = _.extend(args, idSet)
+      args.context = context
       spec = @feedback.apply(args)
       event = context.stimFactory.buildEvent(spec, context)
       event.start(context)
@@ -236,6 +245,11 @@ exports.Trial =
 
     before: (context) ->
       self = this
+      for child in @children
+        console.log("initializing stimulus", child.stimulus)
+        child.stimulus.initialize()
+
+
       functionNode ( =>
         context.updateState( =>
           context.exState.nextTrial(self)
@@ -282,6 +296,7 @@ exports.Block =
         )
 
         if @blockSpec? and @blockSpec.Start
+          # TODO decide what variables to make available magically
           args = _.extend(context.exState.toRecord(), context: context)
           spec = @blockSpec.Start.apply(args)
           @showEvent(spec, context)
@@ -298,6 +313,7 @@ exports.Block =
           ids = _.unique(blockData.select("id"))
           console.log("END ids", ids)
           out = {}
+
           for curid in ids
             out[curid] = DataTable.fromRecords(blockData.filter(id: curid).get())
 
@@ -485,6 +501,7 @@ exports.ExperimentContext =
   class ExperimentContext
     constructor: (stimFactory) ->
 
+      @variables = {}
 
       @stimFactory = stimFactory
 
@@ -501,6 +518,13 @@ exports.ExperimentContext =
       @currentTrial =  new Trial([], {})
 
       @numBlocks = 0
+
+
+    set: (name, value) -> @variables[name] = value
+
+    get: (name) -> @variables[name]
+
+    update: (name, fun) -> @variables[name] = fun(@variables[name])
 
     updateState: (fun) ->
       @exState = fun(@exState)
@@ -576,6 +600,10 @@ exports.ExperimentContext =
 
 
     showEvent: (event) -> event.start(this)
+
+    findByID: (id) ->
+
+    findByName: (name) ->
 
     showStimulus: (stimulus) ->
       p = stimulus.render(this)
@@ -718,6 +746,12 @@ class KineticContext extends exports.ExperimentContext
     console.log("show Stimulus, drawing")
     @draw()
 
+  findByID: (id) ->
+    if _.isArray(id)
+      @stage.find("#" + i) for i in id when i?
+    else
+      @stage.find("#" + id)
+
 
   keydownStream: -> Bacon.fromEventTarget(window, "keydown")
 
@@ -823,41 +857,30 @@ exports.Presenter =
 class Presenter
   constructor: (@trialList, @display, @context) ->
     @trialBuilder = @display.Trial
-    console.log("trialBuilder", @trialBuilder)
 
     @prelude = if @display.Prelude?
-      console.log("building prelude")
       buildPrelude(@display.Prelude.Events, @context)
     else
-      console.log("dummy prelude")
       buildPrelude(__dummySpec.Events, @context)
-
 
     @coda = if @display.Coda?
       buildCoda(@display.Coda.Events, @context)
     else
-      console.log("building dummy coda")
       buildCoda(__dummySpec.Events, @context)
 
-
+    @variables = if @display.Define?
+      @context.variables = @display.Define
 
 
   start: () ->
-    console.log("Presenter.start")
     @blockList = new BlockSeq(for block in @trialList.blocks
       console.log("building block", block)
       trials = for trialNum in [0...block.length]
-        console.log("building trial", trialNum)
         record = _.clone(block[trialNum])
-
         args = {}
         args.trial = record
         args.screen = @context.screenInfo()
-
-        console.log("args", args)
-
         trialSpec = @trialBuilder.apply(args)
-        console.log("building trial spec", trialSpec, "with record", record)
         buildTrial(trialSpec.Events, record, @context, trialSpec.Feedback, trialSpec.Background)
       new Block(trials, @display.Block)
     )

@@ -32,15 +32,12 @@ test 'can concatenate two DataTables with different column names with rbind, uni
 test 'can drop a column from a DataTable', ->
   dt1 = new Psy.DataTable({a: [1,2,3], b:[5,6,7]})
   dt2 = dt1.dropColumn("a")
-  console.log("dt2 is", dt2)
+
   equal(dt2.ncol(), 1)
 
 test 'can shuffle a DataTable', ->
   dt1 = new Psy.DataTable({a: [1,2,3], b:[5,6,7]})
   dt2 = dt1.shuffle()
-
-  console.log("unshuffled dt", dt1)
-  console.log("shuffled dt", dt2)
   equal(dt1.nrow(), dt2.nrow())
 
 test 'DataTable replicate 1 yields cloned copy', ->
@@ -49,6 +46,11 @@ test 'DataTable replicate 1 yields cloned copy', ->
 
   deepEqual(dt1, dt2)
 
+test 'Can create an empty DataTable and add rows', ->
+  dt = new Psy.DataTable()
+  dt.bindrow({x:1, y:2})
+  dt.bindrow({x:2, y:3})
+  console.log("data table", dt)
 
 module("Sampler")
 test 'Can sample from a basic non-replacing sampler', ->
@@ -81,7 +83,6 @@ test 'Can create a FactorNode from an object literal', ->
 
   equal(fac.name, "fac")
   equal(fac.levels.toString(), [1,2,3,4,5].toString(), fac.levels)
-  console.log("expanded factor node", fac.expand(3,3))
 
 module("FactorSetNode")
 test 'can create a FactorSetNode from an object literal', ->
@@ -118,7 +119,7 @@ test 'can build a ConditionSet from object literal', ->
         levels: ["red", "green", "blue"]
 
   xs = Psy.ConditionSet.build(cset)
-  console.log("conditions set", xs)
+
   deepEqual(["wordtype", "repnum", "lag", "novel", "color"], xs.factorNames)
   deepEqual(["wordtype", "repnum", "lag", "novel", "color"], _.keys(xs.factorSet))
 
@@ -231,7 +232,6 @@ test 'can build an ItemNode from object literal', ->
     ]
     type: "text"
 
-  console.log("inode", inode)
 
   node = Psy.ItemNode.build("item", inode)
   equal(node.name, "item")
@@ -364,5 +364,8 @@ asyncTest 'can read a csv file using ajax', 1, ->
   })
 
 
-
+module("rep")
+test 'Psy.rep works with a single value and single times argument', ->
+  x = Psy.rep("", 3)
+  deepEqual(x, ["", "", ""])
 
