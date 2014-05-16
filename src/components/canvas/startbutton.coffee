@@ -1,4 +1,4 @@
-Kinetic = require("../../../jslibs/kinetic").Kinetic
+#Kinetic = require("../../../jslibs/kinetic").Kinetic
 KStimulus = require("../../stimresp").KineticStimulus
 
 class StartButton extends KStimulus
@@ -18,6 +18,6 @@ class StartButton extends KStimulus
     group.add(button)
     group.add(text)
 
-    @presentable(group)
+    @presentable(this, group)
 
 exports.StartButton = StartButton

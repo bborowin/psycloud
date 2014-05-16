@@ -1,4 +1,4 @@
-Kinetic = require("../../../jslibs/kinetic").Kinetic
+#Kinetic = require("../../../jslibs/kinetic").Kinetic
 KStimulus = require("../../stimresp").KineticStimulus
 
 class MultipleChoice extends KStimulus

@@ -1,13 +1,13 @@
-#Kinetic = require("../../../jslibs/kinetic").Kinetic
 layout = require("../../layout")
+#Kinetic = require("../../../jslibs/kinetic").Kinetic
 _ = require('lodash')
 KStimulus = require("../../stimresp").KineticStimulus
 
 
-class Text extends KStimulus
+class Title extends KStimulus
 
   defaults:
-    content: "Text", x: 5, y: 5, width: null, fill: "black", fontSize: 40, fontFamily: "Arial", align: "center", position: null
+    content: "Title", yoffset: 20, fill: "black", fontSize: 80, fontFamily: "Arial", align: "center"
 
   constructor: (spec = {}) ->
     if (spec.content? and _.isArray(spec.content))
@@ -19,13 +19,12 @@ class Text extends KStimulus
   initialize: ->
     @text = new Kinetic.Text({
       x: 0,
-      y: 0,
+      y: @spec.yoffset,
       text: @spec.content,
       fontSize: @spec.fontSize,
       fontFamily: @spec.fontFamily,
       fill: @spec.fill
       lineHeight: @spec.lineHeight or 1
-      width: @spec.width
       listening: false
       align: @spec.align
       #padding: 20
@@ -33,10 +32,9 @@ class Text extends KStimulus
 
 
   render: (context, layer) ->
-    coords = @computeCoordinates(context, @spec.position, @text.getWidth(), @text.getHeight())
-    @text.setPosition({x: coords[0], y: coords[1]})
+    @text.setWidth(context.width())
     @presentable(this, @text)
 
 
 
-exports.Text = Text
+exports.Title = Title

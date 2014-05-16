@@ -1,4 +1,4 @@
-Kinetic = require("../../../jslibs/kinetic").Kinetic
+#Kinetic = require("../../../jslibs/kinetic").Kinetic
 KStimulus = require("../../stimresp").KineticStimulus
 KDrawable = require("../../stimresp").KineticDrawable
 
@@ -37,12 +37,12 @@ class Circle extends KStimulus
 
     ## we override KineticDrawable to provide accurate numbers for circle bounding box.
     new (class extends KDrawable
-      x: -> @nodes[0].getX() - @nodes[0].getWidth()/2
-      y: -> @nodes[0].getY() - @nodes[0].getHeight()/2
-      width: -> @nodes[0].getWidth()
-      height: -> @nodes[0].getHeight()
+      x: -> @node.getX() - @nodes[0].getWidth()/2
+      y: -> @node.getY() - @nodes[0].getHeight()/2
+      width: -> @node.getWidth()
+      height: -> @node.getHeight()
 
-    )(@circle)
+    )(this, @circle)
 
 
 

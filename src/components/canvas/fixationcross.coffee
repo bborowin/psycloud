@@ -1,4 +1,4 @@
-Kinetic = require("../../../jslibs/kinetic").Kinetic
+#Kinetic = require("../../../jslibs/kinetic").Kinetic
 KStimulus = require("../../stimresp").KineticStimulus
 
 
@@ -30,6 +30,6 @@ class FixationCross extends KStimulus
     group.add(horz)
     group.add(vert)
     #layer.add(group)
-    @presentable(group)
+    @presentable(this, group)
 
 exports.FixationCross = FixationCross

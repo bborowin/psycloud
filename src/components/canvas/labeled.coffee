@@ -1,4 +1,4 @@
-Kinetic = require("../../../jslibs/kinetic").Kinetic
+#Kinetic = require("../../../jslibs/kinetic").Kinetic
 Text = require("./Text").Text
 StimResp = require("../../stimresp")
 
@@ -32,11 +32,6 @@ class LabeledElement extends StimResp.Stimulus
       padding: 2
     })
 
-    console.log("labeled text", @text.getPosition())
-
-    console.log("labeled target width:", target.width())
-    console.log("labeled target height:", target.height())
-
 
     switch @spec.position
       when "below" then @text.setPosition({x: target.x(), y: target.y() + target.height() + @spec.gap})
@@ -47,7 +42,7 @@ class LabeledElement extends StimResp.Stimulus
       else
         throw new Error("illegal option", @spec.position)
 
-    new StimResp.ContainerDrawable([target, new StimResp.KineticDrawable(@text)])
+    new StimResp.ContainerDrawable([target, new StimResp.KineticDrawable(this, @text)])
 
 
 

@@ -1,5 +1,5 @@
 KStimulus = require("../../stimresp").KineticStimulus
-Kinetic = require("../../../jslibs/kinetic").Kinetic
+#Kinetic = require("../../../jslibs/kinetic").Kinetic
 
 class Arrow extends KStimulus
 
@@ -78,7 +78,7 @@ class Arrow extends KStimulus
     coords = @computeCoordinates(context, @spec.position, @arrowShaft.getWidth(), @arrowShaft.getHeight())
     # need to recenter
     @node.setPosition({x: coords[0] + (@arrowShaft.getWidth()+@spec.arrowSize)/2, y: coords[1] + @spec.thickness/2})
-    @presentable(@node)
+    @presentable(this, @node)
 
 
 

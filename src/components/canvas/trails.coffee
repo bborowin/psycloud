@@ -1,5 +1,5 @@
 KStimulus = require("../../stimresp").KineticStimulus
-Kinetic = require("../../../jslibs/kinetic").Kinetic
+#Kinetic = require("../../../jslibs/kinetic").Kinetic
 utils = require("../../utils")
 
 
@@ -101,9 +101,11 @@ class TrailsA extends KStimulus
         circle = new Kinetic.Circle({ x: point[0], y: point[1], radius: @circleRadius, fill: @spec.circleFill, id: "circle_" + (i+1)})
 
       @addCircleListener(circle)
+
       label = new Kinetic.Text({ x: point[0], y: point[1], text: (i+1), fontSize: 24, fontFamily: "Arial", fill: "white", listening: false})
 
       label.setPosition({x: circle.getPosition().x - label.getWidth()/2, y: circle.getPosition().y - label.getHeight()/2})
+
       @group.add(circle)
       @group.add(label)
 
@@ -114,7 +116,7 @@ class TrailsA extends KStimulus
 
 
 
-    @presentable(@group)
+    @presentable(this, @group)
 
 
 

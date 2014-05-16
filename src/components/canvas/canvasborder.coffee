@@ -1,5 +1,5 @@
 
-Kinetic = require("../../../jslibs/kinetic").Kinetic
+#Kinetic = require("../../../jslibs/kinetic").Kinetic
 KStimulus = require("../../stimresp").KineticStimulus
 
 
@@ -19,7 +19,7 @@ class CanvasBorder extends KStimulus
 
   render: (context) ->
     border = new Kinetic.Rect({ x: 0, y: 0, width: context.width(), height: context.height(), strokeWidth: @spec.strokeWidth, stroke: @spec.stroke })
-    @presentable(border)
+    @presentable(this, border)
 
 
 exports.CanvasBorder = CanvasBorder

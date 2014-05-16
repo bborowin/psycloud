@@ -1,4 +1,4 @@
-Kinetic = require("../../../jslibs/kinetic").Kinetic
+#Kinetic = require("../../../jslibs/kinetic").Kinetic
 KStimulus = require("../../stimresp").KineticStimulus
 
 
@@ -24,10 +24,9 @@ class Rectangle extends KStimulus
 
 
   render: (context) ->
-    console.log("rendering rectangle")
     coords = @computeCoordinates(context, @spec.position, @spec.width, @spec.height)
     rect = new Kinetic.Rect({ x: coords[0], y: coords[1], width: @spec.width, height: @spec.height, fill: @spec.fill, stroke: @spec.stroke, strokeWidth: @spec.strokeWidth, opacity: @spec.opacity})
     #{x: coords[0], y: coords[1], width: @spec.width, height: @spec.height}
-    @presentable(rect)
+    @presentable(this, rect)
 
 exports.Rectangle = Rectangle

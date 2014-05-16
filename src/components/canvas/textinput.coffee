@@ -1,5 +1,5 @@
 utils = require("../../utils")
-Kinetic = require("../../../jslibs/kinetic").Kinetic
+#Kinetic = require("../../../jslibs/kinetic").Kinetic
 KStimulus = require("../../stimresp").KineticStimulus
 
 class TextInput extends KStimulus
@@ -46,13 +46,6 @@ class TextInput extends KStimulus
         layer.draw()
     , layer)
 
-
-
-
-
-
-
-
   render: (context, layer) ->
     textRect = new Kinetic.Rect({x: @spec.x, y: @spec.y, width: @spec.width, height: @spec.height, fill: @spec.fill, cornerRadius: 4, lineJoin: "round", stroke: @spec.stroke, strokeWidth: @spec.strokeWidth})
     textContent = @spec.content
@@ -94,6 +87,7 @@ class TextInput extends KStimulus
     group.add(textRect)
     group.add(cursor)
     group.add(text)
+    # TODO need to return presentable
     layer.add(group)
 
 exports.TextInput = TextInput

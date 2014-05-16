@@ -1,4 +1,4 @@
-Kinetic = require("../../../jslibs/kinetic").Kinetic
+#Kinetic = require("../../../jslibs/kinetic").Kinetic
 GStimulus = require("../../stimresp").GraphicalStimulus
 KineticDrawable = require("../../stimresp").KineticDrawable
 ContainerDrawable = require("../../stimresp").ContainerDrawable
@@ -22,8 +22,7 @@ class Background extends GStimulus
     })
 
     drawables = []
-    drawables.push(new KineticDrawable(background))
-
+    drawables.push(new KineticDrawable(this, background))
 
     for stim in @stims
       drawables.push(stim.render(context))
