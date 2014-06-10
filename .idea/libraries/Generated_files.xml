@@ -4,6 +4,7 @@
       <sourceFilesUrls>
         <item url="file://$PROJECT_DIR$/examples/continuous_recognition/runner.js" />
         <item url="file://$PROJECT_DIR$/src/components/html/likert.js" />
+        <item url="file://$PROJECT_DIR$/src/components/html/buttongroup.js" />
         <item url="file://$PROJECT_DIR$/node_modules/phantom/samples/test_phantom.js" />
         <item url="file://$PROJECT_DIR$/node_modules/grunt-mocha-debug/tasks/lib/reporter.js" />
         <item url="file://$PROJECT_DIR$/src/components/html/htmllink.js" />
@@ -23,7 +24,6 @@
         <item url="file://$PROJECT_DIR$/src/components/html/htmlrange.js" />
         <item url="file://$PROJECT_DIR$/src/components/html/htmllabel.js" />
         <item url="file://$PROJECT_DIR$/src/components/html/htmlbutton.js" />
-        <item url="file://$PROJECT_DIR$/src/components/canvas/multichoice.js" />
         <item url="file://$PROJECT_DIR$/src/components/canvas/canvasborder.js" />
         <item url="file://$PROJECT_DIR$/src/components/html/multichoice.js" />
         <item url="file://$PROJECT_DIR$/src/components/canvas/trails.js" />
@@ -67,6 +67,7 @@
         <item url="file://$PROJECT_DIR$/src/components/first.js" />
         <item url="file://$PROJECT_DIR$/src/components/prompt.js" />
         <item url="file://$PROJECT_DIR$/src/components/group.js" />
+        <item url="file://$PROJECT_DIR$/examples/color_stroop/runner.js" />
         <item url="file://$PROJECT_DIR$/src/components/keypress.js" />
         <item url="file://$PROJECT_DIR$/src/components/click.js" />
         <item url="file://$PROJECT_DIR$/src/components/nothing.js" />
@@ -135,8 +136,10 @@
         <item url="file://$PROJECT_DIR$/node_modules/grunt-mocha-debug/node_modules/phantomjs-wrapper/node_modules/phantomjs/lib/phantom/examples/module.js" />
         <item url="file://$PROJECT_DIR$/node_modules/grunt-mocha-debug/node_modules/phantomjs-wrapper/node_modules/phantomjs/lib/phantom/examples/colorwheel.js" />
         <item url="file://$PROJECT_DIR$/node_modules/grunt-mocha-debug/node_modules/phantomjs-wrapper/node_modules/phantomjs/lib/phantom/examples/loadurlwithoutcss.js" />
+        <item url="file://$PROJECT_DIR$/src/components/query.js" />
         <item url="file://$PROJECT_DIR$/node_modules/grunt-mocha-debug/node_modules/phantomjs-wrapper/node_modules/phantomjs/lib/phantom/examples/printenv.js" />
         <item url="file://$PROJECT_DIR$/node_modules/grunt-mocha-debug/node_modules/phantomjs-wrapper/node_modules/phantomjs/lib/phantom/examples/stdin-stdout-stderr.js" />
+        <item url="file://$PROJECT_DIR$/tmp.js" />
         <item url="file://$PROJECT_DIR$/node_modules/grunt-mocha-debug/node_modules/phantomjs-wrapper/node_modules/phantomjs/lib/phantom/examples/echoToFile.js" />
         <item url="file://$PROJECT_DIR$/node_modules/coffee-pattern/pattern.js" />
         <item url="file://$PROJECT_DIR$/node_modules/grunt-mocha-debug/node_modules/phantomjs-wrapper/node_modules/phantomjs/lib/phantom/examples/scandir.js" />
@@ -191,8 +194,11 @@
       <root url="file://$PROJECT_DIR$/node_modules/phantom/samples/test_phantom_10.js" />
       <root url="file://$PROJECT_DIR$/node_modules/phantom/samples/test_phantom_7.js" />
       <root url="file://$PROJECT_DIR$/node_modules/phantom/samples/test_phantom_8.js" />
+      <root url="file://$PROJECT_DIR$/src/components/canvas/multichoice.js" />
+      <root url="file://$PROJECT_DIR$/src/components/canvas/multichoice.js" />
       <root url="file://$PROJECT_DIR$/examples/continuous_recognition/runner.js" />
       <root url="file://$PROJECT_DIR$/src/components/html/likert.js" />
+      <root url="file://$PROJECT_DIR$/src/components/html/buttongroup.js" />
       <root url="file://$PROJECT_DIR$/node_modules/phantom/samples/test_phantom.js" />
       <root url="file://$PROJECT_DIR$/node_modules/grunt-mocha-debug/tasks/lib/reporter.js" />
       <root url="file://$PROJECT_DIR$/src/components/html/htmllink.js" />
@@ -212,7 +218,6 @@
       <root url="file://$PROJECT_DIR$/src/components/html/htmlrange.js" />
       <root url="file://$PROJECT_DIR$/src/components/html/htmllabel.js" />
       <root url="file://$PROJECT_DIR$/src/components/html/htmlbutton.js" />
-      <root url="file://$PROJECT_DIR$/src/components/canvas/multichoice.js" />
       <root url="file://$PROJECT_DIR$/src/components/html/multichoice.js" />
       <root url="file://$PROJECT_DIR$/src/components/canvas/canvasborder.js" />
       <root url="file://$PROJECT_DIR$/src/components/canvas/trails.js" />
@@ -257,6 +262,7 @@
       <root url="file://$PROJECT_DIR$/src/components/prompt.js" />
       <root url="file://$PROJECT_DIR$/src/components/group.js" />
       <root url="file://$PROJECT_DIR$/src/components/keypress.js" />
+      <root url="file://$PROJECT_DIR$/examples/color_stroop/runner.js" />
       <root url="file://$PROJECT_DIR$/src/components/click.js" />
       <root url="file://$PROJECT_DIR$/src/components/nothing.js" />
       <root url="file://$PROJECT_DIR$/src/components/components.js" />
@@ -324,7 +330,9 @@
       <root url="file://$PROJECT_DIR$/node_modules/grunt-mocha-debug/node_modules/phantomjs-wrapper/node_modules/phantomjs/lib/phantom/examples/module.js" />
       <root url="file://$PROJECT_DIR$/node_modules/grunt-mocha-debug/node_modules/phantomjs-wrapper/node_modules/phantomjs/lib/phantom/examples/colorwheel.js" />
       <root url="file://$PROJECT_DIR$/node_modules/grunt-mocha-debug/node_modules/phantomjs-wrapper/node_modules/phantomjs/lib/phantom/examples/loadurlwithoutcss.js" />
+      <root url="file://$PROJECT_DIR$/src/components/query.js" />
       <root url="file://$PROJECT_DIR$/node_modules/grunt-mocha-debug/node_modules/phantomjs-wrapper/node_modules/phantomjs/lib/phantom/examples/printenv.js" />
+      <root url="file://$PROJECT_DIR$/tmp.js" />
       <root url="file://$PROJECT_DIR$/node_modules/grunt-mocha-debug/node_modules/phantomjs-wrapper/node_modules/phantomjs/lib/phantom/examples/stdin-stdout-stderr.js" />
       <root url="file://$PROJECT_DIR$/node_modules/grunt-mocha-debug/node_modules/phantomjs-wrapper/node_modules/phantomjs/lib/phantom/examples/echoToFile.js" />
       <root url="file://$PROJECT_DIR$/node_modules/coffee-pattern/pattern.js" />

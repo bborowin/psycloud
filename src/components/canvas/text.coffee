@@ -14,6 +14,10 @@ class Text extends KStimulus
       spec.content = spec.content.join(' \n ')
       if not spec.lineHeight?
         spec.lineHeight = 2
+
+    #if not spec.content?
+    #  throw new Error("Text: content argument is not defined")
+
     super(spec)
 
   initialize: ->

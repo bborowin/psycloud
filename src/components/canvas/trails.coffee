@@ -8,6 +8,8 @@ class TrailsA extends KStimulus
   defaults:
     npoints: 25, circleRadius: 25, circleFill: "blue"
 
+  signals: ["trail_moved", "trail_completed"]
+
   constructor: (spec) ->
     super(spec)
 

@@ -7,6 +7,8 @@ class DropDown extends html.HtmlStimulus
     choices: ["male", "female"]
     name: ""
 
+  signals: ["change"]
+
   constructor: (spec = {}) ->
     super(spec)
 
@@ -35,6 +37,9 @@ class DropDown extends html.HtmlStimulus
     #            input ("#" + choice), type: "radio", name: "multichoice_" + outer.id, id: choice
     #            label choice
 
+
+  initialize: ->
+    @el = @div()
     @el.addClass("ui selection dropdown")
 
     @input = $("""<input type="hidden" name="#{@spec.name}">""")
@@ -57,11 +62,14 @@ class DropDown extends html.HtmlStimulus
     outer = this
 
     @el.dropdown({
-      onChange: (val) ->
-        outer.emit("change", val)
+      onChange: (newval) ->
+        outer.emit("change",  {
+          id: outer.id
+          val: newval
+          source: outer
+          name: outer.name
+        })
     })
-
-
 
 
 

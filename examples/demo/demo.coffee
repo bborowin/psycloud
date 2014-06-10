@@ -316,6 +316,12 @@ _ = Psy._
         new Canvas.FixationCross()
       ]), SpaceKey)
 
+    ButtonGroup:
+      Basic: makeTrial(new Psy.Html.ButtonGroup({ labels: ["One", "Two", "Three"]}), SpaceKey)
+      "At 400, 400": makeTrial(new Psy.Html.ButtonGroup({ x: 400, y: 400, labels: ["One", "Two", "Three"]}), SpaceKey)
+
+
+
     HtmlRange:
       Default: makeTrial(new Psy.Html.HtmlRange(), SpaceKey)
 
@@ -335,6 +341,7 @@ _ = Psy._
       MultiChoice: makeTrial(new Psy.Question({name: "Gender", choices: ["Male", "Female", "Hermaphrodite"], type: "multichoice"}), ChangeReceiver)
       TextField: makeTrial(new Psy.Question( {type: "textfield"}), ChangeReceiver)
       QuestionGroup: makeTrial(new Psy.Group([
+        new Psy.Question({question: "How old are you?", type: "textfield"}),
         new Psy.Question({name: "Gender", choices: ["Male", "Female", "Hermaphrodite"], type: "dropdown"}),
         new Psy.Question({name: "Gender", choices: ["Male", "Female", "Hermaphrodite"], type: "multichoice"}),
         new Psy.Question( {type: "textfield"})]), ChangeReceiver)

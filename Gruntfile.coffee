@@ -101,4 +101,5 @@ module.exports = (grunt) ->
   grunt.registerTask('code', ['clean', 'powerbuild:all', 'concat', 'copy'])
   #grunt.registerTask('default', ['clean', 'coffee', 'powerbuild:all', 'concat_sourcemap:all', 'cssmin', 'shell'])
   grunt.registerTask('default', ['clean', 'coffee', 'powerbuild:all', 'concat', 'cssmin', 'copy', 'shell'])
+  grunt.registerTask('document', ['shell'])
   grunt.registerTask('power', ["powerbuild"])

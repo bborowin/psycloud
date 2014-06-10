@@ -27,7 +27,7 @@ class HtmlMixin
   centerElement: (el) ->
     el.css({
       margin: "0 auto"
-      position: "absolute"
+      position: "relative"
       left: "50%"
       top: "50%"
     })
@@ -65,8 +65,9 @@ class HtmlStimulus extends HMixStim
     )(element)
 
   render: (context) ->
+    super(context)
     @el.hide()
-
+    @initReactions()
     # TODO inconsistency here. html elements are added at rendering stage, Kinetic objects are not...
     context.appendHtml(@el)
     coords = @computeCoordinates(context, @spec.position, @el.width(), @el.height())
@@ -86,6 +87,7 @@ exports.HtmlResponse = HtmlResponse
 
 Html = {}
 Html.HtmlButton = require("./htmlbutton").HtmlButton
+Html.ButtonGroup = require("./buttongroup").ButtonGroup
 Html.CheckBox = require("./checkbox").CheckBox
 Html.HtmlLink = require("./htmllink").HtmlLink
 Html.HtmlLabel = require("./htmllabel").HtmlLabel

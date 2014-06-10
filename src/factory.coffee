@@ -8,11 +8,28 @@ Html = require("./components/html/html").Html
 Components = require("./components/components")
 Psy = require("./psycloud")
 Layout = require("./layout")
+AutoResponse = require("./stimresp").AutoResponse
+
 
 
 class ComponentFactory
 
+  @transformPropertySpec: (name, params) ->
+    sname = name.split("$")
+    if sname.length is 1
+      name = sname[0]
+    else if sname.length is 2
+      name = sname[0]
+      id = sname[1]
+      params.id = id
+    else
+      throw new Error("Illegal property name #{name}. Can only have one '$' character in name")
+
+    [name, params]
+
+
   constructor: (@context) ->
+
 
   buildStimulus: (spec) ->
     stimType = _.keys(spec)[0]
@@ -24,17 +41,17 @@ class ComponentFactory
     params = _.values(spec)[0]
     @makeResponse(responseType, params)
 
-  buildEvent: (spec) ->
-    console.log("building event", spec)
-    if not spec.Next?
-      console.log("error building event with spec: ", spec)
-      throw new Error("Event specification does not contain 'Next' element")
 
+  buildEvent: (spec) ->
     stimSpec = _.omit(spec, "Next")
-    responseSpec = _.pick(spec, "Next")
+
+    if spec.Next?
+      responseSpec = _.pick(spec, "Next")
+      response = @buildResponse(responseSpec.Next)
+    else
+      response = new AutoResponse()
 
     stim = @buildStimulus(stimSpec)
-    response = @buildResponse(responseSpec.Next)
 
     @makeEvent(stim, response)
 
@@ -55,6 +72,12 @@ class ComponentFactory
     throw new Error("unimplemented", name, params, context)
 
 
+spec =
+  Blank:
+    file: "red"
+
+[name, params] = ComponentFactory.transformPropertySpec(_.keys(spec)[0], _.values(spec)[0])
+console.log(name, params)
 
 exports.ComponentFactory = ComponentFactory
 
@@ -64,9 +87,17 @@ class DefaultComponentFactory extends ComponentFactory
     @registry = _.merge(Components, Canvas, Html)
 
 
+  makeStimSet: (params, callee, registry) ->
+    names = _.keys(params)
+    props = _.values(params)
+
+    stims = _.map([0...names.length], (i) =>
+      callee(names[i], props[i], registry)
+    )
+
   makeNestedStims: (params, callee, registry) ->
-    names = _.map(params.stims, (stim) -> _.keys(stim)[0])
-    props = _.map(params.stims, (stim) -> _.values(stim)[0])
+    names = _.map(params, (stim) -> _.keys(stim)[0])
+    props = _.map(params, (stim) -> _.values(stim)[0])
 
     stims = _.map([0...names.length], (i) =>
       callee(names[i], props[i], registry)
@@ -75,10 +106,12 @@ class DefaultComponentFactory extends ComponentFactory
 
   make: (name, params, registry) ->
     callee = arguments.callee
+    [name, params] = ComponentFactory.transformPropertySpec(name, params)
+
 
     switch name
       when "Group"
-        stims = @makeNestedStims(params, callee, @registry)
+        stims = @makeNestedStims(params.stims, callee, @registry)
 
         if params.layout?
           layoutName = _.keys(params.layout)[0]
@@ -88,7 +121,7 @@ class DefaultComponentFactory extends ComponentFactory
           new Components.Group(stims, null, params)
 
       when "CanvasGroup"
-        stims = @makeNestedStims(params, callee, @registry)
+        stims = @makeNestedStims(params.stims, callee, @registry)
 
         if params.layout?
           layoutName = _.keys(params.layout)[0]
@@ -98,11 +131,11 @@ class DefaultComponentFactory extends ComponentFactory
           new Components.CanvasGroup(stims, null, params)
 
       when "Grid"
-        stims = @makeNestedStims(params, callee, @registry)
+        stims = @makeNestedStims(params.stims, callee, @registry)
         new Components.Grid(stims, params.rows or 3, params.columns or 3, params.bounds or null)
 
       when "Background"
-        stims = @makeNestedStims(params, callee, @registry)
+        stims = @makeStimSet(params, callee, @registry)
         new Canvas.Background(stims)
 
       when "First"
@@ -133,5 +166,3 @@ class DefaultComponentFactory extends ComponentFactory
 
 exports.DefaultComponentFactory = DefaultComponentFactory
 exports.componentFactory = new DefaultComponentFactory()
-
-console.log("exports.DefaultComponentFactory", DefaultComponentFactory)

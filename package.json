@@ -56,7 +56,8 @@
     "phantom": "^0.6.1",
     "ya-csv": "^0.9.3",
     "glob": "^3.2.9",
-    "sugar": "^1.4.1"
+    "sugar": "^1.4.1",
+    "pathval": "^0.1.1"
   },
   "scripts": {
     "test": "grunt ci"

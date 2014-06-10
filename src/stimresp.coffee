@@ -2,16 +2,60 @@ _ = require('lodash')
 lay = require("./layout")
 #Kinetic = require("../jslibs/kinetic")
 signals = require("smokesignals")
+Q = require("q")
 
 {match} = require 'coffee-pattern'
 
-exports.Stimulus =
-class Stimulus
+
+exports.Reaction =
+class Reaction
+
+
+  #parseSelectorString: (sel) ->
+  #  if sel.startsWith("#")
+  #    {
+  #      id: sel.from(1)
+  #    }
+  #  else if
+
+  constructor: (@signal, @callback, @id=null) ->
+
+  bind: (node) ->
+    if @id?
+      ""
+
+
+
+
+###
+  Routines:
+    prelude:
+      ---
+    trial: ->
+      design injected
+      ---
+    trial2: ->
+      design
+
+
+###
+
+
+
+
+exports.Component =
+class Component
 
 
   standardDefaults: { }
 
-  defaults: {}
+  defaults: { }
+
+  signals: []
+
+  hasChildren: -> false
+
+  getChildren: -> []
 
   constructor: (spec={}) ->
     signals.convert(this)
@@ -21,17 +65,51 @@ class Stimulus
 
     @name = @constructor.name
 
+    @initialize()
+
+  initialize: ->
+
+  start: (context) ->
+
+  stop: (context) ->
+
+exports.Stimulus =
+class Stimulus extends exports.Component
+
+  standardDefaults: { react: {} }
+
+  constructor: (spec={}) ->
+    super(spec)
+
+
+  initialize: ->
     if @spec?.id?
       @id = @spec.id
     else
       @id = _.uniqueId("stim_")
 
     @stopped = false
-    @name = this.constructor.name
-    @initialize()
 
+    @react = @spec.react or {}
 
-  initialize: -> console.log("initialize called!")
+  initReactions: (self) ->
+    for key, value of @react
+      if _.isFunction(value)
+        @addReaction(key,value)
+      else
+        @addReaction(key, value.callback, value.selector)
+
+  addReaction: (name, fun, selector) ->
+    # TODO check that "name" is a valid signal
+    if not selector?
+      this.on(name,fun)
+    else
+      if selector.id is this.id
+        this.on(name,fun)
+      else if @hasChildren()
+        for child in @getChildren()
+          child.addReaction(name, fun, selector)
+
 
   get: (name) -> @spec[name]
 
@@ -40,6 +118,12 @@ class Stimulus
   reset: -> @stopped = false
 
   render: (context, layer) ->
+
+  start: (context) ->
+    p = @render(context)
+    p.present(context)
+    context.draw()
+
 
   stop: (context) -> @stopped = true
 
@@ -275,7 +359,11 @@ class Response extends exports.Stimulus
   activate: (context, stimulus) ->
     console.log("Response.activate", context, stimulus)
 
+exports.AutoResponse =
+class AutoResponse extends exports.Response
 
+  activate: (context, stimulus) ->
+    Q({})
 
 exports.ResponseData =
 class ResponseData

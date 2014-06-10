@@ -1,35 +1,31 @@
 
 factorSet =
   condition:
-    levels: ["congruent", "incongruent", "neutral"]
+    levels: ["congruent", "incongruent"]
 
-wordItems = ["and", "that", "how", "where", "the", "which"]
-numberItems = ["one", "two", "three"]
-numbers = [1,2,3]
-numberMap = { 1: "one", 2: "two", 3: "three"}
 
-fnode = Psy.FactorSetNode.build(factorSet)
+colors = ["red", "green", "blue", "yellow"]
+
+
+factorNode = Psy.FactorSetNode.build(factorSet)
 
 # create 5 blocks of trials with 5 complete replications per block
-@trials = fnode.trialList(5, 5)
+@trials = factorNode.trialList(5, 5)
 
 
 
 @trials = @trials.bind (record) ->
-  number = Psy.sample(numbers,1)[0]
-  ret =
-    word: Psy.match record.condition,
-      congruent: numberMap[number]
-      incongruent: numberMap[Psy.sample(numbers.exclude(number), 1)[0]]
-      neutral: Psy.sample(wordItems, 1)[0]
-    number: number
-
-  ret.text =  Psy.rep(ret.word, ret.number).join(" ")
-  ret
+  color = Psy.oneOf(colors)
+  word: Psy.match record.condition,
+    congruent: color.toUpperCase()
+    incongruent: Psy.oneOf(colors.exclude(color)).toUpperCase()
+  color: color
 
 
 @trials.shuffle()
 @context = Psy.createContext()
+
+console.log(@trials)
 
 
 window.display =
@@ -75,34 +71,37 @@ window.display =
 
       Background:
         Blank:
-          fill: "gray"
-        CanvasBorder:
-          stroke: "black"
+          fill: "black"
 
       Events:
         1:
           FixationCross:
-            fill: "black"
+            fill: "green"
           Next:
             Timeout:
               duration: 1000
         2:
-          Text:
-            position: "center"
-            origin: "center"
-            content: @trial.text
+          Group:
+            stims: [
+              Text:
+                position: "center"
+                origin: "center"
+                content: @trial.word
+                fill: @trial.color
+            ,
+              ButtonGroup$buttonset:
+                labels: ["red", "green", "blue", "yellow"]
+                x: 280
+                y: 500
+            ]
 
           Next:
-            KeyPress:
-              id: "answer"
-              keys: ['1', '2', '3']
-              correct: if @trial.number is 1 then '1' else if @trial.number is 2 then '2' else '3'
-              timeout: 2500
+            Receiver$buttonset:
+              signal: "clicked"
 
       Feedback:  ->
-        console.log("Feedback this", this)
+
         Blank:
-          fill: if @answer.accuracy then "green" else "red"
           opacity: .1
         Next:
           Timeout:

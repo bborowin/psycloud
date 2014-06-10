@@ -16,7 +16,7 @@ fnode = Psy.FactorSetNode.build(factorSet)
 
 
 @trials = @trials.bind (record) ->
-  number = Psy.sample(numbers,1)[0]
+  number = Psy.oneOf(numbers)
   ret =
     word: Psy.match record.condition,
       congruent: numberMap[number]

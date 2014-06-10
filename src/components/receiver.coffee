@@ -6,18 +6,27 @@ ResponseData = require("../stimresp").ResponseData
 class Receiver extends Response
 
   defaults:
-    id: ""
+    id: null, signal: ""
 
   activate: (context, stimulus) ->
     super(context, stimulus)
     deferred = Q.defer()
 
-    stimulus.on(@spec.id, (args) =>
-      console.log("received event", @spec.id, "with args ", args)
+    callback = (args) =>
+      console.log("Reciever callback")
       resp =
         name: "Receiver"
+        signal: @spec.signal
         id: @spec.id
-      deferred.resolve(new ResponseData(resp)))
+
+      deferred.resolve(new ResponseData(resp))
+
+    if @spec.id?
+      stimulus.addReaction(@spec.signal, callback, { id: @spec.id })
+    else
+      @spec.id = stimulus.id
+      console.log("adding reaction for ", @spec.signal)
+      stimulus.addReaction(@spec.signal, callback)
 
     deferred.promise
 

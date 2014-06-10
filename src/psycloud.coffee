@@ -12,6 +12,7 @@ Background = require("./components/canvas/background").Background
 Stimulus = require("./stimresp").Stimulus
 Response = require("./stimresp").Response
 ResponseData = require("./stimresp").ResponseData
+props = require("pathval")
 #StateMachine = require("../jslibs/state-machine")
 
 
@@ -110,7 +111,7 @@ class RunnableNode
   @functionList: (nodes, context, callback) ->
     ## for every runnable node, create a function that returns a promise via 'node.start'
     _.map(nodes, (node) -> ( (arg) ->
-      context.handleValue(arg)
+      context.handleResponse(arg)
       callback(node) if callback?
       node.start(context)
     ))
@@ -199,7 +200,11 @@ exports.Event =
     constructor: (@stimulus, @response) ->
       node = {
         start: (context) =>
-          @response.start(context, stimulus)
+          #@stimulus.start(context).then(@response.start(context))
+          @stimulus.start(context)
+          @response.start(context,stimulus)
+          #context.draw()
+          #@response.start(context, stimulus)
       }
 
       super([node])
@@ -221,8 +226,8 @@ exports.Event =
         if not @stimulus.overlay
           context.clearContent()
 
-        @stimulus.render(context).present(context)
-        context.draw()
+        #@stimulus.render(context).present(context)
+        #context.draw()
       )
 
     after: (context) ->
@@ -247,6 +252,7 @@ exports.Trial =
       self = this
       for child in @children
         console.log("initializing stimulus", child.stimulus)
+        # TODO initialize should be removed from constructor call then
         child.stimulus.initialize()
 
 
@@ -259,6 +265,7 @@ exports.Trial =
 
         if @background?
           console.log("drawing background")
+          console.log("background is", @background)
           context.setBackground(@background)
           context.drawBackground()
       )
@@ -285,7 +292,7 @@ exports.Block =
 
 
     showEvent: (spec, context) ->
-      event = buildEvent(spec, context)
+      event = context.stimFactory.buildEvent(spec, context)
       event.start(context)
 
     before: (context) ->
@@ -371,39 +378,9 @@ exports.Coda =
     #  )
 
 
-#fsm = StateMachine.create({
-#  initial: 'init', final: 'end',
-#  events: [
-#    { name: 'toPrelude',  from: 'init',  to: 'prelude' },
-#    { name: 'toBlockStart', from: ['prelude', 'trial','block_end'] to: 'block_start'  },
-#    { name: 'nextTrial', from: ['event',  to: 'trial' },
-#  ]
-#});
 
 
 
-
-#@ExState = new SkinnyCoffeeMachine
-#  default: 'init'
-#
-#  events:
-#    inPrelude:
-#      init: 'inPrelude'
-#    next:
-#      blockStart: "trial"
-#      trial: "event"
-
-#
-#    turnOff:
-#      on: 'off'
-#  on:
-#    turnOn:  (from, to) -> "#{from.toUpperCase()} to #{to.toUpperCase()}"
-#    turnOff: (from, to) -> "#{from.toUpperCase()} to #{to.toUpperCase()}"
-#  before:
-#    turnOff: (from, to) -> "Before switching to #{to.toUpperCase()}"
-#  after:
-#    turnOn:  (from, to) -> "After switching to #{to.toUpperCase()}"
-#    turnOff: (from, to) -> "After switching to #{to.toUpperCase()}"
 
 
 
@@ -503,6 +480,8 @@ exports.ExperimentContext =
 
       @variables = {}
 
+      @responseQueue = []
+
       @stimFactory = stimFactory
 
       @userData = TAFFY({})
@@ -520,18 +499,17 @@ exports.ExperimentContext =
       @numBlocks = 0
 
 
-    set: (name, value) -> @variables[name] = value
+    set: (name, value) -> props.set(@variables, name, value)
 
-    get: (name) -> @variables[name]
+    get: (name) -> props.get(@variables, name)
 
-    update: (name, fun) -> @variables[name] = fun(@variables[name])
+    update: (name, fun) -> @set(name, fun(@get(name)))
 
     updateState: (fun) ->
       @exState = fun(@exState)
       @exState
 
     pushData: (data, withState=true) ->
-      console.log("pushing data", data)
       if withState
         record = _.extend(@exState.toRecord(), data)
       else
@@ -539,8 +517,9 @@ exports.ExperimentContext =
 
       @userData.insert(record)
 
-    handleValue: (arg) ->
+    handleResponse: (arg) ->
       if arg? and arg instanceof ResponseData
+        @responseQueue.push(arg)
         @pushData(arg.data)
 
 
@@ -636,7 +615,6 @@ exports.ExperimentContext =
 
     clearBackground: ->
 
-
     keydownStream: -> Bacon.fromEventTarget(window, "keydown")
 
     keypressStream: -> Bacon.fromEventTarget(window, "keypress")
@@ -723,7 +701,7 @@ class KineticContext extends exports.ExperimentContext
 
   draw: ->
     $('#container').focus()
-    #@background.render(this, @backgroundLayer)
+    #@backgroundLayer.draw()
     @contentLayer.draw()
     #@stage.draw()
 
@@ -779,36 +757,6 @@ class KineticContext extends exports.ExperimentContext
 exports.KineticContext = KineticContext
 
 
-buildStimulus = (spec, context) ->
-  stimType = _.keys(spec)[0]
-  params = _.values(spec)[0]
-  console.log("stimType", stimType)
-  console.log("params", params)
-  context.stimFactory.makeStimulus(stimType, params, context)
-
-buildResponse =  (spec, context) ->
-  responseType = _.keys(spec)[0]
-  params = _.values(spec)[0]
-  context.stimFactory.makeResponse(responseType, params, context)
-
-buildEvent = (spec, context) ->
-  #if not spec.Next?
-  #  throw new Error("Event specification does not contain 'Next' element")
-
-  stimSpec = _.omit(spec, "Next")
-  responseSpec = _.pick(spec, "Next")
-
-  if not responseSpec? or _.isEmpty(responseSpec)
-    ## in the absence of a 'Next' element, assume stimulus is it's own response
-    stim = buildStimulus(stimSpec, context)
-    if not stim instanceof Response
-      throw new Error("buildEvent: Missing Response from event: ", spec)
-
-    context.stimFactory.makeEvent(stim, stim, context)
-  else
-    stim = buildStimulus(stimSpec, context)
-    response = buildResponse(responseSpec.Next, context)
-    context.stimFactory.makeEvent(stim, response, context)
 
 
 buildTrial = (eventSpec, record, context, feedback, backgroundSpec) ->
@@ -826,14 +774,15 @@ buildTrial = (eventSpec, record, context, feedback, backgroundSpec) ->
 
 makeEventSeq = (spec, context) ->
   for key, value of spec
-    stimSpec = _.omit(value, "Next")
-    responseSpec = _.pick(value, "Next")
+    context.stimFactory.buildEvent(value)
+    #stimSpec = _.omit(value, "Next")
+    #responseSpec = _.pick(value, "Next")
 
-    console.log("building stim", stimSpec)
+    #console.log("building stim", stimSpec)
 
-    stim = buildStimulus(stimSpec, context)
-    response = buildResponse(responseSpec.Next, context)
-    context.stimFactory.makeEvent(stim, response, context)
+    #stim = buildStimulus(stimSpec, context)
+    #response = buildResponse(responseSpec.Next, context)
+    #context.stimFactory.makeEvent(stim, response, context)
 
 
 buildPrelude = (preludeSpec, context) ->
@@ -889,95 +838,28 @@ class Presenter
     @prelude.start(@context).then(=> @blockList.start(@context)).then( => console.log("inside coda"); @coda.start(@context))
 
 
-# Experiment
-# has N parts
-# with N blocks
-# with N trials
-
-exports.Experiment =
-  class Experiment
-
-    #@create: (designSpec, renderer = "Kinetic") ->
-    #  switch renderer
-    #    when "Kinetic" then new Experiment(designSpec)
-
-    constructor: (@designSpec, @stimFactory = new MockStimFactory()) ->
-      @design = new ExpDesign(@designSpec)
-
-      @display = @designSpec.Display
-
-      @trialGenerator = @display.Trial
-
-
-    buildStimulus: (event, context) ->
-      stimType = _.keys(event)[0]
-      params = _.values(event)[0]
-      @stimFactory.makeStimulus(stimType, params, context)
-
-    buildEvent: (event, context) ->
-      responseType = _.keys(event)[0]
-      params = _.values(event)[0]
-      @stimFactory.makeResponse(responseType, params, context)
-
-    buildTrial: (eventSpec, record, context) ->
-
-      events = for key, value of eventSpec
-        stimSpec = _.omit(value, "Next")
-        responseSpec = _.pick(value, "Next")
-
-        stim = @buildStimulus(stimSpec)
-        response = @buildResponse(responseSpec.Next)
-        @stimFactory.makeEvent(stim, response)
-
-      new Trial(events, record)
-
-    start: (context) ->
-      #numBlocks = @design.blocks
-      trials = @design.fullDesign
-      console.log(trials.nrow())
-      trialList = for i in [0 ... trials.nrow()]
-        record = trials.record(i)
-        record.$trialNumber = i
-        trialSpec = @trialGenerator(record)
-        @buildTrial(trialSpec, record, context)
-
-      context.start(trialList)
-
-
-
-
-
-
-
-    #valueAt: (block, trial) ->
-    #  @expanded[block][@name][trial]
-
 
 
 
 exports.letters = ['a','b','c','d','e','d','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z']
 
 
-des = Design:
-  Blocks: [
-      [
-        a:1, b:2, c:3
-        a:2, b:3, c:4
-      ],
-      [
-        a:5, b:7, c:6
-        a:5, b:7, c:6
-      ]
+#des = Design:
+#  Blocks: [
+#      [
+#        a:1, b:2, c:3
+#        a:2, b:3, c:4
+#      ],
+#      [
+#        a:5, b:7, c:6
+#        a:5, b:7, c:6
+#      ]
+#
+#  ]
 
-  ]
-
-console.log(des.Blocks)
+#console.log(des.Blocks)
 
 
-
-exports.buildStimulus = buildStimulus
-exports.buildResponse = buildResponse
-exports.buildEvent = buildEvent
 exports.buildTrial = buildTrial
 exports.buildPrelude = buildPrelude
 

@@ -27,6 +27,8 @@ class MultiChoice extends html.HtmlStimulus
   defaults:
     choices: ["1", "2", "3", "4"]
 
+  signals: ["change"]
+
   renderForm: ->
     outer = this
     form = render =>
@@ -50,6 +52,8 @@ class MultiChoice extends html.HtmlStimulus
       throw new Error("MultiChoice: no duplicate elements allowed in 'choices' argument")
 
 
+
+
   initialize: ->
     outer = this
     @el = @div()
@@ -58,9 +62,10 @@ class MultiChoice extends html.HtmlStimulus
 
     @el.find('.ui.radio.checkbox').checkbox({
       onChange: ->
-        console.log("multichoice change!")
         outer.emit("change", $(this).attr("id"))
     })
+
+
 
 
 

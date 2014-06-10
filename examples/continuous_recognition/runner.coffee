@@ -13,12 +13,19 @@ console.log(trialList)
 @context = Psy.createContext()
 
 window.display =
-  Display:
+  Display: ->
 
     Define:
       responseCount: 0
       numCorrect: 0
       numWrong: 0
+      demographics: {
+        age: 0
+        gender: ""
+        education: ""
+        ethnicity: ""
+      }
+
 
     Prelude:
       Events:
@@ -26,16 +33,57 @@ window.display =
           Consent:
             url: "./instructions/Consent-1.md"
           Next:
-            Receiver: id: "consent"
+            Receiver:
+              signal: "consent"
         2:
+          Group:
+            stims:
+              1: Question:
+                type: "textfield"
+                question: "What is your current age in years?"
+                react:
+                  change: (arg) => @set("demographics.age", arg.val)
+                    #@update("demographics", (x) -> x.age = arg.val; x)
+                    #console.log(@get("demographics"))
+              2: Question:
+                question: "What is your gender?"
+                type: "dropdown"
+                choices: ["Male", "Female"]
+                name: "Gender"
+                react:
+                  change: (arg) => @set("demographics.gender",arg.val)
+
+              3: Question:
+                question: "How many years of education?"
+                type: "textfield"
+                react:
+                  change: (arg) => @set("demographics.education",arg.val)
+
+              4: Question:
+                question: "What is your ethnicity?"
+                type: "textfield"
+                react:
+                  change: (arg) => @set("demographics.ethnicity",arg.val)
+
+              5: HtmlButton:
+                  id: "submit_button"
+                  label: "Submit"
+                  react:
+                    clicked: (arg) =>
+                      console.log("received clicked", arg)
+                      console.log("demographics: ", @get("demographics"))
+
+          Next:
+            Receiver:
+              id: "submit_button"
+              signal: "clicked"
+        3:
           Instructions:
             pages:
               1: Markdown: url: "./instructions/Instructions-1.md"
               2: Markdown: url: "./instructions/Instructions-2.md"
-              3: Markdown: url: "./instructions/Instructions-3.md"
-              4: Markdown: url: "./instructions/Instructions-4.md"
           Next:
-            Receiver: id: "done"
+            Receiver: signal: "done"
 
     Block:
       Start: ->
@@ -72,9 +120,9 @@ window.display =
         1:
           FixationCross:
             fill: "gray"
-          Next:
-            Timeout:
-              duration: 500
+          #Next:
+          #  Timeout:
+          #    duration: 500
         2:
           Picture:
             url: @trial.image
@@ -92,7 +140,7 @@ window.display =
         numCorrect = @context.get("numCorrect")
         numWrong = @context.get("numWrong")
 
-        if @answer.Accuracy
+        if @answer.accuracy
           numCorrect += 1
           @context.set("numCorrect", numCorrect)
         else
@@ -126,6 +174,6 @@ window.display =
 
 
 
-
-pres = new Psy.Presenter(trialList, display.Display, context)
+disp = display.Display.call(context)
+pres = new Psy.Presenter(trialList, disp, context)
 pres.start()
