@@ -1,5 +1,5 @@
 layout = require("../../layout")
-Kinetic = require("../../../jslibs/kinetic").Kinetic
+#Kinetic = require("../../../jslibs/kinetic").Kinetic
 _ = require('lodash')
 KStimulus = require("../../stimresp").KineticStimulus
 
@@ -54,7 +54,7 @@ class MessageBox extends KStimulus
     coords = @computeCoordinates(context, @spec.position, @text.getWidth(), @text.getHeight())
     @text.setPosition({x: coords[0], y: coords[1]})
     @rect.setPosition({x: coords[0], y: coords[1] - 5})
-    @presentable(@group)
+    @presentable(this, @group)
 
 
 exports.MessageBox = MessageBox
