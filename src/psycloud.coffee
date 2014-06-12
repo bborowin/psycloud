@@ -25,6 +25,31 @@ getParamNames = (func) ->
   result
 
 
+
+class Input
+
+  @EOF: new Input()
+  @EMPTY: new Input()
+
+class Iteratee
+
+class Done extends Iteratee
+  constructor: (@a, @remaining) ->
+
+class Error extends Iteratee
+  constructor: (@msg, @input)  ->
+
+class Cont extends Iteratee
+  # cont = input -> iteratee
+  constructor: (@cont) ->
+
+
+
+
+
+
+
+
 exports.EventData =
 class EventData
   constructor: (@name, @id, @data) ->
@@ -104,7 +129,9 @@ exports.MockStimFactory =
 
 
 
-
+# TrialEnumerator
+# next: (context) -> trial ... a runnable trial
+#
 
 class RunnableNode
 
@@ -264,8 +291,6 @@ exports.Trial =
         context.clearBackground()
 
         if @background?
-          console.log("drawing background")
-          console.log("background is", @background)
           context.setBackground(@background)
           context.drawBackground()
       )
@@ -758,12 +783,9 @@ exports.KineticContext = KineticContext
 
 
 
-
 buildTrial = (eventSpec, record, context, feedback, backgroundSpec) ->
   events = for key, value of eventSpec
-    console.log("building event", key, ", ", value)
     context.stimFactory.buildEvent(value)
-
   if backgroundSpec?
     background = context.stimFactory.makeStimulus("Background", backgroundSpec)
     new Trial(events, record, feedback, background)
