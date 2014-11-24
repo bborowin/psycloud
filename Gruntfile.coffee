@@ -21,6 +21,7 @@ module.exports = (grunt) ->
       options:
         sourceMap: false
         node: false
+        verbose: false
         entryPoints: 'lib/main.js'
         export: "Psy"
         output: 'build/psycloud.js'

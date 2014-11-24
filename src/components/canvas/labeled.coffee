@@ -1,5 +1,5 @@
 #Kinetic = require("../../../jslibs/kinetic").Kinetic
-Text = require("./Text").Text
+Text = require("./text").Text
 StimResp = require("../../stimresp")
 
 class LabeledElement extends StimResp.Stimulus

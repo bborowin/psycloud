@@ -10,7 +10,7 @@ lay = require("./layout")
 Base = require("./stimresp")
 Stimulus = Base.Stimulus
 Response = Base.Response
-Background = require("./components/canvas/Background").Background
+Background = require("./components/canvas/background").Background
 
 {renderable, ul, li, input} = require('teacup')
 
